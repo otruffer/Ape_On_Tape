@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="libs/autojar.jar"/>
+	<classpathentry kind="lib" path="libs/gson-1.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/jarjar-1.1.jar"/>
+	<classpathentry kind="lib" path="libs/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="libs/mockito-all-1.9.0.jar"/>
+	<classpathentry kind="lib" path="libs/netty-3.5.2.Final.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
