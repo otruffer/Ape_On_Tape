@@ -1,10 +1,14 @@
 package server;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
+
+import server.Game.Player;
 
 import com.google.gson.Gson;
 
@@ -13,21 +17,30 @@ public class GameServer extends BaseWebSocketHandler {
     private final Gson json = new Gson();
 
     public static final String ID_KEY = "id";
+    private static int CURRENT_ID = 0;
+    public GameHandler gameHandler;
 
     static class Incoming {
-        enum Action {LOGIN, SAY}
+        enum Action {LOGIN, SAY, KEYS_PRESSED}
 
         Action action;
         String loginUsername;
         String message;
+        List<Integer> keysPressed;
     }
 
     static class Outgoing {
-        enum Action {JOIN, LEAVE, SAY}
+        enum Action {JOIN, LEAVE, SAY, UPDATE}
 
         Action action;
         String username;
         String message;
+        List<Player> players;
+    }
+    
+    public GameServer(GameHandler gameHandler){
+    	super();
+    	this.gameHandler = gameHandler;
     }
 
     private Set<WebSocketConnection> connections = new HashSet<WebSocketConnection>();
@@ -47,20 +60,30 @@ public class GameServer extends BaseWebSocketHandler {
             case SAY:
                 say(connection, incoming.message);
                 break;
+            case KEYS_PRESSED:
+            	this.gameHandler.setKeysPressed((int) connection.data(ID_KEY), incoming.keysPressed);
+            	break;
         }
+    }
+    
+    private int getCurrentId(){
+    	CURRENT_ID++;
+    	return CURRENT_ID;
     }
 
     private void login(WebSocketConnection connection, String username) {
-        connection.data(USERNAME_KEY, username); // associate username with connection
+    	int id = this.getCurrentId();
+        connection.data(ID_KEY, id); // associate username with connection
 
         Outgoing outgoing = new Outgoing();
         outgoing.action = Outgoing.Action.JOIN;
         outgoing.username = username;
+        gameHandler.joinPlayer(id);
         broadcast(outgoing);
     }
 
     private void say(WebSocketConnection connection, String message) {
-        String username = (String) connection.data(USERNAME_KEY);
+        String username = (String) connection.data(ID_KEY);
         if (username != null) {
             Outgoing outgoing = new Outgoing();
             outgoing.action = Outgoing.Action.SAY;
@@ -69,11 +92,18 @@ public class GameServer extends BaseWebSocketHandler {
             broadcast(outgoing);
         }
     }
+    
+    public void update(List<Player> players){
+    	Outgoing outgoing = new Outgoing();
+    	outgoing.action = Outgoing.Action.UPDATE;
+    	outgoing.players = players;
+    	broadcast(outgoing);
+    }
 
     private void broadcast(Outgoing outgoing) {
         String jsonStr = this.json.toJson(outgoing);
         for (WebSocketConnection connection : connections) {
-            if (connection.data(USERNAME_KEY) != null) { // only broadcast to those who have completed login
+            if (connection.data(ID_KEY) != null) { // only broadcast to those who have completed login
                 connection.send(jsonStr);
             }
         }
@@ -81,11 +111,13 @@ public class GameServer extends BaseWebSocketHandler {
 
     @Override
     public void onClose(WebSocketConnection connection) throws Exception {
-        String username = (String) connection.data(USERNAME_KEY);
-        if (username != null) {
+        int id = (int) connection.data(ID_KEY);
+        if (id != 0) {
+        	gameHandler.leavePlayer(id);
+        	
             Outgoing outgoing = new Outgoing();
             outgoing.action = Outgoing.Action.LEAVE;
-            outgoing.username = username;
+            outgoing.username = new Integer(id).toString();
             broadcast(outgoing);
         }
         connections.remove(connection);

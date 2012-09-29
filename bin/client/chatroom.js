@@ -3,9 +3,14 @@ var ws;
 
 // Log text to main window.
 function logText(msg) {
-    var textArea = document.getElementById('chatlog');
+    var textArea = document.getElementById('console');
     textArea.value = textArea.value + msg + '\n';
     textArea.scrollTop = textArea.scrollHeight; // scroll into view
+}
+
+function clearLog(){
+    var textArea = document.getElementById('console');
+	textArea.value = "";
 }
 
 // Perform login: Ask user for name, and send message to socket.
@@ -17,7 +22,6 @@ function login() {
             window.localStorage.username = username;
         }
         send({action:'LOGIN', loginUsername:username});
-        document.getElementById('entry').focus();
     } else {
         ws.close();
     }
@@ -34,13 +38,20 @@ function onMessage(incoming) {
         case 'SAY':
             logText("[" + incoming.username + "] " + incoming.message);
             break;
+        case 'UPDATE':
+        	clearLog();
+        	var players = incoming.players;
+        	for(playerId in players){
+        		logText("a player is at position: ("+players[playerId].x+", "+players[playerId].y+")");
+        	}
+        	
     }
 }
 
 // Connect to socket and setup events.
 function connect() {
     // clear out any cached content
-    document.getElementById('chatlog').value = '';
+	clearLog();
 
     // connect to socket
     logText('* Connecting...');
@@ -58,24 +69,42 @@ function connect() {
     ws.onmessage = function(e) {
         onMessage(JSON.parse(e.data));
     };
-
-    // wire up text input event
-    var entry = document.getElementById('entry');
-    entry.onkeypress = function(e) {
-        if (e.keyCode == 13) { // enter key pressed
-            var text = entry.value;
-            if (text) {
-                send({action:'SAY', message:text});
-            }
-            entry.value = '';
-        }
-    };
+    
 }
+var charsTyped = [];
 
+
+function keyHandler(){
+	var keysPressed = new Array();
+	
+	this.keyDown = function(e){
+	console.log("keydown");
+		// IE hack.
+   		if(!e)
+		      e = window.event;
+		//keysPressed.splice(keysPressed.indexOf(e.keyCode), 1);
+	      
+		keysPressed.push(e.keyCode);
+		send({action: "KEYS_PRESSED", keysPressed: keysPressed});
+	}
+	
+	this.keyUp = function(e){	
+	   	if(!e)
+		      e = window.event;
+		keysPressed.splice(keysPressed.indexOf(e.keyCode), 1);
+		send({action: "KEYS_PRESSED", keysPressed: keysPressed});
+	}
+}
 // Send message to server over socket.
 function send(outgoing) {
     ws.send(JSON.stringify(outgoing));
 }
 
 // Connect on load.
-window.onload = connect;
+keyHandler = new keyHandler();
+$(document).ready(connect);
+$(window).bind("keydown", keyHandler.keyDown);
+$(window).bind("keyup", keyHandler.keyUp);
+
+ 
+

@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class Game {
+import server.Game.Player;
 
-	static int player_id = 0;
+public class Game {
 	
 	class Player{
 		int id;
@@ -30,11 +30,14 @@ public class Game {
 		this.height = height;
 	}
 	
-	public void addPlayer(){
+	public void addPlayer(int playerId){
 		Player player = new Player(width/2, height/2);
-		player.id = player_id;
+		player.id = playerId;
 		this.players.put(player.id, player);
-		player_id++;
+	}
+	
+	public void removePlayer(int playerId){
+		this.players.remove(playerId);
 	}
 	
 	public List<Player> getPlayers(){
@@ -57,5 +60,9 @@ public class Game {
 		}
 		player.x += x;
 		player.y += y;
+	}
+
+	public Map<Integer, Player> getPlayersAsMap() {
+		return this.players;
 	}
 }
