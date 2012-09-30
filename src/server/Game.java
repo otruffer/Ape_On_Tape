@@ -13,7 +13,7 @@ public class Game {
 		int id;
 		float x;
 		float y;
-		float speed = 20;
+		float speed = 5;
 		
 		public Player(int x, int y){
 			this.x = x;
