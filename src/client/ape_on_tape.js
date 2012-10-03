@@ -27,7 +27,7 @@ function login() {
 	var username = prompt('Choose a username', defaultUsername);
 	if (username) {
 		if (window.localStorage) { // store in browser localStorage, so we
-									// remember next next
+			// remember next next
 			window.localStorage.username = username;
 		}
 		send({
@@ -141,17 +141,18 @@ var initGame = function() {
 
 // returns the parameter that scales the game window to fullscreen
 var scale = function() {
-	var windowWidth = window.innerWidth;
-	var windowHeight = window.innerHeight;
+	var windowWidth = window.innerWidth - 2; // TODO: replace fixed property
+												// (2px)
+	var windowHeight = window.innerHeight - 2;
 	if (windowWidth < windowHeight) {
-		return windowWidth / width;
+		return (windowWidth / width > 1) ? windowWidth / width : 1;
 	} else {
-		return windowHeight / height;
+		return (windowHeight / height > 1) ? windowHeight / height : 1;
 	}
 }
 
 // returns a scaled value to a corresponding input argument
-var _ = function(argument){
+var _ = function(argument) {
 	return argument * scale();
 }
 
@@ -167,13 +168,14 @@ var drawPlayers = function() {
 }
 
 var drawPlayer = function(player) {
-	ctx.scale(scale(),scale());
+	ctx.scale(scale(), scale());
 	ctx.fillStyle = '#333';
 	ctx.beginPath();
-	ctx.rect(player.y, player.x, _(10), _(10));
+	ctx.drawImage(img_ape, player.y, player.x);
+	//ctx.rect(player.y, player.x, _(10), _(10));
 	ctx.closePath();
 	ctx.fill();
-	ctx.scale(1/scale(),1/scale());
+	ctx.scale(1 / scale(), 1 / scale());
 }
 
 var clear = function() {
@@ -186,8 +188,16 @@ var clear = function() {
 	ctx.fill();
 }
 
+function preloadImages() {
+	if (document.images) {
+		img_ape = new Image();
+		img_ape.src = "img/ape_2.png"
+	}
+}
+
 // Connect on load.
 keyHandler = new keyHandler();
+preloadImages();
 $(document).ready(connect);
 $(window).bind("keydown", keyHandler.keyDown);
 $(window).bind("keyup", keyHandler.keyUp);
