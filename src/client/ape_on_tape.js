@@ -191,7 +191,7 @@ var clear = function() {
 function preloadImages() {
 	if (document.images) {
 		img_ape = new Image();
-		img_ape.src = "img/ape_2.png"
+		img_ape.src = "img/ape_1.png";
 	}
 }
 
