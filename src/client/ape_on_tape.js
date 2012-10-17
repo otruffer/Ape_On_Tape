@@ -4,6 +4,7 @@ var width = 800;
 var height = 600;
 var ctx, c;
 var gameState;
+var ape;
 
 // Log text to main window.
 function logText(msg) {
@@ -142,7 +143,7 @@ var initGame = function() {
 // returns the parameter that scales the game window to fullscreen
 var scale = function() {
 	var windowWidth = window.innerWidth - 2; // TODO: replace fixed property
-												// (2px)
+	// (2px)
 	var windowHeight = window.innerHeight - 2;
 	if (windowWidth < windowHeight) {
 		return (windowWidth / width > 1) ? windowWidth / width : 1;
@@ -168,14 +169,18 @@ var drawPlayers = function() {
 }
 
 var drawPlayer = function(player) {
-	ctx.scale(scale(), scale());
-	ctx.fillStyle = '#333';
-	ctx.beginPath();
-	ctx.drawImage(img_ape, player.y, player.x);
-	//ctx.rect(player.y, player.x, _(10), _(10));
-	ctx.closePath();
-	ctx.fill();
-	ctx.scale(1 / scale(), 1 / scale());
+	// ctx.scale(scale(), scale());
+	// ctx.fillStyle = '#333';
+	// ctx.beginPath();
+	// ctx.drawImage(img_ape, player.y, player.x);
+	// ctx.rect(player.y, player.x, _(10), _(10));
+	// TEST - animate ape ----------------------------
+	$('#ape').css('top', player.x);
+	$('#ape').css('left', player.y);
+	// TEST -----------------------------------------
+	// ctx.closePath();
+	// ctx.fill();
+	// ctx.scale(1 / scale(), 1 / scale());
 }
 
 var clear = function() {
@@ -188,16 +193,17 @@ var clear = function() {
 	ctx.fill();
 }
 
-function preloadImages() {
-	if (document.images) {
-		img_ape = new Image();
-		img_ape.src = "img/ape_1.png";
-	}
+function loadGraphics() {
+	$('#ape').css('width', 100);
+	$('#ape').css('height', 100);
+	$('#ape').svg(); //append new <svg/> canvas to #ape
+	ape = $('#ape').svg('get'); //retrieve svg instance
+	ape.load('img/ape.svg', {svgWidth: 100, svgHeight: 100}); // load vector graphic
 }
 
 // Connect on load.
 keyHandler = new keyHandler();
-preloadImages();
+$(document).ready(loadGraphics); // TODO evaluation order?
 $(document).ready(connect);
 $(window).bind("keydown", keyHandler.keyDown);
 $(window).bind("keyup", keyHandler.keyUp);
