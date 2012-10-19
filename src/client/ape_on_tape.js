@@ -137,60 +137,7 @@ var initGame = function() {
 	c.width = _(width);
 	c.height = _(height);
 	gameState = new GameState();
-	GameLoop();
-}
-
-// returns the parameter that scales the game window to fullscreen
-var scale = function() {
-	var windowWidth = window.innerWidth - 2; // TODO: replace fixed property
-	// (2px)
-	var windowHeight = window.innerHeight - 2;
-	if (windowWidth < windowHeight) {
-		return (windowWidth / width > 1) ? windowWidth / width : 1;
-	} else {
-		return (windowHeight / height > 1) ? windowHeight / height : 1;
-	}
-}
-
-// returns a scaled value to a corresponding input argument
-var _ = function(argument) {
-	return argument * scale();
-}
-
-var GameLoop = function() {
-	clear();
-	drawPlayers();
-	gLoop = setTimeout(GameLoop, 1000 / 50);
-}
-
-var drawPlayers = function() {
-	for ( var i = 0; i < gameState.players.length; i++)
-		drawPlayer(gameState.players[i]);
-}
-
-var drawPlayer = function(player) {
-	// ctx.scale(scale(), scale());
-	// ctx.fillStyle = '#333';
-	// ctx.beginPath();
-	// ctx.drawImage(img_ape, player.y, player.x);
-	// ctx.rect(player.y, player.x, _(10), _(10));
-	// TEST - animate ape ----------------------------
-	$('#ape').css('top', player.x);
-	$('#ape').css('left', player.y);
-	// TEST -----------------------------------------
-	// ctx.closePath();
-	// ctx.fill();
-	// ctx.scale(1 / scale(), 1 / scale());
-}
-
-var clear = function() {
-	c.width = _(width);
-	c.height = _(height);
-	ctx.fillStyle = '#d0e7f9';
-	ctx.beginPath();
-	ctx.rect(0, 0, _(width), _(height));
-	ctx.closePath();
-	ctx.fill();
+	startRenderingEngine(); // DrawingEngine
 }
 
 function loadGraphics() {
