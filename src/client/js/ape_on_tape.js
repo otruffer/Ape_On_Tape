@@ -1,7 +1,8 @@
 // Socket reference.
 var ws;
-var width = 800;
-var height = 600;
+var width = 600;
+var height = 400;
+var headerHeight = 40;
 var ctx, c;
 var gameState;
 var ape;
@@ -144,7 +145,7 @@ var initGame = function() {
 var scale = function() {
 	var windowWidth = window.innerWidth - 2; // TODO: replace fixed property
 	// (2px)
-	var windowHeight = window.innerHeight - 2;
+	var windowHeight = window.innerHeight - headerHeight -2;
 	if (windowWidth < windowHeight) {
 		return (windowWidth / width > 1) ? windowWidth / width : 1;
 	} else {
