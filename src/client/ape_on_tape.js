@@ -131,12 +131,17 @@ var initGame = function(){
 var GameLoop = function(){  
   clear();
   drawPlayers();  
-  gLoop = setTimeout(GameLoop, 1000 / 50);  
+  movePlayers();
+  gLoop = setTimeout(GameLoop, 1000 / 30);  
 }  
 
 var drawPlayers = function(){
 	for(var i = 0; i < gameState.players.length; i++)
 		drawPlayer(gameState.players[i]);
+}
+
+var movePlayers = function(){
+	
 }
 
 var drawPlayer = function(player){
