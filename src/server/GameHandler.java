@@ -20,7 +20,7 @@ public class GameHandler implements Runnable{
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final int WEB_SERVER_PORT = 9876;
+	final int WEB_SERVER_PORT = 9875;
 	final int[] UP_KEYS = {38, 119}; 
 	final int[] DOWN_KEYS = {40, 115};
 	final int[] LEFT_KEYS = {37, 97};
