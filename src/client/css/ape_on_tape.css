@@ -1,0 +1,68 @@
+body {
+	background-color: #333333;
+	color: #ffffff;
+	font-family: arial, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+#header {
+	font-family: 'Finger Paint';
+	color: black;
+	font-size: 24px;
+	text-shadow: 2px 0px rgba(255, 255, 255, 0.5);
+	height: 40px;
+	line-height: 40px;
+	position: relative;
+	border-bottom: 1px solid black;
+	/*box-shadow: 0 1px 4px black;*/ background-color : #eee;
+	/* fallback for ie */
+	background-image: linear-gradient(bottom, rgb(179, 179, 179) 0%,
+		rgb(240, 240, 240) 100% );
+	background-image: -o-linear-gradient(bottom, rgb(179, 179, 179) 0%,
+		rgb(240, 240, 240) 100% );
+	background-image: -moz-linear-gradient(bottom, rgb(179, 179, 179) 0%,
+		rgb(240, 240, 240) 100% );
+	background-image: -webkit-linear-gradient(bottom, rgb(179, 179, 179) 0%,
+		rgb(240, 240, 240) 100% );
+	background-image: -ms-linear-gradient(bottom, rgb(179, 179, 179) 0%,
+		rgb(240, 240, 240) 100% );
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(179,
+		179, 179) ), color-stop(1, rgb(240, 240, 240) ) );
+	background-color: #eee
+}
+
+#header div {
+	display: inline-block;
+	margin: 0 2em;
+}
+
+#title {
+	
+}
+
+#playerName  {
+	color: #f60;
+}
+
+#gameRoom {
+	
+}
+
+#gameRoom .description {
+	font-family: 'Marcellus';
+	text-shadow: none;
+}
+
+#canvas {
+	float: left;
+	box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
+	/*border: 1px solid black;*/
+	margin-right: 10px;
+}
+
+#console {
+	float: left;
+	/*background-color: black;*/
+	color: lime;
+}

@@ -1,7 +1,8 @@
 // Socket reference.
 var ws;
-var width = 800;
-var height = 600;
+var width = 600;
+var height = 400;
+var headerHeight = 40;
 var ctx, c;
 var gameState;
 var apeImg; // the player image
@@ -126,10 +127,10 @@ var drawCounter = 0;
 var Player = function(x, y) {
 	this.x = x;
 	this.y = y;
-	this.color = '#FF6600';
-	// preload and draw canvas
-	this.canvas = document.createElement("canvas");
-	if (drawCounter < 1) {
+	// TEST -----------------------------------------
+	this.color = '#FF6600'; //the player's color
+	this.canvas = document.createElement("canvas"); // preload player canvas
+	if (drawCounter < 1) { //f*cking multiple drawing - TO SOLVE
 		$('body').append(this.canvas);
 		drawCounter += 1;
 	}
@@ -140,6 +141,7 @@ var Player = function(x, y) {
 	this.canvas.style.left = "100px";
 	var canvasCtx = this.canvas.getContext('2d');
 	canvasCtx.drawImage(apeImg, 0, 0, 100, 100);
+	// ----------------------------------------------
 	
 }
 
