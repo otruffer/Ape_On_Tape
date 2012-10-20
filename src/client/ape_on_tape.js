@@ -4,7 +4,7 @@ var width = 800;
 var height = 600;
 var ctx, c;
 var gameState;
-var ape;
+var apeImg; // the player image
 
 // Log text to main window.
 function logText(msg) {
@@ -122,9 +122,25 @@ var GameState = function() {
 	this.players = new Array();
 }
 
+var drawCounter = 0;
 var Player = function(x, y) {
 	this.x = x;
 	this.y = y;
+	this.color = '#FF6600';
+	// preload and draw canvas
+	this.canvas = document.createElement("canvas");
+	if (drawCounter < 1) {
+		$('body').append(this.canvas);
+		drawCounter += 1;
+	}
+	this.canvas.setAttribute('width', 500);
+	this.canvas.setAttribute('height', 500);
+	this.canvas.style.position = "absolute";
+	this.canvas.style.top = "100px";
+	this.canvas.style.left = "100px";
+	var canvasCtx = this.canvas.getContext('2d');
+	canvasCtx.drawImage(apeImg, 0, 0, 100, 100);
+	
 }
 
 // Send message to server over socket.
@@ -141,11 +157,8 @@ var initGame = function() {
 }
 
 function loadGraphics() {
-	$('#ape').css('width', 100);
-	$('#ape').css('height', 100);
-	$('#ape').svg(); //append new <svg/> canvas to #ape
-	ape = $('#ape').svg('get'); //retrieve svg instance
-	ape.load('img/ape.svg', {svgWidth: 100, svgHeight: 100}); // load vector graphic
+	apeImg = new Image();
+	apeImg.src = "img/ape_1.png";
 }
 
 // Connect on load.

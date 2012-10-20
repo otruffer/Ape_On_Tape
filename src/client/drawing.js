@@ -35,21 +35,21 @@ function RenderingEngine(numTilesX, numTilesY) {
 	this.fpsUpdateDelta = 0;
 }
 
-function startRenderingEngine(){ // initializes draw loop
+function startRenderingEngine() { // initializes draw loop
 	draw();
 }
 
 function draw() { // main draw loop
-	//update state
+	// update state
 	var now = new Date();
 	var timeDelta = now - rE.lastRender;
 	rE.lastRender = now;
 	rE.fpsUpdateDelta += timeDelta;
-	//draw
+	// draw
 	clear();
 	drawPlayers();
-	//print fps
-	if (rE.fpsUpdateDelta >= 500) { //print fps every 500ms
+	// print fps
+	if (rE.fpsUpdateDelta >= 500) { // print fps every 500ms
 		$("#fps").text("fps: " + Math.floor(1000 / timeDelta));
 		rE.fpsUpdateDelta = 0;
 	}
@@ -62,8 +62,8 @@ var drawPlayers = function() {
 }
 
 var drawPlayer = function(player) {
-	$('#ape').css('top', player.x);
-	$('#ape').css('left', player.y);
+	player.canvas.setAttribute('style', 'top: ' + player.x + 'px; left: '
+			+ player.y + 'px;');
 }
 
 // returns the parameter that scales the game window to fullscreen
