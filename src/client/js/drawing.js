@@ -62,15 +62,15 @@ var drawPlayers = function() {
 }
 
 var drawPlayer = function(player) {
-	player.canvas.setAttribute('style', 'top: ' + player.x + 'px; left: '
-			+ player.y + 'px;');
+	// update player canvas position
+	player.canvas.style.top = player.x + 'px';
+	player.canvas.style.left = player.y + 'px';
 }
 
 // returns the parameter that scales the game window to fullscreen
 var scale = function() {
-	var windowWidth = window.innerWidth - 2; // TODO: replace fixed property
-	// (2px)
-	var windowHeight = window.innerHeight - 2;
+	var windowWidth = window.innerWidth - 2 - $('#header').width();
+	var windowHeight = window.innerHeight - 2 - $('#header').height();
 	if (windowWidth < windowHeight) {
 		return (windowWidth / width > 1) ? windowWidth / width : 1;
 	} else {
@@ -84,10 +84,11 @@ var _ = function(argument) {
 }
 
 var clear = function() {
-	c.width = _(width);
-	c.height = _(height);
+	// c.width = _(width);
+	// c.height = _(height);
 	ctx.fillStyle = '#d0e7f9';
 	ctx.beginPath();
+	// ctx.rect(0, 0, _(width), _(height));
 	ctx.rect(0, 0, _(width), _(height));
 	ctx.closePath();
 	ctx.fill();

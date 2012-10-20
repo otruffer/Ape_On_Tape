@@ -1,7 +1,7 @@
 // Socket reference.
 var ws;
-var width = 600;
-var height = 400;
+var width = 800;
+var height = 600;
 var headerHeight = 40;
 var ctx, c;
 var gameState;
@@ -57,7 +57,7 @@ function onMessage(incoming) {
 		gameState.players = new Array();
 		for (playerId in players) {
 			gameState.players.push(new Player(players[playerId].x,
-					players[playerId].y));
+					players[playerId].y, players[playerId].id));
 			// logText("a player is at position: ("+players[playerId].x+",
 			// "+players[playerId].y+")");
 		}
@@ -123,26 +123,23 @@ var GameState = function() {
 	this.players = new Array();
 }
 
-var drawCounter = 0;
-var Player = function(x, y) {
+var Player = function(x, y, id) {
 	this.x = x;
 	this.y = y;
-	// TEST -----------------------------------------
-	this.color = '#FF6600'; //the player's color
-	this.canvas = document.createElement("canvas"); // preload player canvas
-	if (drawCounter < 1) { //f*cking multiple drawing - TO SOLVE
+	this.id = id;
+	// preload player canvas if not loaded yet
+	this.canvas = document.getElementById('player' + this.id);
+	if (!this.canvas) {
+		this.canvas = document.createElement('canvas');
+		this.canvas.setAttribute('id', 'player' + this.id);
+		this.canvas.setAttribute('width', 100);
+		this.canvas.setAttribute('height', 100);
+		this.canvas.setAttribute('style', 'position: absolute; top: ' + x
+				+ 'px; left: ' + y + 'px');
+		var canvasCtx = this.canvas.getContext('2d');
+		canvasCtx.drawImage(apeImg, 0, 0, 100, 100);
 		$('body').append(this.canvas);
-		drawCounter += 1;
 	}
-	this.canvas.setAttribute('width', 500);
-	this.canvas.setAttribute('height', 500);
-	this.canvas.style.position = "absolute";
-	this.canvas.style.top = "100px";
-	this.canvas.style.left = "100px";
-	var canvasCtx = this.canvas.getContext('2d');
-	canvasCtx.drawImage(apeImg, 0, 0, 100, 100);
-	// ----------------------------------------------
-	
 }
 
 // Send message to server over socket.
@@ -152,8 +149,8 @@ function send(outgoing) {
 
 var initGame = function() {
 	c = document.getElementById('canvas'), ctx = c.getContext('2d');
-	c.width = _(width);
-	c.height = _(height);
+	c.width = width;
+	c.height = height;
 	gameState = new GameState();
 	startRenderingEngine(); // DrawingEngine
 }
