@@ -1,6 +1,8 @@
+// Socket reference.
 var ws;
-var width = 800;
-var height = 600;
+var width = 600;
+var height = 400;
+var headerHeight = 40;
 var ctx, c;
 var gameState;
 var ape;
@@ -139,17 +141,11 @@ var initGame = function() {
 	GameLoop();
 }
 
-var GameLoop = function(){  
-  clear();
-  drawPlayers();  
-  movePlayers();
-  gLoop = setTimeout(GameLoop, 1000 / 30);  
-}  
 // returns the parameter that scales the game window to fullscreen
 var scale = function() {
 	var windowWidth = window.innerWidth - 2; // TODO: replace fixed property
 	// (2px)
-	var windowHeight = window.innerHeight - 2;
+	var windowHeight = window.innerHeight - headerHeight -2;
 	if (windowWidth < windowHeight) {
 		return (windowWidth / width > 1) ? windowWidth / width : 1;
 	} else {
@@ -168,16 +164,11 @@ var GameLoop = function() {
 	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
 
-var movePlayers = function(){
-	
+var drawPlayers = function() {
+	for ( var i = 0; i < gameState.players.length; i++)
+		drawPlayer(gameState.players[i]);
 }
 
-var drawPlayer = function(player){
-	  ctx.fillStyle = '#333';  
-  ctx.beginPath();  
-  ctx.rect(player.y, player.x, 10, 10);  
-  ctx.closePath();  
-  ctx.fill();  
 var drawPlayer = function(player) {
 	// ctx.scale(scale(), scale());
 	// ctx.fillStyle = '#333';
