@@ -48,6 +48,7 @@ function onMessage(incoming) {
 		break;
 	case 'LEAVE':
 		logText("* User '" + incoming.username + "' left.");
+		distroyPlayerCanvas(incoming.username);
 		break;
 	case 'SAY':
 		logText("[" + incoming.username + "] " + incoming.message);
@@ -140,6 +141,10 @@ var Player = function(x, y, id) {
 		canvasCtx.drawImage(apeImg, 0, 0, 100, 100);
 		$('body').append(this.canvas);
 	}
+}
+
+function distroyPlayerCanvas(id) {
+	$('#player' + id).remove();
 }
 
 // Send message to server over socket.

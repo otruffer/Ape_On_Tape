@@ -1,4 +1,4 @@
-//requestAnimationFrame polyfill for smart rendering --------------------------
+//requestAnimationFrame polyfill -----------------------------------------------
 (function() {
 	var lastTime = 0;
 	var vendors = [ 'ms', 'moz', 'webkit', 'o' ];
@@ -29,31 +29,36 @@
 // end requestAnimationFrame ---------------------------------------------------
 
 function RenderingEngine(numTilesX, numTilesY) {
+	var self = this; // assure callback to right element
+
+	// fields
 	this.tileWidth = numTilesX;
 	this.tileHeight = numTilesY;
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
+
+	// main draw loop
+	this.draw = function() {
+		// update state
+		var now = new Date();
+		var timeDelta = now - self.lastRender;
+		self.lastRender = now;
+		self.fpsUpdateDelta += timeDelta;
+		// draw on canvas
+		clear();
+		drawPlayers();
+		// print fps
+		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
+			$("#fps").text("fps: " + Math.floor(1000 / timeDelta));
+			self.fpsUpdateDelta = 0;
+		}
+		// callback to draw loop
+		requestAnimationFrame(self.draw);
+	}
 }
 
 function startRenderingEngine() { // initializes draw loop
-	draw();
-}
-
-function draw() { // main draw loop
-	// update state
-	var now = new Date();
-	var timeDelta = now - rE.lastRender;
-	rE.lastRender = now;
-	rE.fpsUpdateDelta += timeDelta;
-	// draw
-	clear();
-	drawPlayers();
-	// print fps
-	if (rE.fpsUpdateDelta >= 500) { // print fps every 500ms
-		$("#fps").text("fps: " + Math.floor(1000 / timeDelta));
-		rE.fpsUpdateDelta = 0;
-	}
-	requestAnimationFrame(draw);
+	rE.draw();
 }
 
 var drawPlayers = function() {
