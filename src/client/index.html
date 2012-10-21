@@ -3,12 +3,13 @@
 
 <head>
 <title>Chat room</title>
-<link rel="stylesheet" type="text/css" href="css/ape_on_tape.css">
 <script
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 <script type="text/javascript" src="js/jquery.svg.min.js"></script>
 <script type="text/javascript" src="js/ape_on_tape.js"></script>
 <script type="text/javascript" src="js/game-meta.js"></script>
+<script type="text/javascript" src="js/drawing.js"></script>
+<link rel="stylesheet" type="text/css" href="css/ape_on_tape.css">
 <link href='http://fonts.googleapis.com/css?family=Finger+Paint'
 	rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Marcellus'
@@ -18,10 +19,13 @@
 	<div id="header">
 		<div id="title">Ape Escape</div>
 		<div id="playerName"></div>
-		<div id="gameRoom"><span class="description">Room:</span></div>
+		<div id="gameRoom">
+			<span class="description">Room:</span>
+		</div>
 	</div>
 	<canvas id="canvas" width="800" height="600"></canvas>
 	<div id="console" width="400" height="200">-</div>
-	<div id="ape" style="position: absolute;"></div>
+	<div id="fps" width="200" height="100"
+		style="float: left; background-color: blue">-</div>
 </body>
 </html>
