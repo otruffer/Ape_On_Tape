@@ -7,8 +7,6 @@ import java.util.Set;
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
 
-import server.Game.Player;
-
 import com.google.gson.Gson;
 
 public class GameServer extends BaseWebSocketHandler {

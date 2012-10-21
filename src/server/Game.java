@@ -7,25 +7,21 @@ import java.util.Map;
 
 public class Game {
 	
-	class Player{
-		int id;
-		float x;
-		float y;
-		float speed = 5;
-		
-		public Player(int x, int y){
-			this.x = x;
-			this.y = y;
-		}
-	}
-	
 	Map<Integer, Player> players;
+	TileMap map;
+	final int[][] testMap = {	{1, 1, 1, 1, 1},
+								{1, 0, 0, 0, 1},
+								{1, 0, 0, 0, 1},
+								{1, 0, 0, 0, 1},
+								{1, 1, 1, 1, 1}
+								};
 	int width, height;
 	
 	public Game(int width, int height){
 		players = new HashMap<Integer, Player>();
 		this.width = width;
 		this.height = height;
+		this.map = new TileMap(testMap);
 	}
 	
 	public void addPlayer(int playerId){
@@ -49,15 +45,7 @@ public class Game {
 	 * @param y either -1, 0, 1
 	 */
 	public void movePlayer(int playerId, int x, int y){
-		Player player = this.players.get(playerId);
-		x *= player.speed;
-		y *= player.speed;
-		if(x!=0&&y!=0){
-			x /= Math.sqrt(2);
-			y /= Math.sqrt(2);
-		}
-		player.x += x;
-		player.y += y;
+		this.players.get(playerId).moveOnMap(map, x, y);
 	}
 
 	public Map<Integer, Player> getPlayersAsMap() {
