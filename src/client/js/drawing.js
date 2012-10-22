@@ -28,14 +28,15 @@
 }());
 // end requestAnimationFrame ---------------------------------------------------
 
-function RenderingEngine(numTilesX, numTilesY) {
+function RenderingEngine(tilesX, tilesY) {
 	var self = this; // assure callback to right element
 
 	// fields
-	this.tileWidth = numTilesX;
-	this.tileHeight = numTilesY;
+	this.tilesX = tilesX;
+	this.tilesY = tilesY;
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
+	this.needCanvasReload = true;
 
 	// main draw loop
 	this.draw = function() {
@@ -44,8 +45,11 @@ function RenderingEngine(numTilesX, numTilesY) {
 		var timeDelta = now - self.lastRender;
 		self.lastRender = now;
 		self.fpsUpdateDelta += timeDelta;
+		// reload canvas and background
+		if (self.needCanvasReload) {
+			self.clear();
+		}
 		// draw on canvas
-		clear();
 		drawPlayers();
 		// print fps
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -55,10 +59,38 @@ function RenderingEngine(numTilesX, numTilesY) {
 		// callback to draw loop
 		requestAnimationFrame(self.draw);
 	}
+
+	// background clear
+	this.clear = function() {
+		c.width = _(width);
+		c.height = _(height);
+		ctx.fillStyle = '#d0e7f9';
+		ctx.fillRect(0, 0, _(width), _(height));
+		self.drawTiles();
+		self.needCanvasReload = false;
+	}
+
+	// draw background scene
+	this.drawTiles = function() {
+		var tWidth = c.width / self.tilesX; // calculate tile width
+		var tHeight = c.height / self.tilesY; // calculate tile height
+		for ( var i = 0; i < self.tilesX * self.tilesY; i++) {
+			var ix = i % self.tilesX;
+			var iy = (i - ix) / self.tilesX;
+			ctx.fillStyle = get_random_color();
+			ctx.fillRect(ix * tWidth, iy * tHeight, tWidth, tHeight);
+		}
+	}
 }
 
-function startRenderingEngine() { // initializes draw loop
-	rE.draw();
+// random color generator for testing issues
+function get_random_color() {
+	var letters = '0123456789ABCDEF'.split('');
+	var color = '#';
+	for ( var i = 0; i < 6; i++) {
+		color += letters[Math.round(Math.random() * 15)];
+	}
+	return color;
 }
 
 var drawPlayers = function() {
@@ -74,29 +106,16 @@ var drawPlayer = function(player) {
 
 // returns the parameter that scales the game window to fullscreen
 var scale = function() {
-	var windowWidth = window.innerWidth - 2 - $('#header').width();
+	// var windowWidth = window.innerWidth - 2 - $('#header').width();
 	var windowHeight = window.innerHeight - 2 - $('#header').height();
-	if (windowWidth < windowHeight) {
-		return (windowWidth / width > 1) ? windowWidth / width : 1;
-	} else {
-		return (windowHeight / height > 1) ? windowHeight / height : 1;
-	}
+	// if (windowWidth < windowHeight) {
+	// return (windowWidth / width > 1) ? windowWidth / width : 1;
+	// } else {
+	return (windowHeight / height > 1) ? windowHeight / height : 1;
+	// }
 }
 
 // returns a scaled value to a corresponding input argument
 var _ = function(argument) {
 	return argument * scale();
 }
-
-var clear = function() {
-	// c.width = _(width);
-	// c.height = _(height);
-	ctx.fillStyle = '#d0e7f9';
-	ctx.beginPath();
-	// ctx.rect(0, 0, _(width), _(height));
-	ctx.rect(0, 0, _(width), _(height));
-	ctx.closePath();
-	ctx.fill();
-}
-
-var rE = new RenderingEngine(10, 10);

@@ -1,11 +1,10 @@
-// Socket reference.
-var ws;
+var ws; // Socket reference.
 var width = 800;
 var height = 600;
-var headerHeight = 40;
-var ctx, c;
-var gameState;
-var apeImg; // the player image
+var ctx, c; // Main drawing canvas context
+var gameState; // Holds the array of current players
+var apeImg; // The player image
+var renderEngine;
 
 // Log text to main window.
 function logText(msg) {
@@ -128,7 +127,7 @@ var Player = function(x, y, id) {
 	this.x = x;
 	this.y = y;
 	this.id = id;
-	// preload player canvas if not loaded yet
+	// Preload player canvas if not loaded yet
 	this.canvas = document.getElementById('player' + this.id);
 	if (!this.canvas) {
 		this.canvas = document.createElement('canvas');
@@ -138,7 +137,7 @@ var Player = function(x, y, id) {
 		this.canvas.setAttribute('style', 'position: absolute; top: ' + x
 				+ 'px; left: ' + y + 'px');
 		var canvasCtx = this.canvas.getContext('2d');
-		canvasCtx.drawImage(apeImg, 0, 0, 100, 100);
+		canvasCtx.drawImage(apeImg, 0, 0, 60, 60);
 		$('body').append(this.canvas);
 	}
 }
@@ -157,7 +156,8 @@ var initGame = function() {
 	c.width = width;
 	c.height = height;
 	gameState = new GameState();
-	startRenderingEngine(); // DrawingEngine
+	renderEngine = new RenderingEngine(16, 12); // load with 16x12 tiles
+	renderEngine.draw(); // start drawing loop
 }
 
 function loadGraphics() {
