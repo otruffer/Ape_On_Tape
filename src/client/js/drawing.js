@@ -64,7 +64,7 @@ function RenderingEngine(tilesX, tilesY) {
 	this.clear = function() {
 		c.width = _(width);
 		c.height = _(height);
-		ctx.fillStyle = '#d0e7f9';
+		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, _(width), _(height));
 		self.drawTiles();
 		self.needCanvasReload = false;
@@ -77,8 +77,25 @@ function RenderingEngine(tilesX, tilesY) {
 		for ( var i = 0; i < self.tilesX * self.tilesY; i++) {
 			var ix = i % self.tilesX;
 			var iy = (i - ix) / self.tilesX;
-			ctx.fillStyle = get_random_color();
-			ctx.fillRect(ix * tWidth, iy * tHeight, tWidth, tHeight);
+			// ctx.fillStyle = get_random_color();
+			if (ix == 0) {
+				if (iy != tilesY - 1) {
+					ctx.drawImage(t_grass_full, ix * tWidth, iy * tHeight,
+							tWidth, tHeight);
+				} else {
+					ctx.drawImage(t_grass_long, ix * tWidth, iy * tHeight,
+							tWidth, tHeight);
+				}
+			}
+			if (ix == 1 && iy != tilesY - 1) {
+				if (iy == tilesY - 2) {
+					ctx.drawImage(t_grass_corner, ix * tWidth, iy * tHeight,
+							tWidth, tHeight);
+				} else {
+					ctx.drawImage(t_grass_long, ix * tWidth, iy * tHeight,
+							tWidth, tHeight);
+				}
+			}
 		}
 	}
 }

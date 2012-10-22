@@ -163,6 +163,12 @@ var initGame = function() {
 function loadGraphics() {
 	apeImg = new Image();
 	apeImg.src = "img/ape_1.png";
+	t_grass_corner = new Image();
+	t_grass_corner.src = "img/grass/grass_corner.png"
+	t_grass_full = new Image();
+	t_grass_full.src = "img/grass/grass_full.png"
+	t_grass_long = new Image();
+	t_grass_long.src = "img/grass/grass_long.png"
 }
 
 // Connect on load.
