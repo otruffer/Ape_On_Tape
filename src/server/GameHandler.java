@@ -25,7 +25,8 @@ public class GameHandler implements Runnable{
 	final int[] DOWN_KEYS = {40, 115};
 	final int[] LEFT_KEYS = {37, 97};
 	final int[] RIGHT_KEYS = {100, 39};
-	
+	final String STATIC_ROOT_DIR = "/var/www/ape_on_tape";
+	final boolean USE_STATIC_ROOT_DIR = true;
 	
 	private GameServer gameServer;
 	private WebServer webServer;
@@ -34,11 +35,12 @@ public class GameHandler implements Runnable{
 	
 	public GameHandler() throws InterruptedException, ExecutionException{
 		gameServer = new GameServer(this);
+		String rootDir = (String) (USE_STATIC_ROOT_DIR ? STATIC_ROOT_DIR:ClientDirUtil.getClientDirectory());
 		webServer =  createWebServer(WEB_SERVER_PORT)
 				/*.add(new LoggingHandler(
 						new SimpleLogSink(Chatroom.USERNAME_KEY)))*/
 				.add("/chatsocket", gameServer)
-				.add(new StaticFileHandler(ClientDirUtil.getClientDirectory()))
+				.add(new StaticFileHandler(rootDir))
 				.start().get();
 		
 		game = new Game(800, 400);

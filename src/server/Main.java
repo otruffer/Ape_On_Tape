@@ -1,7 +1,5 @@
 package server;
 
-import java.io.File;
-
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
 import org.webbitserver.handler.logging.LoggingHandler;

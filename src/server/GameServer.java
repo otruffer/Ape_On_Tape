@@ -61,7 +61,7 @@ public class GameServer extends BaseWebSocketHandler {
                 say(connection, incoming.message);
                 break;
             case KEYS_PRESSED:
-            	this.gameHandler.setKeysPressed((int) connection.data(ID_KEY), incoming.keysPressed);
+            	this.gameHandler.setKeysPressed((Integer) connection.data(ID_KEY), incoming.keysPressed);
             	break;
         }
     }
@@ -111,7 +111,7 @@ public class GameServer extends BaseWebSocketHandler {
 
     @Override
     public void onClose(WebSocketConnection connection) throws Exception {
-        int id = (int) connection.data(ID_KEY);
+        int id = (Integer) connection.data(ID_KEY);
         if (id != 0) {
         	gameHandler.leavePlayer(id);
         	
