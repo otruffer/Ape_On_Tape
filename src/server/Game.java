@@ -5,14 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import ch.unibe.scg.doodle.Doo;
-
 public class Game {
 
 	Map<Integer, Player> players;
 	TileMap map;
-	final int[][] testMap = { { 1, 1, 1, 1, 1 }, { 1, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 1 }, { 1, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 } };
+	final int[][] testMap = { { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 0, 0, 1, 1, 0, 0, 0, 0, 1 },
+			{ 1, 0, 0, 0, 1, 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1 },
+			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
 	int width, height;
 
 	public Game(int width, int height) {
@@ -24,7 +26,8 @@ public class Game {
 
 	public void addPlayer(int playerId) {
 		synchronized (this.players) {
-			Player player = new Player(playerId, width / 2, height / 2);
+			float[] start = map.getStartXY();
+			Player player = new Player(playerId, start[0], start[1]);
 			player.setId(playerId);
 			this.players.put(player.id, player);
 		}
