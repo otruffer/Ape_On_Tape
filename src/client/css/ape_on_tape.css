@@ -17,18 +17,18 @@ body {
 	border-bottom: 1px solid black;
 	/*box-shadow: 0 1px 4px black;*/ background-color : #eee;
 	/* fallback for ie */
-	background-image: linear-gradient(bottom, rgb(179, 179, 179) 0%,
+	background-image: linear-gradient(bottom, rgb(200, 200, 200) 0%,
 		rgb(240, 240, 240) 100% );
-	background-image: -o-linear-gradient(bottom, rgb(179, 179, 179) 0%,
+	background-image: -o-linear-gradient(bottom, rgb(200, 200, 200) 0%,
 		rgb(240, 240, 240) 100% );
-	background-image: -moz-linear-gradient(bottom, rgb(179, 179, 179) 0%,
+	background-image: -moz-linear-gradient(bottom, rgb(200, 200, 200) 0%,
 		rgb(240, 240, 240) 100% );
-	background-image: -webkit-linear-gradient(bottom, rgb(179, 179, 179) 0%,
+	background-image: -webkit-linear-gradient(bottom, rgb(200, 200, 200) 0%,
 		rgb(240, 240, 240) 100% );
-	background-image: -ms-linear-gradient(bottom, rgb(179, 179, 179) 0%,
+	background-image: -ms-linear-gradient(bottom, rgb(200, 200, 200) 0%,
 		rgb(240, 240, 240) 100% );
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(179,
-		179, 179) ), color-stop(1, rgb(240, 240, 240) ) );
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(200,
+		200, 200) ), color-stop(1, rgb(240, 240, 240) ) );
 	background-color: #eee
 }
 
@@ -46,12 +46,13 @@ body {
 }
 
 #gameRoom {
-	
+	color: #082;
 }
 
 #gameRoom .description {
 	font-family: 'Marcellus';
 	text-shadow: none;
+	color: black;
 }
 
 #canvas {
@@ -63,6 +64,12 @@ body {
 
 #console {
 	float: left;
-	/*background-color: black;*/
+	background-color: rgba(0,0,0,0.2);
 	color: lime;
+	padding: 4px;
+	width: 200px;
+	position: absolute;
+	right: 0;
+	height: 400px;
+	overflow-y: scroll;
 }

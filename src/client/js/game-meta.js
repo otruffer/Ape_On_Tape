@@ -1,5 +1,10 @@
 $(document).ready(initGameMeta);
 
 function initGameMeta() {
-	$('#playerName').append(window.localStorage.username);
+	if (loginReady && roomChosen) {
+		$('#playerName').append(window.localStorage.username);
+		$('#gameRoom').append(window.localStorage.room);
+	} else {
+		setTimeout('initGameMeta()', 200);
+	}
 }

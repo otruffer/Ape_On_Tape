@@ -7,6 +7,9 @@ var renderEngine;
 var lastSocketMessage = new Date();
 var socketDelta = 0;
 
+var loginReady;
+var roomChosen;
+
 // Log text to main window.
 function logText(msg) {
 	consoleDOM = $('#console');
@@ -39,6 +42,28 @@ function login() {
 	} else {
 		ws.close();
 	}
+
+	loginReady = true;
+}
+
+function roomSelection() {
+	var defaultRoom = (window.localStorage && window.localStorage.room)
+			|| 'soup';
+	var room = prompt('Choose game room', defaultRoom);
+	if (room) {
+		if (window.localStorage) { // store in browser localStorage, so we
+			// remember next next
+			window.localStorage.room = room;
+		}
+		send({
+			action : 'ROOM',
+			roomJoin : room
+		});
+	} else {
+		ws.close();
+	}
+	
+	roomChosen = true;
 }
 
 function onMessage(incoming) {
@@ -80,6 +105,7 @@ function connect() {
 	ws.onopen = function(e) {
 		logText('* Connected!');
 		login();
+		roomSelection();
 		initGame();
 	};
 	ws.onclose = function(e) {
@@ -158,7 +184,7 @@ function loadGraphics() {
 	preloadImage('grass_corner', 'img/tiles/grass_corner.png');
 }
 
-//preload images -> images can be accessed using imagePreload['name'].
+// preload images -> images can be accessed using imagePreload['name'].
 var imagePreload = {};
 function preloadImage(name, imgPath) {
 	var img = new Image();
