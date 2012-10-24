@@ -69,6 +69,7 @@ public class GameServer extends BaseWebSocketHandler {
 			login(connection, incoming.loginUsername);
 			break;
 		case ROOM:
+			leaveCurrentRoom(connection);
 			joinRoom(connection, incoming.roomJoin);
 			break;
 		// case SAY:
@@ -95,6 +96,11 @@ public class GameServer extends BaseWebSocketHandler {
 	private void joinRoom(WebSocketConnection connection, String roomJoin) {
 		int id = (int) connection.data().get(ID_KEY);
 		gameHandler.joinRoom(id, roomJoin);
+	}
+
+	private void leaveCurrentRoom(WebSocketConnection connection) {
+		int id = (int) connection.data().get(ID_KEY);
+		gameHandler.leaveCurrentRoom(id);
 	}
 
 	public void sendJoinMessage(int id, String user, String roomJoin,
@@ -163,14 +169,17 @@ public class GameServer extends BaseWebSocketHandler {
 		gameHandler.playerDisconnected(id);
 	}
 
-	public void disconnectMessage(int id, String user, List<Player> receipants) {
+	public void sendDisconnectMessage(int id, String user,
+			List<Player> receipants) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.LEAVE;
 		outgoing.username = user;
 		broadcast(outgoing, receipants);
+	}
+
+	public void disconnect(int id) {
 		WebSocketConnection connection = findConnection(id);
 		connections.remove(connection);
-
 	}
 
 	public void sendRoomList(Collection<String> rooms, List<Player> allPlayers) {

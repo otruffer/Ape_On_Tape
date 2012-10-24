@@ -17,9 +17,16 @@ function initHeader() {
 function initRooms() {
 	if (rooms) {
 		for (index in rooms) {
-			$('#roomList ul').append("<li>" + rooms[index] + "</li>");
+			var item = $('<li>');
+			item.append(rooms[index]);
+			$('#roomList ul').append(item);
+			item.click(changeRoom);
 		}
 	} else {
 		setTimeout('initRooms()', 200);
 	}
+}
+
+function changeRoom() {
+	changeToRoom($(this).text());
 }

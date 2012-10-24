@@ -169,8 +169,9 @@ public class GameHandler implements Runnable {
 
 	public void playerDisconnected(int id) {
 		this.leavePlayer(id, playerRooms.get(id));
-		gameServer.disconnectMessage(id, playerNames.get(id),
+		gameServer.sendDisconnectMessage(id, playerNames.get(id),
 				playersInRoomWith(id));
+		gameServer.disconnect(id);
 		playerRooms.remove(id);
 	}
 
@@ -182,9 +183,17 @@ public class GameHandler implements Runnable {
 		String user = playerNames.get(id);
 		playerRooms.put(id, roomJoin);
 		this.joinPlayer(id, roomJoin);
-		gameServer.sendJoinMessage(id, playerNames.get(id), roomJoin,
-				playersInRoomWith(id));
+		gameServer.sendJoinMessage(id, user, roomJoin, playersInRoomWith(id));
 		gameServer.sendRoomList(allRooms(), this.allPlayers());
+	}
+
+	public void leaveCurrentRoom(int id) {
+		// check if player is in some room
+		if (playerRooms.containsKey(id)) {
+			gameServer.sendDisconnectMessage(id, playerNames.get(id),
+					playersInRoomWith(id));
+			playerRooms.remove(id);
+		}
 	}
 
 	private Collection<String> allRooms() {
