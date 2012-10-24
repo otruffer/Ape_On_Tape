@@ -79,20 +79,16 @@ function RenderingEngine(tilesX, tilesY) {
 
 	// draw background scene
 	this.drawTiles = function() {
-		var tWidth = c.width / self.tilesX; // calculate tile width
-		var tHeight = c.height / self.tilesY; // calculate tile height
-		for ( var i = 0; i < self.tilesX * self.tilesY; i++) {
-			var ix = i % self.tilesX;
-			var iy = (i - ix) / self.tilesX;
-			if (ix == 0) {
-				ctx.drawImage(imagePreload['grass_long'], ix * tWidth, iy
-						* tHeight, tWidth, tHeight);
-				// var m_canvas = document.createElement('canvas');
-				// m_canvas.width = 50;
-				// m_canvas.height = 50;
-				// var m_context = m_canvas.getContext('2d');
-				// m_context.drawImage(imagePreload['grass_full'],0,0);
-				// ctx.drawImage(m_canvas, 150, 150);
+		for (ix in gameState.map) {
+			for (iy in gameState.map[ix]) {
+				if (gameState.map[ix][iy] == 1) {
+					ctx.drawImage(tilePreload['gr_edg'][2],
+							ix * self.TILE_SIZE, iy * self.TILE_SIZE / 2,
+							self.TILE_SIZE / 2, self.TILE_SIZE / 2)
+					ctx.drawImage(tilePreload['gr_edg'][0], ix * self.TILE_SIZE
+							+ self.TILE_SIZE / 2, iy * self.TILE_SIZE / 2,
+							self.TILE_SIZE / 2, self.TILE_SIZE / 2)
+				}
 			}
 		}
 	}
