@@ -28,12 +28,13 @@ public class GameServer extends BaseWebSocketHandler {
    
 
     static class Outgoing {
-        enum Action {JOIN, LEAVE, SAY, UPDATE}
+        enum Action {JOIN, LEAVE, SAY, UPDATE, MAP}
 
         Action action;
         String username;
         String message;
         List<Player> players;
+        int[][] map;
     }
     
     public GameServer(GameHandler gameHandler){
@@ -77,6 +78,7 @@ public class GameServer extends BaseWebSocketHandler {
         outgoing.action = Outgoing.Action.JOIN;
         outgoing.username = username;
         gameHandler.joinPlayer(id);
+        this.sendMap(connection, gameHandler.getGameMap());
         broadcast(outgoing);
     }
 
@@ -96,6 +98,14 @@ public class GameServer extends BaseWebSocketHandler {
     	outgoing.action = Outgoing.Action.UPDATE;
     	outgoing.players = players;
     	broadcast(outgoing);
+    }
+    
+    public void sendMap(WebSocketConnection connection, int[][] map){
+    	Outgoing outgoing = new Outgoing();
+    	outgoing.action = Outgoing.Action.MAP;
+    	outgoing.map = map;
+        String jsonStr = this.json.toJson(outgoing);
+    	connection.send(jsonStr);
     }
 
     private void broadcast(Outgoing outgoing) {

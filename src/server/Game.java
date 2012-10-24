@@ -51,4 +51,8 @@ public class Game {
 	public Map<Integer, Player> getPlayersAsMap() {
 		return this.players;
 	}
+	
+	public TileMap getMap(){
+		return map;
+	}
 }

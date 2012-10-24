@@ -22,7 +22,7 @@ public class Tile {
 		return y;
 	}
 	
-	public boolean getWalkable(){
+	public boolean isWalkable(){
 		return walkable;
 	}
 }

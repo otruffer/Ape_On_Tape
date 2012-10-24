@@ -8,4 +8,12 @@ public class MapUtil {
 				tileMap[i][j] = new Tile(map, j, i, intMap[i][j]==0);
 		return tileMap;
 	}
+	
+	static int[][] getArrayFromMap(TileMap map){
+		int[][] tiles = new int[map.getHeight()][map.getWidth()];
+		for(int i = 0; i < map.getHeight(); i++)
+			for(int j = 0; j < map.getWidth(); j++)
+				tiles[i][j] = map.getTile(j, i).isWalkable()?1:0;
+		return tiles;
+	}
 }

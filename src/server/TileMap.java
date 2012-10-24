@@ -38,4 +38,12 @@ public class TileMap {
 		}
 		return tile;
 	}
+	
+	public int getHeight(){
+		return tileMap.length;
+	}
+	
+	public int getWidth(){
+		return tileMap[0].length;
+	}
 }

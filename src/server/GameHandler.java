@@ -127,4 +127,8 @@ public class GameHandler implements Runnable{
 		int[] values = {x, y};
 		return values;
 	}
+	
+	public int[][] getGameMap(){
+		return MapUtil.getArrayFromMap(game.getMap());
+	}
 }
