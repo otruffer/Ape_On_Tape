@@ -7,11 +7,15 @@ function initGameMeta() {
 
 function initHeader() {
 	if (loginReady && roomChosen) {
-		$('#playerName').append(window.localStorage.username);
-		$('#gameRoom').append(window.localStorage.room);
+		$('#playerName').text(window.localStorage.username);
+		$('#gameRoom .name').text(window.localStorage.room);
 	} else {
 		setTimeout('initHeader()', 200);
 	}
+}
+
+function updateRoomInfo() {
+	$('#gameRoom .name').text(window.localStorage.room);
 }
 
 function initRooms() {

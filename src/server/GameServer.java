@@ -38,7 +38,7 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, MAP, ROOMS
+			JOIN, LEAVE, SAY, UPDATE, MAP, ROOMS, NEW_ROOM
 		}
 
 		Action action;
@@ -47,6 +47,7 @@ public class GameServer extends BaseWebSocketHandler {
 		List<Player> players;
 		int[][] map;
 		String[] rooms;
+		String newRoom;
 	}
 
 	public GameServer(GameHandler gameHandler) {
@@ -182,10 +183,17 @@ public class GameServer extends BaseWebSocketHandler {
 		connections.remove(connection);
 	}
 
-	public void sendRoomList(Collection<String> rooms, List<Player> allPlayers) {
+	public void sendRoomList(Collection<String> rooms, List<Player> receivers) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.ROOMS;
 		outgoing.rooms = rooms.toArray(new String[0]);
-		broadcast(outgoing, allPlayers);
+		broadcast(outgoing, receivers);
+	}
+
+	public void sendNewRoomInfo(String newRoomName, List<Player> receipants) {
+		Outgoing outgoing = new Outgoing();
+		outgoing.action = Outgoing.Action.NEW_ROOM;
+		outgoing.newRoom = newRoomName;
+		broadcast(outgoing, receipants);
 	}
 }

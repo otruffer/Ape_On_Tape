@@ -124,7 +124,6 @@ public class GameHandler implements Runnable {
 	private void syncLoop() {
 		for (Game game : games.values()) {
 			this.gameServer.update(game.getPlayers());
-			// Doo.dle(game.getPlayers());
 		}
 	}
 
@@ -185,6 +184,13 @@ public class GameHandler implements Runnable {
 		this.joinPlayer(id, roomJoin);
 		gameServer.sendJoinMessage(id, user, roomJoin, playersInRoomWith(id));
 		gameServer.sendRoomList(allRooms(), this.allPlayers());
+		LinkedList<Player> playerAsList = new LinkedList<Player>();
+		playerAsList.add(playerFromId(id));
+		gameServer.sendNewRoomInfo(roomJoin, playerAsList);
+	}
+
+	private Player playerFromId(int id) {
+		return games.get(playerRooms.get(id)).getPlayersAsMap().get(id);
 	}
 
 	public void leaveCurrentRoom(int id) {
@@ -192,6 +198,7 @@ public class GameHandler implements Runnable {
 		if (playerRooms.containsKey(id)) {
 			gameServer.sendDisconnectMessage(id, playerNames.get(id),
 					playersInRoomWith(id));
+			games.get(playerRooms.get(id)).removePlayer(id);
 			playerRooms.remove(id);
 		}
 	}

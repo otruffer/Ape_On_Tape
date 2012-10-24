@@ -106,6 +106,10 @@ function onMessage(incoming) {
 	case 'ROOMS':
 		rooms = incoming.rooms;
 		break;
+	case 'NEW_ROOM':
+		window.localStorage.room = incoming.newRoom;
+		updateRoomInfo();
+		break;
 	}
 }
 
