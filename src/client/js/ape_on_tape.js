@@ -3,8 +3,9 @@ var width = 800;
 var height = 600;
 var ctx, c; // Main drawing canvas context
 var gameState; // Holds the array of current players
-var apeImg; // The player image
 var renderEngine;
+var lastSocketMessage = new Date();
+var socketDelta = 0;
 
 // Log text to main window.
 function logText(msg) {
@@ -41,6 +42,9 @@ function login() {
 }
 
 function onMessage(incoming) {
+	var time = new Date();
+	socketDelta = time - lastSocketMessage;
+	lastSocketMessage = time;
 	switch (incoming.action) {
 	case 'JOIN':
 		logText("* User '" + incoming.username + "' joined.");
@@ -127,19 +131,6 @@ var Player = function(x, y, id) {
 	this.x = x;
 	this.y = y;
 	this.id = id;
-	// Preload player canvas if not loaded yet
-	this.canvas = document.getElementById('player' + this.id);
-	if (!this.canvas) {
-		this.canvas = document.createElement('canvas');
-		this.canvas.setAttribute('id', 'player' + this.id);
-		this.canvas.setAttribute('width', 100);
-		this.canvas.setAttribute('height', 100);
-		this.canvas.setAttribute('style', 'position: absolute; top: ' + x
-				+ 'px; left: ' + y + 'px');
-		var canvasCtx = this.canvas.getContext('2d');
-		canvasCtx.drawImage(apeImg, 0, 0, 60, 60);
-		$('body').append(this.canvas);
-	}
 }
 
 function distroyPlayerCanvas(id) {
@@ -161,14 +152,18 @@ var initGame = function() {
 }
 
 function loadGraphics() {
-	apeImg = new Image();
-	apeImg.src = "img/ape_1.png";
-	t_grass_corner = new Image();
-	t_grass_corner.src = "img/grass/grass_corner.png"
-	t_grass_full = new Image();
-	t_grass_full.src = "img/grass/grass_full.png"
-	t_grass_long = new Image();
-	t_grass_long.src = "img/grass/grass_long.png"
+	preloadImage('ape', 'img/ape.png');
+	preloadImage('grass_long', 'img/tiles/grass_long.png');
+	preloadImage('grass_full', 'img/tiles/grass_full.png');
+	preloadImage('grass_corner', 'img/tiles/grass_corner.png');
+}
+
+//preload images -> images can be accessed using imagePreload['name'].
+var imagePreload = {};
+function preloadImage(name, imgPath) {
+	var img = new Image();
+	img.src = imgPath
+	imagePreload[name] = img;
 }
 
 // Connect on load.

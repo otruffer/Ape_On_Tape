@@ -1,4 +1,4 @@
-//requestAnimationFrame polyfill -----------------------------------------------
+// BEGIN -- requestAnimationFrame polyfill -------------------------------------
 (function() {
 	var lastTime = 0;
 	var vendors = [ 'ms', 'moz', 'webkit', 'o' ];
@@ -26,12 +26,15 @@
 			clearTimeout(id);
 		};
 }());
-// end requestAnimationFrame ---------------------------------------------------
+// END -- requestAnimationFrame polyfill ---------------------------------------
 
 function RenderingEngine(tilesX, tilesY) {
 	var self = this; // assure callback to right element
 
-	// fields
+	// constant fields
+	this.TILE_SIZE = 50;
+
+	// dynamic fields
 	this.tilesX = tilesX;
 	this.tilesY = tilesY;
 	this.lastRender = new Date();
@@ -50,10 +53,14 @@ function RenderingEngine(tilesX, tilesY) {
 			self.clear();
 		}
 		// draw on canvas
-		drawPlayers();
-		// print fps
+		self.drawPlayers();
+		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
-			$("#fps").text("fps: " + Math.floor(1000 / timeDelta));
+			$("#fps").text(
+					"fps: " + Math.floor(1000 / timeDelta) + " -- "
+							+ "socket updates per second: "
+							+ Math.floor(1000 / socketDelta) + " ("
+							+ socketDelta + "ms)");
 			self.fpsUpdateDelta = 0;
 		}
 		// callback to draw loop
@@ -67,7 +74,7 @@ function RenderingEngine(tilesX, tilesY) {
 		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, _(width), _(height));
 		self.drawTiles();
-		self.needCanvasReload = false;
+		// self.needCanvasReload = false;
 	}
 
 	// draw background scene
@@ -77,59 +84,33 @@ function RenderingEngine(tilesX, tilesY) {
 		for ( var i = 0; i < self.tilesX * self.tilesY; i++) {
 			var ix = i % self.tilesX;
 			var iy = (i - ix) / self.tilesX;
-			// ctx.fillStyle = get_random_color();
 			if (ix == 0) {
-				if (iy != tilesY - 1) {
-					ctx.drawImage(t_grass_full, ix * tWidth, iy * tHeight,
-							tWidth, tHeight);
-				} else {
-					ctx.drawImage(t_grass_long, ix * tWidth, iy * tHeight,
-							tWidth, tHeight);
-				}
-			}
-			if (ix == 1 && iy != tilesY - 1) {
-				if (iy == tilesY - 2) {
-					ctx.drawImage(t_grass_corner, ix * tWidth, iy * tHeight,
-							tWidth, tHeight);
-				} else {
-					ctx.drawImage(t_grass_long, ix * tWidth, iy * tHeight,
-							tWidth, tHeight);
-				}
+				ctx.drawImage(imagePreload['grass_long'], ix * tWidth, iy
+						* tHeight, tWidth, tHeight);
+				// var m_canvas = document.createElement('canvas');
+				// m_canvas.width = 50;
+				// m_canvas.height = 50;
+				// var m_context = m_canvas.getContext('2d');
+				// m_context.drawImage(imagePreload['grass_full'],0,0);
+				// ctx.drawImage(m_canvas, 150, 150);
 			}
 		}
 	}
-}
 
-// random color generator for testing issues
-function get_random_color() {
-	var letters = '0123456789ABCDEF'.split('');
-	var color = '#';
-	for ( var i = 0; i < 6; i++) {
-		color += letters[Math.round(Math.random() * 15)];
+	this.drawPlayers = function() {
+		for ( var i = 0; i < gameState.players.length; i++)
+			self.drawPlayer(gameState.players[i]);
 	}
-	return color;
-}
 
-var drawPlayers = function() {
-	for ( var i = 0; i < gameState.players.length; i++)
-		drawPlayer(gameState.players[i]);
-}
-
-var drawPlayer = function(player) {
-	// update player canvas position
-	player.canvas.style.top = player.x + 'px';
-	player.canvas.style.left = player.y + 'px';
+	this.drawPlayer = function(player) {
+		ctx.drawImage(imagePreload['ape'], player.y, player.x, 60, 60);
+	}
 }
 
 // returns the parameter that scales the game window to fullscreen
 var scale = function() {
-	// var windowWidth = window.innerWidth - 2 - $('#header').width();
 	var windowHeight = window.innerHeight - 2 - $('#header').height();
-	// if (windowWidth < windowHeight) {
-	// return (windowWidth / width > 1) ? windowWidth / width : 1;
-	// } else {
 	return (windowHeight / height > 1) ? windowHeight / height : 1;
-	// }
 }
 
 // returns a scaled value to a corresponding input argument
