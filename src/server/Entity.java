@@ -8,7 +8,7 @@ public class Entity {
 	float width = 20f;
 	float speed = 5;
 
-	public Entity(int id, int x, int y) {
+	public Entity(int id, float x, float y) {
 		this.id = id;
 		this.x = x;
 		this.y = y;
@@ -21,8 +21,9 @@ public class Entity {
 			deltax /= Math.sqrt(2);
 			deltay /= Math.sqrt(2);
 		}
-		this.x += deltax;
-		this.y += deltay;
+		this.x = Util.moveOnMapVertical(map, this, deltax);
+		this.y = Util.moveOnMapHorizontal(map, this, deltay);
+		
 	}
 
 	public int getId() {
@@ -31,5 +32,21 @@ public class Entity {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public float getX() {
+		return x;
+	}
+	
+	public float getY() {
+		return y;
+	}
+	
+	public float getWidth(){
+		return width;
+	}
+	
+	public float getHeight(){
+		return height;
 	}
 }

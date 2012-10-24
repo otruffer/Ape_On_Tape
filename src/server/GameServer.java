@@ -1,18 +1,13 @@
 package server;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
-
-import ch.unibe.scg.doodle.Doo;
 
 import com.google.gson.Gson;
 

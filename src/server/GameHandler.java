@@ -16,18 +16,13 @@ import java.util.concurrent.ExecutionException;
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
-
-import server.GameServer.Outgoing;
-
-import ch.unibe.scg.doodle.Doo;
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final int WEB_SERVER_PORT = 9877;
+	final int WEB_SERVER_PORT = 9875;
 	final int[] UP_KEYS = { 38, 119 };
 	final int[] DOWN_KEYS = { 40, 115 };
 	final int[] LEFT_KEYS = { 37, 97 };
@@ -164,7 +159,7 @@ public class GameHandler implements Runnable {
 	}
 
 	public int[][] getGameMap(String roomName) {
-		return MapUtil.getArrayFromMap(games.get(roomName).getMap());
+		return Util.getArrayFromMap(games.get(roomName).getMap());
 	}
 
 	public void playerDisconnected(int id) {
