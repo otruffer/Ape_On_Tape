@@ -63,8 +63,15 @@ function roomSelection() {
 	} else {
 		ws.close();
 	}
-	
+
 	roomChosen = true;
+}
+
+function changeToRoom(roomName) {
+	send({
+		action : 'ROOM',
+		roomJoin : roomName
+	});
 }
 
 function onMessage(incoming) {
