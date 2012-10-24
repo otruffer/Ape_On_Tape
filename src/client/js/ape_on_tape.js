@@ -90,7 +90,10 @@ function onMessage(incoming) {
 			// logText("a player is at position: ("+players[playerId].x+",
 			// "+players[playerId].y+")");
 		}
-
+		break;
+	case 'MAP':
+		gameState.map = incoming.map;
+		// console.log('incoming map');
 	}
 }
 
@@ -179,17 +182,45 @@ var initGame = function() {
 
 function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
-	preloadImage('grass_long', 'img/tiles/grass_long.png');
-	preloadImage('grass_full', 'img/tiles/grass_full.png');
-	preloadImage('grass_corner', 'img/tiles/grass_corner.png');
+	var suffix = new Array('_cor', '_edg', '_ful', '_inr');
+	for (i in suffix) {
+		preloadTile('gr' + suffix[i], 'img/grass/gr' + suffix[i] + '.png');
+	}
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
 var imagePreload = {};
 function preloadImage(name, imgPath) {
 	var img = new Image();
-	img.src = imgPath
+	img.src = imgPath;
 	imagePreload[name] = img;
+}
+
+// preload tiles -> tiles are stored as an array of canvases in
+// tilePreload['name']
+var tilePreload = {};
+function preloadTile(name, imgPath) {
+	tilePreload[name] = new Array();
+	var img = new Image();
+	img.src = imgPath;
+	img.onload = function() {
+		tilePreload[name].push(rotateImage(img, 0));
+		tilePreload[name].push(rotateImage(img, 90));
+		tilePreload[name].push(rotateImage(img, 180));
+		tilePreload[name].push(rotateImage(img, 270));
+	}
+}
+
+// takes an Image object, rotates it by 'deg' and returns a canvas element
+function rotateImage(img, deg) {
+	var rotCanvas = document.createElement('canvas');
+	rotCanvas.width = img.width;
+	rotCanvas.height = img.height;
+	var rotCtx = rotCanvas.getContext('2d');
+	rotCtx.translate(img.height / 2, img.width / 2);
+	rotCtx.rotate(deg * Math.PI / 180);
+	rotCtx.drawImage(img, -img.height / 2, -img.width / 2);
+	return rotCanvas;
 }
 
 // Connect on load.
