@@ -2,15 +2,21 @@ package server;
 
 import static org.webbitserver.WebServers.createWebServer;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
+
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import server.GameServer.Outgoing;
 
@@ -162,8 +168,9 @@ public class GameHandler implements Runnable {
 	}
 
 	public void playerDisconnected(int id) {
-		this.leavePlayer(id, playerRooms.get(id));		
-		gameServer.disconnectMessage(id, playerNames.get(id), playersInRoomWith(id));
+		this.leavePlayer(id, playerRooms.get(id));
+		gameServer.disconnectMessage(id, playerNames.get(id),
+				playersInRoomWith(id));
 		playerRooms.remove(id);
 	}
 
@@ -177,6 +184,21 @@ public class GameHandler implements Runnable {
 		this.joinPlayer(id, roomJoin);
 		gameServer.sendJoinMessage(id, playerNames.get(id), roomJoin,
 				playersInRoomWith(id));
+		gameServer.sendRoomList(allRooms(), this.allPlayers());
+	}
+
+	private Collection<String> allRooms() {
+		Set<String> result = new HashSet<String>();
+		result.addAll(this.playerRooms.values());
+		return result;
+	}
+
+	private List<Player> allPlayers() {
+		ArrayList<Player> result = new ArrayList<Player>();
+		for (Game game : games.values()) {
+			result.addAll(game.getPlayers());
+		}
+		return result;
 	}
 
 	private List<Player> playersInRoomWith(int id) {

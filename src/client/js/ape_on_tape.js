@@ -9,6 +9,7 @@ var socketDelta = 0;
 
 var loginReady;
 var roomChosen;
+var rooms;
 
 // Log text to main window.
 function logText(msg) {
@@ -94,6 +95,10 @@ function onMessage(incoming) {
 	case 'MAP':
 		gameState.map = incoming.map;
 		// console.log('incoming map');
+		break;
+	case 'ROOMS':
+		rooms = incoming.rooms;
+		break;
 	}
 }
 

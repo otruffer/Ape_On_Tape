@@ -1,6 +1,7 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -37,7 +38,7 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, MAP
+			JOIN, LEAVE, SAY, UPDATE, MAP, ROOMS
 		}
 
 		Action action;
@@ -45,6 +46,7 @@ public class GameServer extends BaseWebSocketHandler {
 		String message;
 		List<Player> players;
 		int[][] map;
+		String[] rooms;
 	}
 
 	public GameServer(GameHandler gameHandler) {
@@ -69,9 +71,9 @@ public class GameServer extends BaseWebSocketHandler {
 		case ROOM:
 			joinRoom(connection, incoming.roomJoin);
 			break;
-//		case SAY:
-//			say(connection, incoming.message);
-//			break;
+		// case SAY:
+		// say(connection, incoming.message);
+		// break;
 		case KEYS_PRESSED:
 			this.gameHandler.setKeysPressed((int) connection.data(ID_KEY),
 					incoming.keysPressed);
@@ -116,16 +118,16 @@ public class GameServer extends BaseWebSocketHandler {
 		return connection;
 	}
 
-//	private void say(WebSocketConnection connection, String message) {
-//		String username = (String) connection.data(ID_KEY);
-//		if (username != null) {
-//			Outgoing outgoing = new Outgoing();
-//			outgoing.action = Outgoing.Action.SAY;
-//			outgoing.username = username;
-//			outgoing.message = message;
-//			broadcast(outgoing, receipants);
-//		}
-//	}
+	// private void say(WebSocketConnection connection, String message) {
+	// String username = (String) connection.data(ID_KEY);
+	// if (username != null) {
+	// Outgoing outgoing = new Outgoing();
+	// outgoing.action = Outgoing.Action.SAY;
+	// outgoing.username = username;
+	// outgoing.message = message;
+	// broadcast(outgoing, receipants);
+	// }
+	// }
 
 	public void update(List<Player> players) {
 		Outgoing outgoing = new Outgoing();
@@ -160,7 +162,7 @@ public class GameServer extends BaseWebSocketHandler {
 		int id = (int) connection.data(ID_KEY);
 		gameHandler.playerDisconnected(id);
 	}
-	
+
 	public void disconnectMessage(int id, String user, List<Player> receipants) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.LEAVE;
@@ -168,6 +170,13 @@ public class GameServer extends BaseWebSocketHandler {
 		broadcast(outgoing, receipants);
 		WebSocketConnection connection = findConnection(id);
 		connections.remove(connection);
-		
+
+	}
+
+	public void sendRoomList(Collection<String> rooms, List<Player> allPlayers) {
+		Outgoing outgoing = new Outgoing();
+		outgoing.action = Outgoing.Action.ROOMS;
+		outgoing.rooms = rooms.toArray(new String[0]);
+		broadcast(outgoing, allPlayers);
 	}
 }
