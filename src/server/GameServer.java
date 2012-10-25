@@ -11,8 +11,6 @@ import java.util.Set;
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
 
-import ch.unibe.scg.doodle.Doo;
-
 import com.google.gson.Gson;
 
 public class GameServer extends BaseWebSocketHandler {
@@ -63,19 +61,19 @@ public class GameServer extends BaseWebSocketHandler {
 	public void onMessage(WebSocketConnection connection, String msg) {
 		Incoming incoming = json.fromJson(msg, Incoming.class);
 		switch (incoming.action) {
-		case LOGIN:
-			login(connection, incoming.loginUsername);
-			break;
-		case ROOM:
-			joinRoom(connection, incoming.roomJoin);
-			break;
-//		case SAY:
-//			say(connection, incoming.message);
-//			break;
-		case KEYS_PRESSED:
-			this.gameHandler.setKeysPressed((int) connection.data(ID_KEY),
-					incoming.keysPressed);
-			break;
+			case LOGIN :
+				login(connection, incoming.loginUsername);
+				break;
+			case ROOM :
+				joinRoom(connection, incoming.roomJoin);
+				break;
+			// case SAY:
+			// say(connection, incoming.message);
+			// break;
+			case KEYS_PRESSED :
+				this.gameHandler.setKeysPressed((int) connection.data(ID_KEY),
+						incoming.keysPressed);
+				break;
 		}
 	}
 
@@ -116,16 +114,16 @@ public class GameServer extends BaseWebSocketHandler {
 		return connection;
 	}
 
-//	private void say(WebSocketConnection connection, String message) {
-//		String username = (String) connection.data(ID_KEY);
-//		if (username != null) {
-//			Outgoing outgoing = new Outgoing();
-//			outgoing.action = Outgoing.Action.SAY;
-//			outgoing.username = username;
-//			outgoing.message = message;
-//			broadcast(outgoing, receipants);
-//		}
-//	}
+	// private void say(WebSocketConnection connection, String message) {
+	// String username = (String) connection.data(ID_KEY);
+	// if (username != null) {
+	// Outgoing outgoing = new Outgoing();
+	// outgoing.action = Outgoing.Action.SAY;
+	// outgoing.username = username;
+	// outgoing.message = message;
+	// broadcast(outgoing, receipants);
+	// }
+	// }
 
 	public void update(List<Player> players) {
 		Outgoing outgoing = new Outgoing();
@@ -160,7 +158,7 @@ public class GameServer extends BaseWebSocketHandler {
 		int id = (int) connection.data(ID_KEY);
 		gameHandler.playerDisconnected(id);
 	}
-	
+
 	public void disconnectMessage(int id, String user, List<Player> receipants) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.LEAVE;
@@ -168,6 +166,6 @@ public class GameServer extends BaseWebSocketHandler {
 		broadcast(outgoing, receipants);
 		WebSocketConnection connection = findConnection(id);
 		connections.remove(connection);
-		
+
 	}
 }

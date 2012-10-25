@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import ch.unibe.scg.doodle.Doo;
-
 public class Game {
 
 	Map<Integer, Player> players;

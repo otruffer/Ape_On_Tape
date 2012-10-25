@@ -14,7 +14,6 @@ import org.webbitserver.handler.StaticFileHandler;
 
 import server.GameServer.Outgoing;
 
-import ch.unibe.scg.doodle.Doo;
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {

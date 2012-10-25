@@ -62,7 +62,7 @@ function roomSelection() {
 	} else {
 		ws.close();
 	}
-	
+
 	roomChosen = true;
 }
 
@@ -182,10 +182,8 @@ var initGame = function() {
 
 function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
-	var suffix = new Array('_cor', '_edg', '_ful', '_inr');
-	for (i in suffix) {
-		preloadTile('gr' + suffix[i], 'img/grass/gr' + suffix[i] + '.png');
-	}
+	var tileSetPath = 'img/tiles/material_tileset.png';
+	loadTileSet('mat', tileSetPath, 25, 25);
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
@@ -196,31 +194,27 @@ function preloadImage(name, imgPath) {
 	imagePreload[name] = img;
 }
 
-// preload tiles -> tiles are stored as an array of canvases in
-// tilePreload['name']
 var tilePreload = {};
-function preloadTile(name, imgPath) {
+function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 	tilePreload[name] = new Array();
 	var img = new Image();
 	img.src = imgPath;
 	img.onload = function() {
-		tilePreload[name].push(rotateImage(img, 0));
-		tilePreload[name].push(rotateImage(img, 90));
-		tilePreload[name].push(rotateImage(img, 180));
-		tilePreload[name].push(rotateImage(img, 270));
+		var cols = img.width / tileWidth;
+		var rows = img.height / tileHeight;
+		var t_canvas, t_ctx;
+		for ( var y = 0; y < cols; y++) {
+			for ( var x = 0; x < cols; x++) {
+				t_canvas = document.createElement('canvas');
+				t_canvas.width = tileWidth;
+				t_canvas.height = tileHeight;
+				t_ctx = t_canvas.getContext('2d');
+				t_ctx.drawImage(img, x * tileWidth, y * tileWidth, tileWidth,
+						tileHeight, 0, 0, tileWidth, tileHeight);
+				tilePreload[name].push(t_canvas);
+			}
+		}
 	}
-}
-
-// takes an Image object, rotates it by 'deg' and returns a canvas element
-function rotateImage(img, deg) {
-	var rotCanvas = document.createElement('canvas');
-	rotCanvas.width = img.width;
-	rotCanvas.height = img.height;
-	var rotCtx = rotCanvas.getContext('2d');
-	rotCtx.translate(img.height / 2, img.width / 2);
-	rotCtx.rotate(deg * Math.PI / 180);
-	rotCtx.drawImage(img, -img.height / 2, -img.width / 2);
-	return rotCanvas;
 }
 
 // Connect on load.

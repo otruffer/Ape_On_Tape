@@ -32,7 +32,7 @@ function RenderingEngine(tilesX, tilesY) {
 	var self = this; // assure callback to right element
 
 	// constant fields
-	this.TILE_SIZE = 50;
+	this.T = 25;
 
 	// dynamic fields
 	this.tilesX = tilesX;
@@ -81,13 +81,25 @@ function RenderingEngine(tilesX, tilesY) {
 	this.drawTiles = function() {
 		for (ix in gameState.map) {
 			for (iy in gameState.map[ix]) {
+				// inefficient background drawing
+				ctx.drawImage(tilePreload['mat'][7], ix * self.T * 2, iy
+						* self.T * 2, self.T, self.T);
+				ctx.drawImage(tilePreload['mat'][7], ix * self.T * 2 + self.T,
+						iy * self.T * 2, self.T, self.T);
+				ctx.drawImage(tilePreload['mat'][7], ix * self.T * 2, iy
+						* self.T * 2 + self.T, self.T, self.T);
+				ctx.drawImage(tilePreload['mat'][7], ix * self.T * 2 + self.T,
+						iy * self.T * 2 + self.T, self.T, self.T);
+				// grass tile overlay
 				if (gameState.map[ix][iy] == 1) {
-					ctx.drawImage(tilePreload['gr_edg'][2],
-							ix * self.TILE_SIZE, iy * self.TILE_SIZE / 2,
-							self.TILE_SIZE / 2, self.TILE_SIZE / 2)
-					ctx.drawImage(tilePreload['gr_edg'][0], ix * self.TILE_SIZE
-							+ self.TILE_SIZE / 2, iy * self.TILE_SIZE / 2,
-							self.TILE_SIZE / 2, self.TILE_SIZE / 2)
+					ctx.drawImage(tilePreload['mat'][5], ix * self.T * 2, iy
+							* self.T * 2, self.T, self.T)
+					ctx.drawImage(tilePreload['mat'][9], ix * self.T * 2
+							+ self.T, iy * self.T * 2, self.T, self.T)
+					ctx.drawImage(tilePreload['mat'][5], ix * self.T * 2, iy
+							* self.T * 2 + self.T, self.T, self.T)
+					ctx.drawImage(tilePreload['mat'][9], ix * self.T * 2
+							+ self.T, iy * self.T * 2 + self.T, self.T, self.T)
 				}
 			}
 		}
