@@ -1,11 +1,9 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.webbitserver.BaseWebSocketHandler;
@@ -35,7 +33,7 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, MAP
+			JOIN, LEAVE, SAY, UPDATE, MAP, ROOMS, NEW_ROOM
 		}
 
 		Action action;
@@ -43,6 +41,8 @@ public class GameServer extends BaseWebSocketHandler {
 		String message;
 		List<Player> players;
 		int[][] map;
+		String[] rooms;
+		String newRoom;
 	}
 
 	public GameServer(GameHandler gameHandler) {
@@ -65,6 +65,7 @@ public class GameServer extends BaseWebSocketHandler {
 				login(connection, incoming.loginUsername);
 				break;
 			case ROOM :
+				leaveCurrentRoom(connection);
 				joinRoom(connection, incoming.roomJoin);
 				break;
 			// case SAY:
@@ -91,6 +92,11 @@ public class GameServer extends BaseWebSocketHandler {
 	private void joinRoom(WebSocketConnection connection, String roomJoin) {
 		int id = (int) connection.data().get(ID_KEY);
 		gameHandler.joinRoom(id, roomJoin);
+	}
+
+	private void leaveCurrentRoom(WebSocketConnection connection) {
+		int id = (int) connection.data().get(ID_KEY);
+		gameHandler.leaveCurrentRoom(id);
 	}
 
 	public void sendJoinMessage(int id, String user, String roomJoin,
@@ -159,13 +165,31 @@ public class GameServer extends BaseWebSocketHandler {
 		gameHandler.playerDisconnected(id);
 	}
 
-	public void disconnectMessage(int id, String user, List<Player> receipants) {
+	public void sendDisconnectMessage(int id, String user,
+			List<Player> receipants) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.LEAVE;
 		outgoing.username = user;
 		broadcast(outgoing, receipants);
+	}
+
+	public void disconnect(int id) {
 		WebSocketConnection connection = findConnection(id);
 		connections.remove(connection);
 
+	}
+
+	public void sendRoomList(Collection<String> rooms, List<Player> receivers) {
+		Outgoing outgoing = new Outgoing();
+		outgoing.action = Outgoing.Action.ROOMS;
+		outgoing.rooms = rooms.toArray(new String[0]);
+		broadcast(outgoing, receivers);
+	}
+
+	public void sendNewRoomInfo(String newRoomName, List<Player> receipants) {
+		Outgoing outgoing = new Outgoing();
+		outgoing.action = Outgoing.Action.NEW_ROOM;
+		outgoing.newRoom = newRoomName;
+		broadcast(outgoing, receipants);
 	}
 }

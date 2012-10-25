@@ -2,11 +2,15 @@ package server;
 
 import static org.webbitserver.WebServers.createWebServer;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.webbitserver.WebServer;
@@ -20,11 +24,11 @@ public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final int WEB_SERVER_PORT = 9877;
-	final int[] UP_KEYS = { 38, 119 };
-	final int[] DOWN_KEYS = { 40, 115 };
-	final int[] LEFT_KEYS = { 37, 97 };
-	final int[] RIGHT_KEYS = { 100, 39 };
+	final int WEB_SERVER_PORT = 9875;
+	final int[] UP_KEYS = {38, 119};
+	final int[] DOWN_KEYS = {40, 115};
+	final int[] LEFT_KEYS = {37, 97};
+	final int[] RIGHT_KEYS = {100, 39};
 
 	private final String DEFAULT_ROOMNAME = "soup";
 
@@ -117,7 +121,6 @@ public class GameHandler implements Runnable {
 	private void syncLoop() {
 		for (Game game : games.values()) {
 			this.gameServer.update(game.getPlayers());
-			// Doo.dle(game.getPlayers());
 		}
 	}
 
@@ -152,17 +155,19 @@ public class GameHandler implements Runnable {
 			y = 1;
 		else if (isKeyPressed(LEFT_KEYS, keys))
 			y = -1;
-		int[] values = { x, y };
+		int[] values = {x, y};
 		return values;
 	}
 
 	public int[][] getGameMap(String roomName) {
-		return MapUtil.getArrayFromMap(games.get(roomName).getMap());
+		return Util.getArrayFromMap(games.get(roomName).getMap());
 	}
 
 	public void playerDisconnected(int id) {
-		this.leavePlayer(id, playerRooms.get(id));		
-		gameServer.disconnectMessage(id, playerNames.get(id), playersInRoomWith(id));
+		this.leavePlayer(id, playerRooms.get(id));
+		gameServer.sendDisconnectMessage(id, playerNames.get(id),
+				playersInRoomWith(id));
+		gameServer.disconnect(id);
 		playerRooms.remove(id);
 	}
 
@@ -174,8 +179,39 @@ public class GameHandler implements Runnable {
 		String user = playerNames.get(id);
 		playerRooms.put(id, roomJoin);
 		this.joinPlayer(id, roomJoin);
-		gameServer.sendJoinMessage(id, playerNames.get(id), roomJoin,
-				playersInRoomWith(id));
+		gameServer.sendJoinMessage(id, user, roomJoin, playersInRoomWith(id));
+		gameServer.sendRoomList(allRooms(), this.allPlayers());
+		LinkedList<Player> playerAsList = new LinkedList<Player>();
+		playerAsList.add(playerFromId(id));
+		gameServer.sendNewRoomInfo(roomJoin, playerAsList);
+	}
+
+	private Player playerFromId(int id) {
+		return games.get(playerRooms.get(id)).getPlayersAsMap().get(id);
+	}
+
+	public void leaveCurrentRoom(int id) {
+		// check if player is in some room
+		if (playerRooms.containsKey(id)) {
+			gameServer.sendDisconnectMessage(id, playerNames.get(id),
+					playersInRoomWith(id));
+			games.get(playerRooms.get(id)).removePlayer(id);
+			playerRooms.remove(id);
+		}
+	}
+
+	private Collection<String> allRooms() {
+		Set<String> result = new HashSet<String>();
+		result.addAll(this.playerRooms.values());
+		return result;
+	}
+
+	private List<Player> allPlayers() {
+		ArrayList<Player> result = new ArrayList<Player>();
+		for (Game game : games.values()) {
+			result.addAll(game.getPlayers());
+		}
+		return result;
 	}
 
 	private List<Player> playersInRoomWith(int id) {

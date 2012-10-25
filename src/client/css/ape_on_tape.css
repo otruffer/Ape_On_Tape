@@ -1,5 +1,6 @@
 body {
 	background-color: #333333;
+	/*background-image: url('../img/palms.png');*/
 	color: #ffffff;
 	font-family: arial, sans-serif;
 	margin: 0;
@@ -15,7 +16,8 @@ body {
 	line-height: 40px;
 	position: relative;
 	border-bottom: 1px solid black;
-	/*box-shadow: 0 1px 4px black;*/ background-color : #eee;
+	/*box-shadow: 0 1px 4px black;*/
+	background-color: #eee;
 	/* fallback for ie */
 	background-image: linear-gradient(bottom, rgb(200, 200, 200) 0%,
 		rgb(240, 240, 240) 100% );
@@ -41,7 +43,7 @@ body {
 	
 }
 
-#playerName  {
+#playerName {
 	color: #f60;
 }
 
@@ -64,12 +66,43 @@ body {
 
 #console {
 	float: left;
-	background-color: rgba(0,0,0,0.2);
+	background-color: rgba(0, 0, 0, 0.2);
 	color: lime;
 	padding: 4px;
 	width: 200px;
 	position: absolute;
 	right: 0;
-	height: 400px;
+	height: 600px;
 	overflow-y: scroll;
 }
+
+#roomList {
+	position: absolute;
+	right: 208px;
+	background-color: rgba(100,100,100,0.2);
+	width: 200px;
+	height: 600px;
+	padding: 4px;
+}
+
+#roomList h3 {
+	margin: 0.25em 0;
+}
+
+#roomList ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	color: #ddd;
+}
+
+#roomList ul li {
+	padding: 2px;
+}
+
+#roomList ul li:hover {
+	background-color: #0a0;
+	color: white;
+	cursor: pointer;
+}
+

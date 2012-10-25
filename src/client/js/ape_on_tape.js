@@ -9,6 +9,7 @@ var socketDelta = 0;
 
 var loginReady;
 var roomChosen;
+var rooms;
 
 // Log text to main window.
 function logText(msg) {
@@ -66,6 +67,13 @@ function roomSelection() {
 	roomChosen = true;
 }
 
+function changeToRoom(roomName) {
+	send({
+		action : 'ROOM',
+		roomJoin : roomName
+	});
+}
+
 function onMessage(incoming) {
 	var time = new Date();
 	socketDelta = time - lastSocketMessage;
@@ -94,6 +102,14 @@ function onMessage(incoming) {
 	case 'MAP':
 		gameState.map = incoming.map;
 		// console.log('incoming map');
+		break;
+	case 'ROOMS':
+		rooms = incoming.rooms;
+		break;
+	case 'NEW_ROOM':
+		window.localStorage.room = incoming.newRoom;
+		updateRoomInfo();
+		break;
 	}
 }
 

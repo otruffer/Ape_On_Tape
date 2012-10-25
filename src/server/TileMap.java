@@ -2,11 +2,12 @@ package server;
 
 public class TileMap {
 	private Tile[][] tileMap;
-	private float tileHeight;
-	private float tileWidth;
+	private float tileHeight = 30;
+	private float tileWidth = 30;
+	private static int[] START_TYLE = {1,1};
 	
 	public TileMap(int[][] mapArray){
-		this.tileMap = MapUtil.buildMap(this, mapArray);
+		this.tileMap = Util.buildMap(this, mapArray);
 	}
 	
 	public Tile getTile(int x, int y){
@@ -45,5 +46,10 @@ public class TileMap {
 	
 	public int getWidth(){
 		return tileMap[0].length;
+	}
+
+	public float[] getStartXY() {
+		float[] xy = {START_TYLE[1]*tileHeight, START_TYLE[1]*tileWidth};
+		return xy;
 	}
 }

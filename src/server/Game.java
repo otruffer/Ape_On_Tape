@@ -9,8 +9,12 @@ public class Game {
 
 	Map<Integer, Player> players;
 	TileMap map;
-	final int[][] testMap = { { 1, 1, 1, 1, 1 }, { 1, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 1 }, { 1, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 } };
+	final int[][] testMap = { { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 0, 0, 1, 1, 0, 0, 0, 0, 1 },
+			{ 1, 0, 0, 0, 1, 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1 },
+			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
 	int width, height;
 
 	public Game(int width, int height) {
@@ -21,17 +25,24 @@ public class Game {
 	}
 
 	public void addPlayer(int playerId) {
-		Player player = new Player(playerId, width / 2, height / 2);
-		player.setId(playerId);
-		this.players.put(player.id, player);
+		synchronized (this.players) {
+			float[] start = map.getStartXY();
+			Player player = new Player(playerId, start[0], start[1]);
+			player.setId(playerId);
+			this.players.put(player.id, player);
+		}
 	}
 
 	public void removePlayer(int playerId) {
-		this.players.remove(playerId);
+		synchronized (this.players) {
+			this.players.remove(playerId);
+		}
 	}
 
 	public List<Player> getPlayers() {
-		return new LinkedList<Player>(this.players.values());
+		synchronized (this.players) {
+			return new LinkedList<Player>(this.players.values());
+		}
 	}
 
 	/**
