@@ -75,8 +75,11 @@ function changeToRoom(roomName) {
 	});
 }
 
+var lastTime;
+
 function onMessage(incoming) {
 	var time = new Date();
+//	lastTime = time;
 	socketDelta = time - lastSocketMessage;
 	lastSocketMessage = time;
 	switch (incoming.action) {
