@@ -28,19 +28,23 @@
 }());
 // END -- requestAnimationFrame polyfill ---------------------------------------
 
-function RenderingEngine(tilesX, tilesY) {
+function RenderingEngine(tileSize, playerSize) {
 	var self = this; // assure callback to right element
 
-	// constant fields
+	/* display properties */
 	this.T = 15; // half tile size
-	this.P = 22; // full player size
+	this.P = 20; // full player size
+	this.scale = {}; // context scale
+	this.scale.x = 2;
+	this.scale.y = 2;
+	// this.T = tileSize;
+	// this.P = playerSize;
 
-	// dynamic fields
-	this.tilesX = tilesX;
-	this.tilesY = tilesY;
+	/* engine properties */
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
 	this.needCanvasReload = true;
+	this.background_canvas = document.createElement('canvas');
 
 	// main draw loop
 	this.draw = function() {
@@ -52,8 +56,10 @@ function RenderingEngine(tilesX, tilesY) {
 		// reload canvas and background
 		if (self.needCanvasReload) {
 			self.clear();
+			self.needCanvasReload = false;
 		}
 		// draw on canvas
+		ctx.drawImage(self.background_canvas, 0, 0);
 		self.drawPlayers();
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -74,32 +80,36 @@ function RenderingEngine(tilesX, tilesY) {
 		c.height = height;
 		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, width, height);
-		self.drawTiles();
-		// self.needCanvasReload = false;
+		self.loadBackground();
 	}
 
 	// draw background scene
-	this.drawTiles = function() {
+	this.loadBackground = function() {
+		self.background_canvas = document.createElement('canvas');
+		self.background_canvas.width = c.width;
+		self.background_canvas.height = c.height;
+		var bctx = self.background_canvas.getContext('2d');
+		// bctx.scale(self.scale.x, self.scale.y);
 		for (ix in gameState.map) {
 			for (iy in gameState.map[ix]) {
 				// inefficient background drawing
-				ctx.drawImage(tilePreload['mat'][7], ix * self.T * 2, iy
+				bctx.drawImage(tilePreload['mat'][7], ix * self.T * 2, iy
 						* self.T * 2, self.T, self.T);
-				ctx.drawImage(tilePreload['mat'][7], ix * self.T * 2 + self.T,
+				bctx.drawImage(tilePreload['mat'][7], ix * self.T * 2 + self.T,
 						iy * self.T * 2, self.T, self.T);
-				ctx.drawImage(tilePreload['mat'][7], ix * self.T * 2, iy
+				bctx.drawImage(tilePreload['mat'][7], ix * self.T * 2, iy
 						* self.T * 2 + self.T, self.T, self.T);
-				ctx.drawImage(tilePreload['mat'][7], ix * self.T * 2 + self.T,
+				bctx.drawImage(tilePreload['mat'][7], ix * self.T * 2 + self.T,
 						iy * self.T * 2 + self.T, self.T, self.T);
 				// grass tile overlay
 				if (gameState.map[ix][iy] == 1) {
-					ctx.drawImage(tilePreload['mat'][5], ix * self.T * 2, iy
+					bctx.drawImage(tilePreload['mat'][5], ix * self.T * 2, iy
 							* self.T * 2, self.T, self.T)
-					ctx.drawImage(tilePreload['mat'][9], ix * self.T * 2
+					bctx.drawImage(tilePreload['mat'][9], ix * self.T * 2
 							+ self.T, iy * self.T * 2, self.T, self.T)
-					ctx.drawImage(tilePreload['mat'][5], ix * self.T * 2, iy
+					bctx.drawImage(tilePreload['mat'][5], ix * self.T * 2, iy
 							* self.T * 2 + self.T, self.T, self.T)
-					ctx.drawImage(tilePreload['mat'][9], ix * self.T * 2
+					bctx.drawImage(tilePreload['mat'][9], ix * self.T * 2
 							+ self.T, iy * self.T * 2 + self.T, self.T, self.T)
 				}
 			}
@@ -112,7 +122,8 @@ function RenderingEngine(tilesX, tilesY) {
 	}
 
 	this.drawPlayer = function(player) {
-		ctx.drawImage(imagePreload['ape'], player.y, player.x, self.P, self.P);
+		ctx.drawImage(imagePreload['ape'], player.y, player.x, self.P
+				* self.scale.x, self.P * self.scale.x);
 	}
 }
 
