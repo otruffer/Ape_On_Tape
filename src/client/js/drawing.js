@@ -32,7 +32,8 @@ function RenderingEngine(tilesX, tilesY) {
 	var self = this; // assure callback to right element
 
 	// constant fields
-	this.T = 25;
+	this.T = 15; // half tile size
+	this.P = 22; // full player size
 
 	// dynamic fields
 	this.tilesX = tilesX;
@@ -69,10 +70,10 @@ function RenderingEngine(tilesX, tilesY) {
 
 	// background clear
 	this.clear = function() {
-		c.width = _(width);
-		c.height = _(height);
+		c.width = width;
+		c.height = height;
 		ctx.fillStyle = '#FFCC66';
-		ctx.fillRect(0, 0, _(width), _(height));
+		ctx.fillRect(0, 0, width, height);
 		self.drawTiles();
 		// self.needCanvasReload = false;
 	}
@@ -111,7 +112,7 @@ function RenderingEngine(tilesX, tilesY) {
 	}
 
 	this.drawPlayer = function(player) {
-		ctx.drawImage(imagePreload['ape'], player.y, player.x, 60, 60);
+		ctx.drawImage(imagePreload['ape'], player.y, player.x, self.P, self.P);
 	}
 }
 

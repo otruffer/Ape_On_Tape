@@ -72,7 +72,7 @@ body {
 	width: 200px;
 	position: absolute;
 	right: 0;
-	height: 600px;
+	height: 590px;
 	overflow-y: scroll;
 }
 
@@ -81,7 +81,7 @@ body {
 	right: 208px;
 	background-color: rgba(100,100,100,0.2);
 	width: 200px;
-	height: 600px;
+	height: 590px;
 	padding: 4px;
 }
 
