@@ -79,7 +79,7 @@ body {
 #roomList {
 	position: absolute;
 	right: 208px;
-	background-color: rgba(100,100,100,0.2);
+	background-color: rgba(100, 100, 100, 0.2);
 	width: 200px;
 	height: 590px;
 	padding: 4px;
@@ -106,3 +106,18 @@ body {
 	cursor: pointer;
 }
 
+#delay-graph {
+	height: 100px;
+	width: 200px;
+	overflow-y: hidden;
+	overflow-x: scroll;
+	position: absolute;
+	right: 416px;
+	background-color: rgba(0,0,0,0.5);
+}
+
+#delay-graph .delay {
+	background-color: lime;
+	width: 1px;
+	float: left;
+}
