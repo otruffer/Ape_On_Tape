@@ -41,11 +41,12 @@ function RenderingEngine(tilesX, tilesY) {
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
 	this.needCanvasReload = true;
-
+	this.fpsCounter = 0;
 	// main draw loop
 	this.draw = function() {
 		// update state
 		var now = new Date();
+		this.fpsCounter++;
 		var timeDelta = now - self.lastRender;
 		self.lastRender = now;
 		self.fpsUpdateDelta += timeDelta;
@@ -58,10 +59,11 @@ function RenderingEngine(tilesX, tilesY) {
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
 			$("#fps").text(
-					"fps: " + Math.floor(1000 / timeDelta) + " -- "
+					"fps: " + this.fpsCounter*2 + " -- "
 							+ "socket updates per second: "
-							+ Math.floor(1000 / socketDelta) + " ("
-							+ socketDelta + "ms)");
+							+ syncs*2);
+			syncs = 0;
+			this.fpsCounter = 0;
 			self.fpsUpdateDelta = 0;
 		}
 		// callback to draw loop
