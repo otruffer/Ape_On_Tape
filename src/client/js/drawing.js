@@ -36,8 +36,8 @@ function RenderingEngine(tileSize, playerSize) {
 	this.T = 15; // half tile size
 	this.P = 20; // full player size
 	this.scale = {}; // context scale
-	this.scale.x = 2;
-	this.scale.y = 2;
+	this.scale.x = 1;
+	this.scale.y = 1;
 	// this.T = tileSize;
 	// this.P = playerSize;
 
@@ -64,7 +64,7 @@ function RenderingEngine(tileSize, playerSize) {
 		self.clear();
 		// draw on canvas
 		ctx.drawImage(self.background_canvas, 0, 0);
-		ctx.scale(2, 2);
+		ctx.scale(self.scale.x, self.scale.y);
 		self.drawPlayers();
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -79,8 +79,6 @@ function RenderingEngine(tileSize, playerSize) {
 		requestAnimationFrame(self.draw);
 	}
 
-	globalcounter = 0;
-
 	// background clear
 	this.clear = function() {
 		c.width = width;
@@ -89,10 +87,7 @@ function RenderingEngine(tileSize, playerSize) {
 		ctx.fillRect(0, 0, width, height);
 		if (self.needCanvasReload) {
 			self.loadBackground();
-			globalcounter += 1;
-			if (globalcounter > 1) {
-				self.needCanvasReload = false;
-			}
+			self.needCanvasReload = false;
 		}
 	}
 

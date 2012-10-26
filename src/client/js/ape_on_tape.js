@@ -79,7 +79,7 @@ var lastTime;
 
 function onMessage(incoming) {
 	var time = new Date();
-//	lastTime = time;
+	// lastTime = time;
 	socketDelta = time - lastSocketMessage;
 	lastSocketMessage = time;
 	switch (incoming.action) {
@@ -106,6 +106,7 @@ function onMessage(incoming) {
 		break;
 	case 'MAP':
 		gameState.map = incoming.map;
+		renderEngine.needCanvasReload = true;
 		// console.log('incoming map');
 		break;
 	case 'ROOMS':
