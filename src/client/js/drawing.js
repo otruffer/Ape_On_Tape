@@ -34,46 +34,45 @@ function RenderingEngine(tileSize, playerSize) {
 	/* display properties */
 	this.T = 15; // half tile size
 	this.P = 20; // full player size
-	this.scale = {}; // context scale
-	this.scale.x = 1;
-	this.scale.y = 1;
-	// this.T = tileSize;
-	// this.P = playerSize;
+	this.sc = 1; // scaling parameter
 
 	/* preload offline background canvas */
-	this.background_canvas = document.createElement('canvas');
-	this.background_canvas.width = c.width;
-	this.background_canvas.height = c.height;
+	this.bgCanvas = document.createElement('canvas');
+	this.bgLoaded = false;
+	this.bgLoading = false;
 
 	/* engine properties */
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
-	this.needCanvasReload = true;
 	this.fpsCounter = 0;
 
 	// main draw loop
 	this.draw = function() {
 		// update state
 		var now = new Date();
-		this.fpsCounter++;
+		self.fpsCounter++;
 		var timeDelta = now - self.lastRender;
 		self.lastRender = now;
 		self.fpsUpdateDelta += timeDelta;
-		// reload canvas and background
+
+		// effective drawing
 		self.clear();
-		// draw on canvas
-		ctx.drawImage(self.background_canvas, 0, 0);
-		ctx.scale(self.scale.x, self.scale.y);
+		if (self.bgLoaded) {
+			ctx.drawImage(self.bgCanvas, 0, 0);
+		}
+		ctx.scale(self.sc, self.sc);
 		self.drawPlayers();
+
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
 			$("#fps").text(
-					"fps: " + this.fpsCounter * 2 + " -- "
+					"fps: " + self.fpsCounter * 2 + " -- "
 							+ "socket updates per second: " + syncs * 2);
 			syncs = 0;
-			this.fpsCounter = 0;
+			self.fpsCounter = 0;
 			self.fpsUpdateDelta = 0;
 		}
+
 		// callback to draw loop
 		requestAnimationFrame(self.draw);
 	}
@@ -84,42 +83,68 @@ function RenderingEngine(tileSize, playerSize) {
 		c.height = height;
 		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, width, height);
-		if (self.needCanvasReload) {
+		if (!self.bgLoaded && !self.bgLoading) {
 			self.loadBackground();
-			self.needCanvasReload = false;
+			// self.loadMap('maps/map.json'); //use when loading map from json
 		}
 	}
 
 	// draw background scene
 	this.loadBackground = function() {
-		self.background_canvas.width = c.width;
-		self.background_canvas.height = c.height;
-		var bctx = self.background_canvas.getContext('2d');
-		bctx.scale(self.scale.x, self.scale.y);
+		self.bgCanvas = document.createElement('canvas');
+		self.bgCanvas.width = c.width;
+		self.bgCanvas.height = c.height;
+		var bctx = self.bgCanvas.getContext('2d');
+		bctx.scale(self.sc, self.sc);
 		for (ix in gameState.map) {
 			for (iy in gameState.map[ix]) {
 				// inefficient background drawing
-				bctx.drawImage(tilePreload['mat'][7], ix * self.T * 2, iy
+				bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2, iy
 						* self.T * 2, self.T, self.T);
-				bctx.drawImage(tilePreload['mat'][7], ix * self.T * 2 + self.T,
+				bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2 + self.T,
 						iy * self.T * 2, self.T, self.T);
-				bctx.drawImage(tilePreload['mat'][7], ix * self.T * 2, iy
+				bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2, iy
 						* self.T * 2 + self.T, self.T, self.T);
-				bctx.drawImage(tilePreload['mat'][7], ix * self.T * 2 + self.T,
+				bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2 + self.T,
 						iy * self.T * 2 + self.T, self.T, self.T);
 				// grass tile overlay
 				if (gameState.map[ix][iy] == 1) {
-					bctx.drawImage(tilePreload['mat'][5], ix * self.T * 2, iy
+					bctx.drawImage(tilePreload['mat'][6], ix * self.T * 2, iy
 							* self.T * 2, self.T, self.T)
-					bctx.drawImage(tilePreload['mat'][9], ix * self.T * 2
+					bctx.drawImage(tilePreload['mat'][10], ix * self.T * 2
 							+ self.T, iy * self.T * 2, self.T, self.T)
-					bctx.drawImage(tilePreload['mat'][5], ix * self.T * 2, iy
+					bctx.drawImage(tilePreload['mat'][6], ix * self.T * 2, iy
 							* self.T * 2 + self.T, self.T, self.T)
-					bctx.drawImage(tilePreload['mat'][9], ix * self.T * 2
+					bctx.drawImage(tilePreload['mat'][10], ix * self.T * 2
 							+ self.T, iy * self.T * 2 + self.T, self.T, self.T)
 				}
 			}
 		}
+		self.bgLoaded = true;
+	}
+
+	this.loadMap = function(path) {
+		self.bgLoading = true;
+		$.getJSON(path, function(json) {
+			self.bgCanvas = document.createElement('canvas');
+			self.bgCanvas.width = json.width * 15; // json.tilewidth;
+			self.bgCanvas.height = json.height * 15; // json.tileheight;
+			var bg_ctx = self.bgCanvas.getContext('2d');
+			var i = 0;
+			for ( var iy = 0; iy < json.height; iy++) {
+				for ( var ix = 0; ix < json.width; ix++) {
+					bg_ctx.drawImage(
+							tilePreload['mat'][json.layers[0].data[i]],
+							ix * 15, iy * 15, 15, 15);
+					bg_ctx.drawImage(
+							tilePreload['mat'][json.layers[1].data[i]],
+							ix * 15, iy * 15, 15, 15);
+					i += 1;
+				}
+			}
+			self.bgLoaded = true;
+			self.bgLoading = false;
+		});
 	}
 
 	this.drawPlayers = function() {

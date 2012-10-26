@@ -106,7 +106,7 @@ function onMessage(incoming) {
 		break;
 	case 'MAP':
 		gameState.map = incoming.map;
-		renderEngine.needCanvasReload = true;
+		renderEngine.bgLoaded = false;
 		// console.log('incoming map');
 		break;
 	case 'ROOMS':
@@ -224,6 +224,12 @@ var tilePreload = {};
  */
 function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 	tilePreload[name] = new Array();
+	// push an empty tile to array position 0
+	var emptyTile = document.createElement('canvas');
+	emptyTile.width = tileWidth;
+	emptyTile.height = tileHeight;
+	tilePreload[name].push(emptyTile);
+	// create tiles from tileset
 	var img = new Image();
 	img.src = imgPath;
 	img.onload = function() {
