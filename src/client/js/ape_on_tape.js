@@ -6,6 +6,7 @@ var gameState; // Holds the array of current players
 var renderEngine;
 var lastSocketMessage = new Date();
 var socketDelta = 0;
+var syncs = 0;
 
 var loginReady;
 var roomChosen;
@@ -94,6 +95,7 @@ function onMessage(incoming) {
 		break;
 	case 'UPDATE':
 		var players = incoming.players;
+		syncs++;
 		gameState.players = new Array();
 		for (playerId in players) {
 			gameState.players.push(new Player(players[playerId].x,

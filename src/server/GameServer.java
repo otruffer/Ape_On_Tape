@@ -72,7 +72,7 @@ public class GameServer extends BaseWebSocketHandler {
 			// say(connection, incoming.message);
 			// break;
 			case KEYS_PRESSED :
-				this.gameHandler.setKeysPressed((int) connection.data(ID_KEY),
+				this.gameHandler.setKeysPressed((Integer) connection.data(ID_KEY),
 						incoming.keysPressed);
 				break;
 		}
@@ -90,12 +90,12 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	private void joinRoom(WebSocketConnection connection, String roomJoin) {
-		int id = (int) connection.data().get(ID_KEY);
+		int id = (Integer) connection.data().get(ID_KEY);
 		gameHandler.joinRoom(id, roomJoin);
 	}
 
 	private void leaveCurrentRoom(WebSocketConnection connection) {
-		int id = (int) connection.data().get(ID_KEY);
+		int id = (Integer) connection.data().get(ID_KEY);
 		gameHandler.leaveCurrentRoom(id);
 	}
 
@@ -161,7 +161,7 @@ public class GameServer extends BaseWebSocketHandler {
 
 	@Override
 	public void onClose(WebSocketConnection connection) {
-		int id = (int) connection.data(ID_KEY);
+		int id = (Integer) connection.data(ID_KEY);
 		gameHandler.playerDisconnected(id);
 	}
 

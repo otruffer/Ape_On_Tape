@@ -2,6 +2,7 @@ package server;
 
 import static org.webbitserver.WebServers.createWebServer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -24,11 +25,13 @@ public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final int WEB_SERVER_PORT = 9875;
+	final static int WEB_SERVER_PORT = 9876;
 	final int[] UP_KEYS = {38, 119};
 	final int[] DOWN_KEYS = {40, 115};
 	final int[] LEFT_KEYS = {37, 97};
 	final int[] RIGHT_KEYS = {100, 39};
+	final static boolean USE_EXTERNAL_WEB_ROOT = true;
+	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
 
 	private final String DEFAULT_ROOMNAME = "soup";
 
@@ -40,14 +43,14 @@ public class GameHandler implements Runnable {
 	private Map<Integer, String> playerNames;
 	private Map<Integer, String> playerRooms;
 
-	public GameHandler() throws InterruptedException, ExecutionException {
+	public GameHandler(int port, File webRoot) throws InterruptedException, ExecutionException {
 		gameServer = new GameServer(this);
-		webServer = createWebServer(WEB_SERVER_PORT)
+		webServer = createWebServer(port)
 		/*
 		 * .add(new LoggingHandler( new SimpleLogSink(Chatroom.USERNAME_KEY)))
 		 */
 		.add("/chatsocket", gameServer)
-				.add(new StaticFileHandler(ClientDirUtil.getClientDirectory()))
+				.add(new StaticFileHandler(webRoot))
 				.start().get();
 
 		this.games = new HashMap<String, Game>();
@@ -85,7 +88,16 @@ public class GameHandler implements Runnable {
 
 	public static void main(String[] args) throws InterruptedException,
 			ExecutionException {
-		GameHandler gameHandler = new GameHandler();
+		int port = WEB_SERVER_PORT;
+		File webRoot;
+		if(args.length > 0)
+			port = Integer.parseInt( args[0] );
+		if(args.length > 1)
+			webRoot = new File(args[1]);
+		else
+			webRoot = ClientDirUtil.getClientDirectory();
+					
+		GameHandler gameHandler = new GameHandler(port, webRoot);
 		Thread gameThread = new Thread(gameHandler);
 		gameThread.run();
 	}
