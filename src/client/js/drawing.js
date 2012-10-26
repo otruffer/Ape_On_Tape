@@ -40,39 +40,45 @@ function RenderingEngine(tileSize, playerSize) {
 	// this.T = tileSize;
 	// this.P = playerSize;
 
+	/* preload offline background canvas */
+	this.background_canvas = document.createElement('canvas');
+	this.background_canvas.width = c.width;
+	this.background_canvas.height = c.height;
+
 	/* engine properties */
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
 	this.needCanvasReload = true;
-	this.background_canvas = document.createElement('canvas');
+	this.fpsCounter = 0;
 
 	// main draw loop
 	this.draw = function() {
 		// update state
 		var now = new Date();
+		this.fpsCounter++;
 		var timeDelta = now - self.lastRender;
 		self.lastRender = now;
 		self.fpsUpdateDelta += timeDelta;
 		// reload canvas and background
-		if (self.needCanvasReload) {
-			self.clear();
-			self.needCanvasReload = false;
-		}
+		self.clear();
 		// draw on canvas
 		ctx.drawImage(self.background_canvas, 0, 0);
+		ctx.scale(2, 2);
 		self.drawPlayers();
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
 			$("#fps").text(
-					"fps: " + Math.floor(1000 / timeDelta) + " -- "
-							+ "socket updates per second: "
-							+ Math.floor(1000 / socketDelta) + " ("
-							+ socketDelta + "ms)");
+					"fps: " + this.fpsCounter * 2 + " -- "
+							+ "socket updates per second: " + syncs * 2);
+			syncs = 0;
+			this.fpsCounter = 0;
 			self.fpsUpdateDelta = 0;
 		}
 		// callback to draw loop
 		requestAnimationFrame(self.draw);
 	}
+
+	globalcounter = 0;
 
 	// background clear
 	this.clear = function() {
@@ -80,16 +86,21 @@ function RenderingEngine(tileSize, playerSize) {
 		c.height = height;
 		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, width, height);
-		self.loadBackground();
+		if (self.needCanvasReload) {
+			self.loadBackground();
+			globalcounter += 1;
+			if (globalcounter > 1) {
+				self.needCanvasReload = false;
+			}
+		}
 	}
 
 	// draw background scene
 	this.loadBackground = function() {
-		self.background_canvas = document.createElement('canvas');
 		self.background_canvas.width = c.width;
 		self.background_canvas.height = c.height;
 		var bctx = self.background_canvas.getContext('2d');
-		// bctx.scale(self.scale.x, self.scale.y);
+		bctx.scale(self.scale.x, self.scale.y);
 		for (ix in gameState.map) {
 			for (iy in gameState.map[ix]) {
 				// inefficient background drawing
@@ -122,8 +133,7 @@ function RenderingEngine(tileSize, playerSize) {
 	}
 
 	this.drawPlayer = function(player) {
-		ctx.drawImage(imagePreload['ape'], player.y, player.x, self.P
-				* self.scale.x, self.P * self.scale.x);
+		ctx.drawImage(imagePreload['ape'], player.y, player.x, self.P, self.P);
 	}
 }
 
