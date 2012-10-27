@@ -9,8 +9,8 @@ public class Game {
 
 	Map<Integer, Player> players;
 	TileMap map;
-	final int[][] testMap = 
-			{ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+	final int[][] testMap = {
+			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
 			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
 			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
@@ -81,5 +81,12 @@ public class Game {
 
 	public boolean hasPlayerWithId(int id) {
 		return this.players.containsKey(id);
+	}
+
+	/**
+	 * Returns true if this game (room) is empty.
+	 */
+	public boolean noPlayers() {
+		return this.players.isEmpty();
 	}
 }
