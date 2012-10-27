@@ -84,8 +84,8 @@ function RenderingEngine(tileSize, playerSize) {
 		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, width, height);
 		if (!self.bgLoaded && !self.bgLoading) {
-			self.loadBackground();
-			// self.loadMap('maps/map.json'); //use when loading map from json
+			// self.loadBackground();
+			self.loadMap('maps/map.json'); // use when loading map from json
 		}
 	}
 
