@@ -20,15 +20,21 @@ function updateRoomInfo() {
 
 function initRooms() {
 	if (rooms) {
+		var roomList = $('#roomList ul');
+		roomList.empty();
 		for (index in rooms) {
 			var item = $('<li>');
 			item.append(rooms[index]);
-			$('#roomList ul').append(item);
+			roomList.append(item);
 			item.click(changeRoom);
 		}
 	} else {
 		setTimeout('initRooms()', 200);
 	}
+}
+
+function updateRoomList() {
+	initRooms();
 }
 
 function changeRoom() {

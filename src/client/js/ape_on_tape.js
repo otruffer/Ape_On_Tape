@@ -111,6 +111,7 @@ function onMessage(incoming) {
 		break;
 	case 'ROOMS':
 		rooms = incoming.rooms;
+		updateRoomList();
 		break;
 	case 'NEW_ROOM':
 		window.localStorage.room = incoming.newRoom;
