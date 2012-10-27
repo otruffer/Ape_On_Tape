@@ -2,7 +2,6 @@ package server;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -184,7 +183,8 @@ public class GameServer extends BaseWebSocketHandler {
 		broadcast(outgoing, receivers);
 	}
 
-	public void sendNewRoomInfo(String newRoomName, List<Integer> receipants) {
+	public void sendNewRoomInfo(String newRoomName,
+			Collection<Integer> receipants) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.NEW_ROOM;
 		outgoing.newRoom = newRoomName;

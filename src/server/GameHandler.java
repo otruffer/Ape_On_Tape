@@ -17,8 +17,6 @@ import java.util.concurrent.ExecutionException;
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
 
-import server.GameServer.Outgoing;
-
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
@@ -193,6 +191,13 @@ public class GameHandler implements Runnable {
 
 	public void playerLogin(int id, String username) {
 		playerNames.put(id, username);
+		gameServer.sendRoomList(allRooms(), asList(id));
+	}
+
+	private List<Integer> asList(int id) {
+		List<Integer> list = new ArrayList<Integer>(1);
+		list.add(id);
+		return list;
 	}
 
 	public void joinRoom(int id, String roomJoin) {
@@ -200,9 +205,7 @@ public class GameHandler implements Runnable {
 		playerRooms.put(id, roomJoin);
 		this.joinPlayer(id, roomJoin);
 		gameServer.sendJoinMessage(id, user, roomJoin, playersInRoomWith(id));
-		LinkedList<Integer> playerAsList = new LinkedList<Integer>();
-		playerAsList.add(id);
-		gameServer.sendNewRoomInfo(roomJoin, playerAsList);
+		gameServer.sendNewRoomInfo(roomJoin, asList(id));
 	}
 
 	private void roomListUpdated() {

@@ -22,6 +22,12 @@ function initRooms() {
 	if (rooms) {
 		var roomList = $('#roomList ul');
 		roomList.empty();
+		
+		var newRoomItem = $('<li class=\'newRoom\'>');
+		newRoomItem.append('new Room');
+		roomList.append(newRoomItem);
+		newRoomItem.click(createRoom);
+		
 		for (index in rooms) {
 			var item = $('<li>');
 			item.append(rooms[index]);
@@ -35,6 +41,10 @@ function initRooms() {
 
 function updateRoomList() {
 	initRooms();
+}
+
+function createRoom() {
+	roomSelection();
 }
 
 function changeRoom() {
