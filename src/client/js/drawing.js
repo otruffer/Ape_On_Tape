@@ -32,16 +32,27 @@ function RenderingEngine(tileSize, playerSize) {
 	var self = this; // assure callback to right element
 
 	/* display properties */
+	// TODO: make dynamic
 	this.T = 15; // half tile size
 	this.P = 20; // full player size
-	this.sc = 1; // scaling parameter
+	this.sc = 1 / 0.6; // scaling parameter
 
-	/* preload offline background canvas */
+	/* preloaded offline background canvas */
 	this.bgCanvas = document.createElement('canvas');
 	this.bgLoaded = false;
 	this.bgLoading = false;
 
-	/* engine properties */
+	/* bounding box */
+	this.bbox = {};
+	this.bbox.sx = 0;
+	this.bbox.sy = 0;
+	this.bbox.canScrollX = false;
+	this.bbox.canScrollY = false;
+
+	/* main player information */
+	this.mainPlayer = {};
+
+	/* engine status properties */
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
 	this.fpsCounter = 0;
@@ -57,10 +68,15 @@ function RenderingEngine(tileSize, playerSize) {
 
 		// effective drawing
 		self.clear();
+		self.computePlayerBoundingBox();
 		if (self.bgLoaded) {
-			ctx.drawImage(self.bgCanvas, 0, 0);
+			var width = (c.width <= self.bgCanvas.width) ? c.width
+					: self.bgCanvas.width;
+			var height = (c.height <= self.bgCanvas.height) ? c.height
+					: self.bgCanvas.height;
+			ctx.drawImage(self.bgCanvas, self.bbox.sx, self.bbox.sy, width,
+					height, 0, 0, width, height);
 		}
-		ctx.scale(self.sc, self.sc);
 		self.drawPlayers();
 
 		// print fps and socket update rate
@@ -86,6 +102,92 @@ function RenderingEngine(tileSize, playerSize) {
 		if (!self.bgLoaded && !self.bgLoading) {
 			// self.loadBackground();
 			self.loadMap('maps/map.json'); // use when loading map from json
+		}
+	}
+
+	this.computePlayerBoundingBox = function(player) {
+		if (!player)
+			return;
+
+		// effective, scaled position of the main player TODO: change [0]
+		if (self.bbox.canScrollX) {
+			var pCenterX = (player.y + (self.P / 2)) * self.sc;
+			var sx = pCenterX - (c.width / 2);
+			sx = (sx < 0) ? 0 : sx;
+			sx = (sx + c.width > self.bgCanvas.width) ? self.bgCanvas.width
+					- c.width : sx;
+			self.bbox.sx = sx;
+		} else {
+			self.bbox.sx = 0;
+		}
+
+		if (self.bbox.canScrollY) {
+			var pCenterY = (player.x + (self.P / 2)) * self.sc;
+			var sy = pCenterY - (c.height / 2);
+			sy = (sy < 0) ? 0 : sy;
+			sy = (sy + c.height > self.bgCanvas.height) ? self.bgCanvas.height
+					- c.height : sy;
+			self.bbox.sy = sy;
+		} else {
+			self.bbox.sy = 0;
+		}
+	}
+
+	this.computePlayerEffectivePosition = function(player) {
+		// player relative to map (absolute position)
+		self.mainPlayer.absX = player.y;
+		self.mainPlayer.absY = player.x;
+
+		if (self.bbox.canScrollX) { // only if scrolling possible
+			// effective player position in x direction
+			if (self.bbox.sx == 0) {
+				self.mainPlayer.x = self.mainPlayer.absX;
+			} else if (self.bbox.sx >= self.bgCanvas.width - c.width) {
+				self.mainPlayer.x = self.mainPlayer.absX
+						- (self.bgCanvas.width - c.width) / self.sc;
+			} else {
+				self.mainPlayer.x = c.width / (2 * self.sc) - (self.P / 2);
+			}
+		} else { // just use the absolute position
+			self.mainPlayer.x = self.mainPlayer.absX;
+		}
+
+		if (self.bbox.canScrollY) { // only if scrolling possible
+			// effective player position in y direction
+			if (self.bbox.sy == 0) {
+				self.mainPlayer.y = self.mainPlayer.absY;
+			} else if (self.bbox.sy >= self.bgCanvas.height - c.height) {
+				self.mainPlayer.y = self.mainPlayer.absY
+						- (self.bgCanvas.height - c.height) / self.sc;
+			} else {
+				self.mainPlayer.y = c.height / (2 * self.sc) - (self.P / 2);
+			}
+		} else { // just use the absolute position
+			self.mainPlayer.y = self.mainPlayer.absY;
+		}
+	}
+
+	this.drawPlayers = function() {
+		// store information about the main player
+		for ( var i = 0; i < gameState.players.length; i++) {
+			if (i == 0) {
+				self.computePlayerBoundingBox(gameState.players[i]);
+				self.computePlayerEffectivePosition(gameState.players[i]);
+			}
+		}
+
+		// draw players relative to main player
+		ctx.scale(self.sc, self.sc);
+		for ( var i = 0; i < gameState.players.length; i++)
+			self.drawPlayer(gameState.players[i], i == 0);
+	}
+
+	this.drawPlayer = function(player, isself) {
+		if (isself) {
+			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x,
+					self.mainPlayer.y, self.P, self.P);
+		} else { // draw other players relative to main players
+			// TODO: !!!
 		}
 	}
 
@@ -127,18 +229,23 @@ function RenderingEngine(tileSize, playerSize) {
 		self.bgLoading = true;
 		$.getJSON(path, function(json) {
 			self.bgCanvas = document.createElement('canvas');
-			self.bgCanvas.width = json.width * 15; // json.tilewidth;
-			self.bgCanvas.height = json.height * 15; // json.tileheight;
+			// scale canvas to effective size
+			self.bgCanvas.width = json.width * self.T * self.sc;
+			self.bgCanvas.height = json.height * self.T * self.sc;
+			self.bbox.canScrollX = self.bgCanvas.width > c.width;
+			self.bbox.canScrollY = self.bgCanvas.height > c.height;
 			var bg_ctx = self.bgCanvas.getContext('2d');
+			// scale context to draw with standard (non-effective) sizes;
+			bg_ctx.scale(self.sc, self.sc);
 			var i = 0;
 			for ( var iy = 0; iy < json.height; iy++) {
 				for ( var ix = 0; ix < json.width; ix++) {
 					bg_ctx.drawImage(
-							tilePreload['mat'][json.layers[0].data[i]],
-							ix * 15, iy * 15, 15, 15);
+							tilePreload['mat'][json.layers[0].data[i]], ix
+									* self.T, iy * self.T, self.T, self.T);
 					bg_ctx.drawImage(
-							tilePreload['mat'][json.layers[1].data[i]],
-							ix * 15, iy * 15, 15, 15);
+							tilePreload['mat'][json.layers[1].data[i]], ix
+									* self.T, iy * self.T, self.T, self.T);
 					i += 1;
 				}
 			}
@@ -147,13 +254,8 @@ function RenderingEngine(tileSize, playerSize) {
 		});
 	}
 
-	this.drawPlayers = function() {
-		for ( var i = 0; i < gameState.players.length; i++)
-			self.drawPlayer(gameState.players[i]);
-	}
-
-	this.drawPlayer = function(player) {
-		ctx.drawImage(imagePreload['ape'], player.y, player.x, self.P, self.P);
+	this._ = function(argument) {
+		return argument * self.sc;
 	}
 }
 
