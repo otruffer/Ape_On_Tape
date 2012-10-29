@@ -70,12 +70,10 @@ function RenderingEngine(tileSize, playerSize) {
 		self.clear();
 		self.computePlayerBoundingBox();
 		if (self.bgLoaded) {
-			var width = (c.width <= self.bgCanvas.width) ? c.width
-					: self.bgCanvas.width;
-			var height = (c.height <= self.bgCanvas.height) ? c.height
-					: self.bgCanvas.height;
-			ctx.drawImage(self.bgCanvas, self.bbox.sx, self.bbox.sy, width,
-					height, 0, 0, width, height);
+			var w = (self.bbox.canScrollX) ? c.width : self.bgCanvas.width;
+			var h = (self.bbox.canScrollY) ? c.height : self.bgCanvas.height;
+			ctx.drawImage(self.bgCanvas, self.bbox.sx, self.bbox.sy, w, h, 0,
+					0, w, h);
 		}
 		self.drawPlayers();
 
@@ -109,13 +107,13 @@ function RenderingEngine(tileSize, playerSize) {
 		if (!player)
 			return;
 
-		// effective, scaled position of the main player TODO: change [0]
+		// effective, scaled position of the main player
 		if (self.bbox.canScrollX) {
 			var pCenterX = (player.y + (self.P / 2)) * self.sc;
 			var sx = pCenterX - (c.width / 2);
-			sx = (sx < 0) ? 0 : sx;
+			sx = (sx < 0) ? 0 : sx; // overlapping left edge
 			sx = (sx + c.width > self.bgCanvas.width) ? self.bgCanvas.width
-					- c.width : sx;
+					- c.width : sx; // overlapping right edge
 			self.bbox.sx = sx;
 		} else {
 			self.bbox.sx = 0;
@@ -124,21 +122,23 @@ function RenderingEngine(tileSize, playerSize) {
 		if (self.bbox.canScrollY) {
 			var pCenterY = (player.x + (self.P / 2)) * self.sc;
 			var sy = pCenterY - (c.height / 2);
-			sy = (sy < 0) ? 0 : sy;
+			sy = (sy < 0) ? 0 : sy; // overlapping upper edge
 			sy = (sy + c.height > self.bgCanvas.height) ? self.bgCanvas.height
-					- c.height : sy;
+					- c.height : sy; // overlapping bottom edge
 			self.bbox.sy = sy;
 		} else {
 			self.bbox.sy = 0;
 		}
 	}
 
+	// computes the effective positions (top left corner of the tile) of
+	// the player (main player) as non-scaled parameters
 	this.computePlayerEffectivePosition = function(player) {
 		// player relative to map (absolute position)
 		self.mainPlayer.absX = player.y;
 		self.mainPlayer.absY = player.x;
 
-		if (self.bbox.canScrollX) { // only if scrolling possible
+		if (self.bbox.canScrollX) { // if scrolling possible
 			// effective player position in x direction
 			if (self.bbox.sx == 0) {
 				self.mainPlayer.x = self.mainPlayer.absX;
@@ -146,13 +146,13 @@ function RenderingEngine(tileSize, playerSize) {
 				self.mainPlayer.x = self.mainPlayer.absX
 						- (self.bgCanvas.width - c.width) / self.sc;
 			} else {
-				self.mainPlayer.x = c.width / (2 * self.sc) - (self.P / 2);
+				self.mainPlayer.x = (c.width / self.sc) / 2 - (self.P / 2);
 			}
-		} else { // just use the absolute position
+		} else { // use the absolute position
 			self.mainPlayer.x = self.mainPlayer.absX;
 		}
 
-		if (self.bbox.canScrollY) { // only if scrolling possible
+		if (self.bbox.canScrollY) { // if scrolling possible
 			// effective player position in y direction
 			if (self.bbox.sy == 0) {
 				self.mainPlayer.y = self.mainPlayer.absY;
@@ -160,9 +160,9 @@ function RenderingEngine(tileSize, playerSize) {
 				self.mainPlayer.y = self.mainPlayer.absY
 						- (self.bgCanvas.height - c.height) / self.sc;
 			} else {
-				self.mainPlayer.y = c.height / (2 * self.sc) - (self.P / 2);
+				self.mainPlayer.y = (c.height / self.sc) / 2 - (self.P / 2);
 			}
-		} else { // just use the absolute position
+		} else { // use the absolute position
 			self.mainPlayer.y = self.mainPlayer.absY;
 		}
 	}
@@ -186,8 +186,11 @@ function RenderingEngine(tileSize, playerSize) {
 		if (isself) {
 			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x,
 					self.mainPlayer.y, self.P, self.P);
-		} else { // draw other players relative to main players
-			// TODO: !!!
+		} else { // draw other players relative to main player
+			var dx = self.mainPlayer.absX - player.y;
+			var dy = self.mainPlayer.absY - player.x;
+			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx,
+					self.mainPlayer.y - dy, self.P, self.P);
 		}
 	}
 
