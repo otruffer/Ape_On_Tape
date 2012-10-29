@@ -11,15 +11,13 @@ import java.util.concurrent.ExecutionException;
 
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
-import org.webbitserver.handler.logging.LoggingHandler;
-import org.webbitserver.handler.logging.SimpleLogSink;
 
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable{
 
-	final int GAME_RATE = 20;
-	final int SYNC_RATE = 15;
+	final int GAME_RATE = 30;
+	final int SYNC_RATE = 30;
 	final int WEB_SERVER_PORT = 9876;
 	final int[] UP_KEYS = {38, 119}; 
 	final int[] DOWN_KEYS = {40, 115};

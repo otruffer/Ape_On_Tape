@@ -2,13 +2,10 @@ package server;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
-
-import server.Game.Player;
 
 import com.google.gson.Gson;
 
@@ -28,6 +25,7 @@ public class GameServer extends BaseWebSocketHandler {
         String message;
         List<Integer> keysPressed;
     }
+   
 
     static class Outgoing {
         enum Action {JOIN, LEAVE, SAY, UPDATE}
@@ -46,12 +44,12 @@ public class GameServer extends BaseWebSocketHandler {
     private Set<WebSocketConnection> connections = new HashSet<WebSocketConnection>();
 
     @Override
-    public void onOpen(WebSocketConnection connection) throws Exception {
+    public void onOpen(WebSocketConnection connection) {
         connections.add(connection);
     }
 
     @Override
-    public void onMessage(WebSocketConnection connection, String msg) throws Exception {
+    public void onMessage(WebSocketConnection connection, String msg) {
         Incoming incoming = json.fromJson(msg, Incoming.class);
         switch (incoming.action) {
             case LOGIN:
@@ -110,8 +108,13 @@ public class GameServer extends BaseWebSocketHandler {
     }
 
     @Override
+<<<<<<< HEAD
     public void onClose(WebSocketConnection connection) throws Exception {
         int id = (Integer) connection.data(ID_KEY);
+=======
+    public void onClose(WebSocketConnection connection) {
+        int id = (int) connection.data(ID_KEY);
+>>>>>>> b8ac6a13d99ca54a50c78815383d6b8ea7276272
         if (id != 0) {
         	gameHandler.leavePlayer(id);
         	

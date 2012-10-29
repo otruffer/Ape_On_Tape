@@ -1,9 +1,10 @@
-// Socket reference.
-var ws;
+var ws; // Socket reference.
 var width = 800;
 var height = 600;
-var ctx, c;
-var gameState;
+var ctx, c; // Main drawing canvas context
+var gameState; // Holds the array of current players
+var apeImg; // The player image
+var renderEngine;
 
 // Log text to main window.
 function logText(msg) {
@@ -46,6 +47,7 @@ function onMessage(incoming) {
 		break;
 	case 'LEAVE':
 		logText("* User '" + incoming.username + "' left.");
+		distroyPlayerCanvas(incoming.username);
 		break;
 	case 'SAY':
 		logText("[" + incoming.username + "] " + incoming.message);
@@ -55,7 +57,7 @@ function onMessage(incoming) {
 		gameState.players = new Array();
 		for (playerId in players) {
 			gameState.players.push(new Player(players[playerId].x,
-					players[playerId].y));
+					players[playerId].y, players[playerId].id));
 			// logText("a player is at position: ("+players[playerId].x+",
 			// "+players[playerId].y+")");
 		}
@@ -121,9 +123,27 @@ var GameState = function() {
 	this.players = new Array();
 }
 
-var Player = function(x, y) {
+var Player = function(x, y, id) {
 	this.x = x;
 	this.y = y;
+	this.id = id;
+	// Preload player canvas if not loaded yet
+	this.canvas = document.getElementById('player' + this.id);
+	if (!this.canvas) {
+		this.canvas = document.createElement('canvas');
+		this.canvas.setAttribute('id', 'player' + this.id);
+		this.canvas.setAttribute('width', 100);
+		this.canvas.setAttribute('height', 100);
+		this.canvas.setAttribute('style', 'position: absolute; top: ' + x
+				+ 'px; left: ' + y + 'px');
+		var canvasCtx = this.canvas.getContext('2d');
+		canvasCtx.drawImage(apeImg, 0, 0, 60, 60);
+		$('body').append(this.canvas);
+	}
+}
+
+function distroyPlayerCanvas(id) {
+	$('#player' + id).remove();
 }
 
 // Send message to server over socket.
@@ -133,71 +153,21 @@ function send(outgoing) {
 
 var initGame = function() {
 	c = document.getElementById('canvas'), ctx = c.getContext('2d');
-	c.width = _(width);
-	c.height = _(height);
+	c.width = width;
+	c.height = height;
 	gameState = new GameState();
-	GameLoop();
+	renderEngine = new RenderingEngine(16, 12); // load with 16x12 tiles
+	renderEngine.draw(); // start drawing loop
 }
 
-// returns the parameter that scales the game window to fullscreen
-var scale = function() {
-	var windowWidth = window.innerWidth - 2; // TODO: replace fixed property
-												// (2px)
-	var windowHeight = window.innerHeight - 2;
-	if (windowWidth < windowHeight) {
-		return (windowWidth / width > 1) ? windowWidth / width : 1;
-	} else {
-		return (windowHeight / height > 1) ? windowHeight / height : 1;
-	}
-}
-
-// returns a scaled value to a corresponding input argument
-var _ = function(argument) {
-	return argument * scale();
-}
-
-var GameLoop = function() {
-	clear();
-	drawPlayers();
-	gLoop = setTimeout(GameLoop, 1000 / 50);
-}
-
-var drawPlayers = function() {
-	for ( var i = 0; i < gameState.players.length; i++)
-		drawPlayer(gameState.players[i]);
-}
-
-var drawPlayer = function(player) {
-	ctx.scale(scale(), scale());
-	ctx.fillStyle = '#333';
-	ctx.beginPath();
-	ctx.drawImage(img_ape, player.y, player.x);
-	//ctx.rect(player.y, player.x, _(10), _(10));
-	ctx.closePath();
-	ctx.fill();
-	ctx.scale(1 / scale(), 1 / scale());
-}
-
-var clear = function() {
-	c.width = _(width);
-	c.height = _(height);
-	ctx.fillStyle = '#d0e7f9';
-	ctx.beginPath();
-	ctx.rect(0, 0, _(width), _(height));
-	ctx.closePath();
-	ctx.fill();
-}
-
-function preloadImages() {
-	if (document.images) {
-		img_ape = new Image();
-		img_ape.src = "img/ape_2.png"
-	}
+function loadGraphics() {
+	apeImg = new Image();
+	apeImg.src = "img/ape_1.png";
 }
 
 // Connect on load.
 keyHandler = new keyHandler();
-preloadImages();
+$(document).ready(loadGraphics); // TODO evaluation order?
 $(document).ready(connect);
 $(window).bind("keydown", keyHandler.keyDown);
 $(window).bind("keyup", keyHandler.keyUp);
