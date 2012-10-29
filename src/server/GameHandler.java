@@ -17,19 +17,17 @@ import java.util.concurrent.ExecutionException;
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
 
-import server.GameServer.Outgoing;
-
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final static int WEB_SERVER_PORT = 9876;
-	final int[] UP_KEYS = {38, 119};
-	final int[] DOWN_KEYS = {40, 115};
-	final int[] LEFT_KEYS = {37, 97};
-	final int[] RIGHT_KEYS = {100, 39};
+	final static int WEB_SERVER_PORT = 9875;
+	final int[] UP_KEYS = { 38, 119 };
+	final int[] DOWN_KEYS = { 40, 115 };
+	final int[] LEFT_KEYS = { 37, 97 };
+	final int[] RIGHT_KEYS = { 100, 39 };
 	final static boolean USE_EXTERNAL_WEB_ROOT = true;
 	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
 
@@ -43,14 +41,14 @@ public class GameHandler implements Runnable {
 	private Map<Integer, String> playerNames;
 	private Map<Integer, String> playerRooms;
 
-	public GameHandler(int port, File webRoot) throws InterruptedException, ExecutionException {
+	public GameHandler(int port, File webRoot) throws InterruptedException,
+			ExecutionException {
 		gameServer = new GameServer(this);
 		webServer = createWebServer(port)
 		/*
 		 * .add(new LoggingHandler( new SimpleLogSink(Chatroom.USERNAME_KEY)))
 		 */
-		.add("/chatsocket", gameServer)
-				.add(new StaticFileHandler(webRoot))
+		.add("/chatsocket", gameServer).add(new StaticFileHandler(webRoot))
 				.start().get();
 
 		this.games = new HashMap<String, Game>();
@@ -90,13 +88,13 @@ public class GameHandler implements Runnable {
 			ExecutionException {
 		int port = WEB_SERVER_PORT;
 		File webRoot;
-		if(args.length > 0)
-			port = Integer.parseInt( args[0] );
-		if(args.length > 1)
+		if (args.length > 0)
+			port = Integer.parseInt(args[0]);
+		if (args.length > 1)
 			webRoot = new File(args[1]);
 		else
 			webRoot = ClientDirUtil.getClientDirectory();
-					
+
 		GameHandler gameHandler = new GameHandler(port, webRoot);
 		Thread gameThread = new Thread(gameHandler);
 		gameThread.run();
@@ -110,7 +108,11 @@ public class GameHandler implements Runnable {
 	}
 
 	private void createRoom(String roomName) {
-		this.games.put(roomName, new Game(800, 400));
+		synchronized (this.games) {
+			this.games.put(roomName, new Game(800, 400));
+			this.gameServer
+					.sendRoomList(this.games.keySet(), this.allPlayers());
+		}
 	}
 
 	public void leavePlayer(int playerId, String roomName) {
@@ -167,7 +169,7 @@ public class GameHandler implements Runnable {
 			y = 1;
 		else if (isKeyPressed(LEFT_KEYS, keys))
 			y = -1;
-		int[] values = {x, y};
+		int[] values = { x, y };
 		return values;
 	}
 
