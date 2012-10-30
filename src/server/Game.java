@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,9 +65,9 @@ public class Game {
 		}
 	}
 
-	public List<Player> getPlayers() {
+	public Map<Integer, Player> getPlayers() {
 		synchronized (this.players) {
-			return new LinkedList<Player>(this.players.values());
+			return this.players;
 		}
 	}
 
@@ -80,7 +81,7 @@ public class Game {
 	 *            either -1, 0, 1
 	 */
 	public void movePlayer(int playerId, int x, int y) {
-		this.players.get(playerId).moveOnMap(map, x, y);
+		this.players.get(playerId).moveOnMap(this, x, y);
 	}
 
 	public Map<Integer, Player> getPlayersAsMap() {

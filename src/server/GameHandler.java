@@ -23,7 +23,7 @@ public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final static int WEB_SERVER_PORT = 9875;
+	final static int WEB_SERVER_PORT = 9876;
 	final int[] UP_KEYS = { 38, 119 };
 	final int[] DOWN_KEYS = { 40, 115 };
 	final int[] LEFT_KEYS = { 37, 97 };
@@ -150,6 +150,7 @@ public class GameHandler implements Runnable {
 
 	/**
 	 * use as follows: isKeyPressed(UP_KEYS, keysPressed)
+	 * TODO: move to utility
 	 * 
 	 * @param key
 	 * @param keysPressed
@@ -240,7 +241,7 @@ public class GameHandler implements Runnable {
 	}
 
 	private List<Integer> playersInRoomWith(int id) {
-		return idsFromPlayers(games.get(playerRooms.get(id)).getPlayers());
+		return new LinkedList<Integer>(games.get(playerRooms.get(id)).getPlayers().keySet());
 	}
 
 	public List<Integer> idsFromPlayers(List<Player> players) {

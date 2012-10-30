@@ -98,16 +98,14 @@ function onMessage(incoming) {
 		syncs++;
 		gameState.players = new Array();
 		for (playerId in players) {
-			gameState.players.push(new Player(players[playerId].x,
-					players[playerId].y, players[playerId].id));
-			// logText("a player is at position: ("+players[playerId].x+",
-			// "+players[playerId].y+")");
+			gameState.players[playerId] = new Player(players[playerId].x,
+					players[playerId].y, players[playerId].id);
 		}
 		break;
-	case 'MAP':
+	case 'INIT_GAME':
 		gameState.map = incoming.map;
+		gameState.playerId = incoming.playerId;
 		renderEngine.bgLoaded = false;
-		// console.log('incoming map');
 		break;
 	case 'ROOMS':
 		rooms = incoming.rooms;

@@ -3,6 +3,7 @@ package server;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.webbitserver.BaseWebSocketHandler;
@@ -32,14 +33,15 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, MAP, ROOMS, NEW_ROOM
+			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM
 		}
 
 		Action action;
 		String username;
 		String message;
-		List<Player> players;
+		Map<Integer, Player> players;
 		int[][] map;
+		int playerId;
 		String[] rooms;
 		String newRoom;
 	}
@@ -103,7 +105,7 @@ public class GameServer extends BaseWebSocketHandler {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.JOIN;
 		outgoing.username = user;
-		this.sendMap(findConnection(id), gameHandler.getGameMap(roomJoin));
+		this.sendGameInfo(findConnection(id), gameHandler.getGameMap(roomJoin));
 		broadcast(outgoing, receipants);
 	}
 
@@ -130,16 +132,17 @@ public class GameServer extends BaseWebSocketHandler {
 	// }
 	// }
 
-	public void update(List<Player> players) {
+	public void update(Map<Integer, Player> players) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.UPDATE;
 		outgoing.players = players;
-		broadcast(outgoing, gameHandler.idsFromPlayers(players));
+		broadcast(outgoing, players.keySet());
 	}
 
-	public void sendMap(WebSocketConnection connection, int[][] map) {
+	public void sendGameInfo(WebSocketConnection connection, int[][] map) {
 		Outgoing outgoing = new Outgoing();
-		outgoing.action = Outgoing.Action.MAP;
+		outgoing.action = Outgoing.Action.INIT_GAME;
+		outgoing.playerId = (Integer) connection.data().get(ID_KEY);
 		outgoing.map = map;
 		String jsonStr = this.json.toJson(outgoing);
 		connection.send(jsonStr);
