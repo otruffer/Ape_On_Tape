@@ -110,14 +110,18 @@ public class GameHandler implements Runnable {
 	private void createRoom(String roomName) {
 		synchronized (this.games) {
 			this.games.put(roomName, new Game(800, 400));
-			this.gameServer
-					.sendRoomList(this.games.keySet(), this.allPlayers());
+			roomListUpdated();
 		}
 	}
 
-	public void leavePlayer(int playerId, String roomName) {
-		this.games.get(roomName).removePlayer(playerId);
+	public void leavePlayer(int playerId) {
+		this.leaveCurrentRoom(playerId);
 		this.keysPressed.remove(playerId);
+	}
+
+	private void destroyRoom(String roomName) {
+		this.games.remove(roomName);
+		roomListUpdated();
 	}
 
 	private void gameLoop() {
@@ -133,8 +137,10 @@ public class GameHandler implements Runnable {
 	}
 
 	private void syncLoop() {
-		for (Game game : games.values()) {
-			this.gameServer.update(game.getPlayers());
+		synchronized (this.games) {
+			for (Game game : games.values()) {
+				this.gameServer.update(game.getPlayers());
+			}
 		}
 	}
 
@@ -178,15 +184,22 @@ public class GameHandler implements Runnable {
 	}
 
 	public void playerDisconnected(int id) {
-		this.leavePlayer(id, playerRooms.get(id));
 		gameServer.sendDisconnectMessage(id, playerNames.get(id),
 				playersInRoomWith(id));
+		this.leavePlayer(id);
 		gameServer.disconnect(id);
 		playerRooms.remove(id);
 	}
 
 	public void playerLogin(int id, String username) {
 		playerNames.put(id, username);
+		gameServer.sendRoomList(allRooms(), asList(id));
+	}
+
+	private List<Integer> asList(int id) {
+		List<Integer> list = new ArrayList<Integer>(1);
+		list.add(id);
+		return list;
 	}
 
 	public void joinRoom(int id, String roomJoin) {
@@ -194,14 +207,11 @@ public class GameHandler implements Runnable {
 		playerRooms.put(id, roomJoin);
 		this.joinPlayer(id, roomJoin);
 		gameServer.sendJoinMessage(id, user, roomJoin, playersInRoomWith(id));
-		gameServer.sendRoomList(allRooms(), this.allPlayers());
-		LinkedList<Player> playerAsList = new LinkedList<Player>();
-		playerAsList.add(playerFromId(id));
-		gameServer.sendNewRoomInfo(roomJoin, playerAsList);
+		gameServer.sendNewRoomInfo(roomJoin, asList(id));
 	}
 
-	private Player playerFromId(int id) {
-		return games.get(playerRooms.get(id)).getPlayersAsMap().get(id);
+	private void roomListUpdated() {
+		gameServer.sendRoomList(allRooms(), this.allPlayers());
 	}
 
 	public void leaveCurrentRoom(int id) {
@@ -209,8 +219,12 @@ public class GameHandler implements Runnable {
 		if (playerRooms.containsKey(id)) {
 			gameServer.sendDisconnectMessage(id, playerNames.get(id),
 					playersInRoomWith(id));
-			games.get(playerRooms.get(id)).removePlayer(id);
+			String roomName = playerRooms.get(id);
+			Game room = games.get(roomName);
+			room.removePlayer(id);
 			playerRooms.remove(id);
+			if (room.noPlayers())
+				destroyRoom(roomName);
 		}
 	}
 
@@ -220,15 +234,19 @@ public class GameHandler implements Runnable {
 		return result;
 	}
 
-	private List<Player> allPlayers() {
-		ArrayList<Player> result = new ArrayList<Player>();
-		for (Game game : games.values()) {
-			result.addAll(game.getPlayers());
-		}
+	private Collection<Integer> allPlayers() {
+		Collection<Integer> result = this.playerNames.keySet();
 		return result;
 	}
 
-	private List<Player> playersInRoomWith(int id) {
-		return games.get(playerRooms.get(id)).getPlayers();
+	private List<Integer> playersInRoomWith(int id) {
+		return idsFromPlayers(games.get(playerRooms.get(id)).getPlayers());
+	}
+
+	public List<Integer> idsFromPlayers(List<Player> players) {
+		List<Integer> ids = new LinkedList<Integer>();
+		for (Player p : players)
+			ids.add(p.id);
+		return ids;
 	}
 }

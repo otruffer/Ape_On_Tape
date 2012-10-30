@@ -79,7 +79,7 @@ var lastTime;
 
 function onMessage(incoming) {
 	var time = new Date();
-//	lastTime = time;
+	// lastTime = time;
 	socketDelta = time - lastSocketMessage;
 	lastSocketMessage = time;
 	switch (incoming.action) {
@@ -106,10 +106,12 @@ function onMessage(incoming) {
 		break;
 	case 'MAP':
 		gameState.map = incoming.map;
+		renderEngine.bgLoaded = false;
 		// console.log('incoming map');
 		break;
 	case 'ROOMS':
 		rooms = incoming.rooms;
+		updateRoomList();
 		break;
 	case 'NEW_ROOM':
 		window.localStorage.room = incoming.newRoom;
@@ -197,7 +199,7 @@ var initGame = function() {
 	c.width = width;
 	c.height = height;
 	gameState = new GameState();
-	renderEngine = new RenderingEngine(16, 12); // load with 16x12 tiles
+	renderEngine = new RenderingEngine(30, 20);
 	renderEngine.draw(); // start drawing loop
 }
 
@@ -216,8 +218,19 @@ function preloadImage(name, imgPath) {
 }
 
 var tilePreload = {};
+/*
+ * Loads an image tile set as an array of pre-rendered canvas elements into the
+ * tilePreload variable which can be accessed using tilePreload['name'].
+ * tileWidth and tileHeight is the size of a subdivided tile in the tile set.
+ */
 function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 	tilePreload[name] = new Array();
+	// push an empty tile to array position 0
+	var emptyTile = document.createElement('canvas');
+	emptyTile.width = tileWidth;
+	emptyTile.height = tileHeight;
+	tilePreload[name].push(emptyTile);
+	// create tiles from tileset
 	var img = new Image();
 	img.src = imgPath;
 	img.onload = function() {
@@ -238,9 +251,16 @@ function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 	}
 }
 
+function resizeHandler(e) {
+	if (renderEngine) {
+		renderEngine.needCanvasReload = true;
+	}
+}
+
 // Connect on load.
 keyHandler = new keyHandler();
 $(document).ready(loadGraphics); // TODO evaluation order?
 $(document).ready(connect);
 $(window).bind("keydown", keyHandler.keyDown);
 $(window).bind("keyup", keyHandler.keyUp);
+$(window).resize(resizeHandler);

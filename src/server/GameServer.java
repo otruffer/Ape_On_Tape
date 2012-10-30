@@ -2,7 +2,6 @@ package server;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -61,20 +60,20 @@ public class GameServer extends BaseWebSocketHandler {
 	public void onMessage(WebSocketConnection connection, String msg) {
 		Incoming incoming = json.fromJson(msg, Incoming.class);
 		switch (incoming.action) {
-			case LOGIN :
-				login(connection, incoming.loginUsername);
-				break;
-			case ROOM :
-				leaveCurrentRoom(connection);
-				joinRoom(connection, incoming.roomJoin);
-				break;
-			// case SAY:
-			// say(connection, incoming.message);
-			// break;
-			case KEYS_PRESSED :
-				this.gameHandler.setKeysPressed((Integer) connection.data(ID_KEY),
-						incoming.keysPressed);
-				break;
+		case LOGIN:
+			login(connection, incoming.loginUsername);
+			break;
+		case ROOM:
+			leaveCurrentRoom(connection);
+			joinRoom(connection, incoming.roomJoin);
+			break;
+		// case SAY:
+		// say(connection, incoming.message);
+		// break;
+		case KEYS_PRESSED:
+			this.gameHandler.setKeysPressed((Integer) connection.data(ID_KEY),
+					incoming.keysPressed);
+			break;
 		}
 	}
 
@@ -100,7 +99,7 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	public void sendJoinMessage(int id, String user, String roomJoin,
-			List<Player> receipants) {
+			List<Integer> receipants) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.JOIN;
 		outgoing.username = user;
@@ -135,7 +134,7 @@ public class GameServer extends BaseWebSocketHandler {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.UPDATE;
 		outgoing.players = players;
-		broadcast(outgoing, players);
+		broadcast(outgoing, gameHandler.idsFromPlayers(players));
 	}
 
 	public void sendMap(WebSocketConnection connection, int[][] map) {
@@ -146,13 +145,10 @@ public class GameServer extends BaseWebSocketHandler {
 		connection.send(jsonStr);
 	}
 
-	private void broadcast(Outgoing outgoing, List<Player> players) {
+	private void broadcast(Outgoing outgoing, Collection<Integer> playerIds) {
 		String jsonStr = this.json.toJson(outgoing);
 		for (WebSocketConnection connection : connections) {
-			List<Integer> ids = new LinkedList<Integer>();
-			for (Player p : players)
-				ids.add(p.getId());
-			if (ids.contains(connection.data(ID_KEY))) {
+			if (playerIds.contains(connection.data(ID_KEY))) {
 				// only broadcast to those who have completed login
 				connection.send(jsonStr);
 			}
@@ -166,7 +162,7 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	public void sendDisconnectMessage(int id, String user,
-			List<Player> receipants) {
+			List<Integer> receipants) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.LEAVE;
 		outgoing.username = user;
@@ -179,14 +175,16 @@ public class GameServer extends BaseWebSocketHandler {
 
 	}
 
-	public void sendRoomList(Collection<String> rooms, List<Player> receivers) {
+	public void sendRoomList(Collection<String> rooms,
+			Collection<Integer> receivers) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.ROOMS;
 		outgoing.rooms = rooms.toArray(new String[0]);
 		broadcast(outgoing, receivers);
 	}
 
-	public void sendNewRoomInfo(String newRoomName, List<Player> receipants) {
+	public void sendNewRoomInfo(String newRoomName,
+			Collection<Integer> receipants) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.NEW_ROOM;
 		outgoing.newRoom = newRoomName;
