@@ -26,16 +26,16 @@ public class Util {
 		boolean botright = map.getTileXY(e.getX() + e.getWidth(), e.getY()+ e.getHeight() + deltay).isWalkable();
 		if(deltay > 0){
 			if(botleft && botright)
-				y =  e.getY() + deltay;
+				e.setY( e.getY() + deltay);
 			else{
-				y =  map.getTileXY(e.getX(), e.getY() + map.getTileHeight()).getY()*map.getTileHeight()-e.getHeight()-0.1f;
+				e.setY(map.getTileXY(e.getX(), e.getY() + map.getTileHeight()).getY()*map.getTileHeight()-e.getHeight()-0.1f);
 			}
 		}
 		else{
 			if(topleft && topright)
-				y =  e.getY() + deltay;
+				e.setY(e.getY() + deltay);
 			else{
-				y =  map.getTileXY(e.getX(), e.getY()).getY()*map.getTileHeight();
+				e.setY(map.getTileXY(e.getX(), e.getY()).getY()*map.getTileHeight());
 			}
 		}
 		
@@ -46,16 +46,16 @@ public class Util {
 		
 		if(deltax > 0){
 			if(topright && botright)
-				x =  e.getX() + deltax;
+				e.setX(e.getX() + deltax);
 			else{
-				x =  map.getTileXY(e.getX() + map.getTileWidth(), e.getY()).getX()*map.getTileWidth()-e.getWidth()-0.1f;
+				e.setX(map.getTileXY(e.getX() + map.getTileWidth(), e.getY()).getX()*map.getTileWidth()-e.getWidth()-0.1f);
 			}
 		}
 		else{
 			if(topleft && botleft)
-				x =  e.getX() + deltax;
+				e.setX(e.getX() + deltax);
 			else{
-				x =  map.getTileXY(e.getX(), e.getY()).getX()*map.getTileWidth();
+				e.setX(map.getTileXY(e.getX(), e.getY()).getX()*map.getTileWidth());
 			}
 		}
 		float[] xy = {x, y};

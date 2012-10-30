@@ -170,7 +170,7 @@ function RenderingEngine(tileSize, playerSize) {
 
 	this.drawPlayers = function() {
 		// store information about the main player
-		for ( id in gameState.players) {
+		for (id in gameState.players) {
 			if (id == gameState.playerId) {
 				self.computePlayerBoundingBox(gameState.players[id]);
 				self.computePlayerEffectivePosition(gameState.players[id]);
@@ -179,7 +179,7 @@ function RenderingEngine(tileSize, playerSize) {
 
 		// draw players relative to main player
 		ctx.scale(self.sc, self.sc);
-		for ( id in gameState.players)
+		for (id in gameState.players)
 			self.drawPlayer(gameState.players[id], id == gameState.playerId);
 	}
 
@@ -256,10 +256,6 @@ function RenderingEngine(tileSize, playerSize) {
 			self.bgLoaded = true;
 			self.bgLoading = false;
 		});
-	}
-
-	this._ = function(argument) {
-		return argument * self.sc;
 	}
 }
 

@@ -22,10 +22,7 @@ public class Entity {
 			deltax /= Math.sqrt(2);
 			deltay /= Math.sqrt(2);
 		}
-		float[] xy =  Util.moveOnMap(game, this, deltax, deltay);
-		this.x = xy[0];
-		this.y = xy[1];
-		
+		Util.moveOnMap(game, this, deltax, deltay);
 	}
 
 	public int getId() {
@@ -51,4 +48,14 @@ public class Entity {
 	public float getHeight(){
 		return height;
 	}
+
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+	
+	
 }
