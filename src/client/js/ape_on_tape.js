@@ -203,7 +203,7 @@ function initGame() {
 }
 
 function initBackgroundMusic() {
-	toggleBackgroundMusic();
+//	toggleBackgroundMusic();
 	$('#music-control').click(toggleBackgroundMusic);
 }
 

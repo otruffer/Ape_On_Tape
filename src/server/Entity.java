@@ -7,6 +7,7 @@ public class Entity {
 	protected float height = 20f;
 	protected float width = 20f;
 	protected float speed = 5;
+	// XXX: Does nothing?
 	protected boolean collision = true;
 
 	public Entity(int id, float x, float y) {

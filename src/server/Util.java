@@ -38,7 +38,7 @@ public class Util {
 				e.setY(map.getTileXY(e.getX(), e.getY()).getY()*map.getTileHeight());
 			}
 		}
-		
+		// o.O http://goo.gl/Fp0YE
 		topleft = map.getTileXY(e.getX() + deltax, e.getY()).isWalkable();
 		topright = map.getTileXY(e.getX() + e.getWidth() + deltax, e.getY()).isWalkable();
 		botleft = map.getTileXY(e.getX() + deltax, e.getY()+ e.getHeight()).isWalkable();
