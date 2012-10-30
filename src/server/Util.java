@@ -29,6 +29,7 @@ public class Util {
 				e.setY( e.getY() + deltay);
 			else{
 				e.setY(map.getTileXY(e.getX(), e.getY() + map.getTileHeight()).getY()*map.getTileHeight()-e.getHeight()-0.1f);
+				game.collision(e);
 			}
 		}
 		else{
@@ -36,6 +37,7 @@ public class Util {
 				e.setY(e.getY() + deltay);
 			else{
 				e.setY(map.getTileXY(e.getX(), e.getY()).getY()*map.getTileHeight());
+				game.collision(e);
 			}
 		}
 		// o.O http://goo.gl/Fp0YE
@@ -49,6 +51,7 @@ public class Util {
 				e.setX(e.getX() + deltax);
 			else{
 				e.setX(map.getTileXY(e.getX() + map.getTileWidth(), e.getY()).getX()*map.getTileWidth()-e.getWidth()-0.1f);
+				game.collision(e);
 			}
 		}
 		else{
@@ -56,6 +59,7 @@ public class Util {
 				e.setX(e.getX() + deltax);
 			else{
 				e.setX(map.getTileXY(e.getX(), e.getY()).getX()*map.getTileWidth());
+				game.collision(e);
 			}
 		}
 		float[] xy = {x, y};

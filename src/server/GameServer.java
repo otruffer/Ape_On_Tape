@@ -33,7 +33,7 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM
+			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM, COLLISION
 		}
 
 		Action action;
@@ -165,11 +165,11 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	public void sendDisconnectMessage(int id, String user,
-			List<Integer> receipants) {
+			List<Integer> receipents) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.LEAVE;
 		outgoing.username = user;
-		broadcast(outgoing, receipants);
+		broadcast(outgoing, receipents);
 	}
 
 	public void disconnect(int id) {
@@ -179,18 +179,24 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	public void sendRoomList(Collection<String> rooms,
-			Collection<Integer> receivers) {
+			Collection<Integer> receipent) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.ROOMS;
 		outgoing.rooms = rooms.toArray(new String[0]);
-		broadcast(outgoing, receivers);
+		broadcast(outgoing, receipent);
 	}
 
 	public void sendNewRoomInfo(String newRoomName,
-			Collection<Integer> receipants) {
+			Collection<Integer> receipents) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.NEW_ROOM;
 		outgoing.newRoom = newRoomName;
-		broadcast(outgoing, receipants);
+		broadcast(outgoing, receipents);
+	}
+
+	public void sendCollisionAlert(Collection<Integer> receipents) {
+		Outgoing outgoing = new Outgoing();
+		outgoing.action = Outgoing.Action.COLLISION;
+		broadcast(outgoing, receipents);
 	}
 }

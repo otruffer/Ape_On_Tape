@@ -109,7 +109,9 @@ public class GameHandler implements Runnable {
 
 	private void createRoom(String roomName) {
 		synchronized (this.games) {
-			this.games.put(roomName, new Game(800, 400));
+			Game newRoom = new Game(800, 400);
+			this.games.put(roomName, newRoom);
+			newRoom.addCollisionListener(new RealCollisionListener(this));
 			roomListUpdated();
 		}
 	}
@@ -149,8 +151,7 @@ public class GameHandler implements Runnable {
 	}
 
 	/**
-	 * use as follows: isKeyPressed(UP_KEYS, keysPressed)
-	 * TODO: move to utility
+	 * use as follows: isKeyPressed(UP_KEYS, keysPressed) TODO: move to utility
 	 * 
 	 * @param key
 	 * @param keysPressed
@@ -229,6 +230,10 @@ public class GameHandler implements Runnable {
 		}
 	}
 
+	public void collision(Game game, Entity e) {
+		gameServer.sendCollisionAlert(game.getPlayers().keySet());
+	}
+
 	private Collection<String> allRooms() {
 		Set<String> result = new HashSet<String>();
 		result.addAll(this.playerRooms.values());
@@ -241,7 +246,8 @@ public class GameHandler implements Runnable {
 	}
 
 	private List<Integer> playersInRoomWith(int id) {
-		return new LinkedList<Integer>(games.get(playerRooms.get(id)).getPlayers().keySet());
+		return new LinkedList<Integer>(games.get(playerRooms.get(id))
+				.getPlayers().keySet());
 	}
 
 	public List<Integer> idsFromPlayers(List<Player> players) {

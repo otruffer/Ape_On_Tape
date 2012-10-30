@@ -115,6 +115,9 @@ function onMessage(incoming) {
 		window.localStorage.room = incoming.newRoom;
 		updateRoomInfo();
 		break;
+	case 'COLLISION':
+		playCollisionSound();
+		break;
 	}
 }
 
@@ -208,8 +211,9 @@ function initBackgroundMusic() {
 }
 
 var bgMusicPlaying = false;
+var backgroundMusic = new Audio('sound/follies.mp3');
 function toggleBackgroundMusic() {
-	var backgroundMusic = $('#background-music')[0];
+//	var backgroundMusic = $('#background-music')[0];
 	var control = $('#music-control');
 	if (!bgMusicPlaying) {
 		backgroundMusic.play();
@@ -221,6 +225,11 @@ function toggleBackgroundMusic() {
 		control.text('Play Music');
 	}
 	bgMusicPlaying = !bgMusicPlaying;
+}
+
+function playCollisionSound() {
+	new Audio('sound/jab.mp3').play();
+//	$('#collision-sound')[0].play();
 }
 
 function loadGraphics() {
