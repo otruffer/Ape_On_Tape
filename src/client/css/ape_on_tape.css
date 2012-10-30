@@ -100,6 +100,11 @@ body {
 	padding: 2px;
 }
 
+#roomList ul li.newRoom {
+	color: #bbb;
+	font-style: italic;
+}
+
 #roomList ul li:hover {
 	background-color: #0a0;
 	color: white;
