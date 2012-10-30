@@ -170,17 +170,17 @@ function RenderingEngine(tileSize, playerSize) {
 
 	this.drawPlayers = function() {
 		// store information about the main player
-		for ( var i = 0; i < gameState.players.length; i++) {
-			if (i == 0) {
-				self.computePlayerBoundingBox(gameState.players[i]);
-				self.computePlayerEffectivePosition(gameState.players[i]);
+		for ( id in gameState.players) {
+			if (id == gameState.playerId) {
+				self.computePlayerBoundingBox(gameState.players[id]);
+				self.computePlayerEffectivePosition(gameState.players[id]);
 			}
 		}
 
 		// draw players relative to main player
 		ctx.scale(self.sc, self.sc);
-		for ( var i = 0; i < gameState.players.length; i++)
-			self.drawPlayer(gameState.players[i], i == 0);
+		for ( id in gameState.players)
+			self.drawPlayer(gameState.players[id], id == gameState.playerId);
 	}
 
 	this.drawPlayer = function(player, isself) {

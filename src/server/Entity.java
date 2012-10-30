@@ -2,11 +2,12 @@ package server;
 
 public class Entity {
 	protected int id;
-	float x;
-	float y;
-	float height = 20f;
-	float width = 20f;
-	float speed = 5;
+	protected float x;
+	protected float y;
+	protected float height = 20f;
+	protected float width = 20f;
+	protected float speed = 5;
+	protected boolean collision = true;
 
 	public Entity(int id, float x, float y) {
 		this.id = id;
@@ -14,15 +15,16 @@ public class Entity {
 		this.y = y;
 	}
 
-	public void moveOnMap(TileMap map, int dirx, int diry) {
+	public void moveOnMap(Game game, int dirx, int diry) {
 		float deltax = this.speed * dirx;
 		float deltay = this.speed * diry;
 		if (deltax != 0 && deltay != 0) {
 			deltax /= Math.sqrt(2);
 			deltay /= Math.sqrt(2);
 		}
-		this.x = Util.moveOnMapVertical(map, this, deltax);
-		this.y = Util.moveOnMapHorizontal(map, this, deltay);
+		float[] xy =  Util.moveOnMap(game, this, deltax, deltay);
+		this.x = xy[0];
+		this.y = xy[1];
 		
 	}
 
