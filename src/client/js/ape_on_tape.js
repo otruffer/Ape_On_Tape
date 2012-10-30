@@ -192,13 +192,35 @@ function send(outgoing) {
 	ws.send(JSON.stringify(outgoing));
 }
 
-var initGame = function() {
+function initGame() {
 	c = document.getElementById('canvas'), ctx = c.getContext('2d');
 	c.width = width;
 	c.height = height;
 	gameState = new GameState();
 	renderEngine = new RenderingEngine(30, 20);
 	renderEngine.draw(); // start drawing loop
+	initBackgroundMusic();
+}
+
+function initBackgroundMusic() {
+	toggleBackgroundMusic();
+	$('#music-control').click(toggleBackgroundMusic);
+}
+
+var bgMusicPlaying = false;
+function toggleBackgroundMusic() {
+	var backgroundMusic = $('#background-music')[0];
+	var control = $('#music-control');
+	if (!bgMusicPlaying) {
+		backgroundMusic.play();
+		control.addClass('playing');
+		control.text('Stop Music');
+	} else {
+		backgroundMusic.pause();
+		control.removeClass('playing');
+		control.text('Play Music');
+	}
+	bgMusicPlaying = !bgMusicPlaying;
 }
 
 function loadGraphics() {

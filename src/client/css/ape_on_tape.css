@@ -57,6 +57,24 @@ body {
 	color: black;
 }
 
+#music-control {
+	font-family: 'Marcellus';
+	color: #06a;
+	text-shadow: none;
+	padding: 0 6px;
+}
+
+#music-control.playing {
+	box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.5) inset;
+	background-color: #DDD;
+}
+
+#music-control:hover {
+	cursor: pointer;
+	color: #eee;
+	background-color: #69e;
+}
+
 #canvas {
 	float: left;
 	box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
@@ -118,7 +136,7 @@ body {
 	overflow-x: scroll;
 	position: absolute;
 	right: 416px;
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
 #delay-graph .delay {
