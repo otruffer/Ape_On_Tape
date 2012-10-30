@@ -160,7 +160,16 @@ public class Game {
 	}
 
 	public void collision(Entity e) {
+		if (e.collisionState())
+			return;
+
+		// TODO: save (and read) collision state dependent on side of collision
+		e.setCollisionState(true);
 		for (CollisionListener listener : collisionListeners)
 			listener.collisionOccured(this, e);
+	}
+
+	public void noCollision(Entity e) {
+		e.setCollisionState(false);
 	}
 }

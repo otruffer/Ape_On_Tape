@@ -16,53 +16,72 @@ public class Util {
 				tiles[i][j] = map.getTile(j, i).isWalkable() ? 0 : 1;
 		return tiles;
 	}
-	
-	static float[] moveOnMap(Game game, Entity e, float deltax, float deltay){
+
+	static float[] moveOnMap(Game game, Entity e, float deltax, float deltay) {
+		// TODO: Just temporary. Later: Check at every possible direction and
+		// notify game that no collision occurred on that side (to release
+		// collision state)
+		boolean collision = false;
 		TileMap map = game.getMap();
 		float x = e.getX(), y = e.getY();
-		boolean topleft = map.getTileXY(e.getX(), e.getY() + deltay).isWalkable();
-		boolean topright = map.getTileXY(e.getX() + e.getWidth(), e.getY() + deltay).isWalkable();
-		boolean botleft = map.getTileXY(e.getX(), e.getY()+ e.getHeight() + deltay).isWalkable();
-		boolean botright = map.getTileXY(e.getX() + e.getWidth(), e.getY()+ e.getHeight() + deltay).isWalkable();
-		if(deltay > 0){
-			if(botleft && botright)
-				e.setY( e.getY() + deltay);
-			else{
-				e.setY(map.getTileXY(e.getX(), e.getY() + map.getTileHeight()).getY()*map.getTileHeight()-e.getHeight()-0.1f);
-				game.collision(e);
-			}
-		}
-		else{
-			if(topleft && topright)
+		boolean topleft = map.getTileXY(e.getX(), e.getY() + deltay)
+				.isWalkable();
+		boolean topright = map.getTileXY(e.getX() + e.getWidth(),
+				e.getY() + deltay).isWalkable();
+		boolean botleft = map.getTileXY(e.getX(),
+				e.getY() + e.getHeight() + deltay).isWalkable();
+		boolean botright = map.getTileXY(e.getX() + e.getWidth(),
+				e.getY() + e.getHeight() + deltay).isWalkable();
+		if (deltay > 0) {
+			if (botleft && botright)
 				e.setY(e.getY() + deltay);
-			else{
-				e.setY(map.getTileXY(e.getX(), e.getY()).getY()*map.getTileHeight());
+			else {
+				e.setY(map.getTileXY(e.getX(), e.getY() + map.getTileHeight())
+						.getY() * map.getTileHeight() - e.getHeight() - 0.1f);
 				game.collision(e);
+				collision = true;
+			}
+		} else {
+			if (topleft && topright)
+				e.setY(e.getY() + deltay);
+			else {
+				e.setY(map.getTileXY(e.getX(), e.getY()).getY()
+						* map.getTileHeight());
+				game.collision(e);
+				collision = true;
 			}
 		}
 		// o.O http://goo.gl/Fp0YE
 		topleft = map.getTileXY(e.getX() + deltax, e.getY()).isWalkable();
-		topright = map.getTileXY(e.getX() + e.getWidth() + deltax, e.getY()).isWalkable();
-		botleft = map.getTileXY(e.getX() + deltax, e.getY()+ e.getHeight()).isWalkable();
-		botright = map.getTileXY(e.getX() + e.getWidth() + deltax, e.getY()+ e.getHeight()).isWalkable();
-		
-		if(deltax > 0){
-			if(topright && botright)
+		topright = map.getTileXY(e.getX() + e.getWidth() + deltax, e.getY())
+				.isWalkable();
+		botleft = map.getTileXY(e.getX() + deltax, e.getY() + e.getHeight())
+				.isWalkable();
+		botright = map.getTileXY(e.getX() + e.getWidth() + deltax,
+				e.getY() + e.getHeight()).isWalkable();
+
+		if (deltax > 0) {
+			if (topright && botright)
 				e.setX(e.getX() + deltax);
-			else{
-				e.setX(map.getTileXY(e.getX() + map.getTileWidth(), e.getY()).getX()*map.getTileWidth()-e.getWidth()-0.1f);
+			else {
+				e.setX(map.getTileXY(e.getX() + map.getTileWidth(), e.getY())
+						.getX() * map.getTileWidth() - e.getWidth() - 0.1f);
 				game.collision(e);
+				collision = true;
+			}
+		} else {
+			if (topleft && botleft)
+				e.setX(e.getX() + deltax);
+			else {
+				e.setX(map.getTileXY(e.getX(), e.getY()).getX()
+						* map.getTileWidth());
+				game.collision(e);
+				collision = true;
 			}
 		}
-		else{
-			if(topleft && botleft)
-				e.setX(e.getX() + deltax);
-			else{
-				e.setX(map.getTileXY(e.getX(), e.getY()).getX()*map.getTileWidth());
-				game.collision(e);
-			}
-		}
-		float[] xy = {x, y};
+		if (!collision)
+			game.noCollision(e);
+		float[] xy = { x, y };
 		return xy;
 	}
 }

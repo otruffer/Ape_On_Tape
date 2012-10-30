@@ -9,6 +9,7 @@ public class Entity {
 	protected float speed = 5;
 	// XXX: Does nothing?
 	protected boolean collision = true;
+	private boolean collisionState;
 
 	public Entity(int id, float x, float y) {
 		this.id = id;
@@ -37,16 +38,16 @@ public class Entity {
 	public float getX() {
 		return x;
 	}
-	
+
 	public float getY() {
 		return y;
 	}
-	
-	public float getWidth(){
+
+	public float getWidth() {
 		return width;
 	}
-	
-	public float getHeight(){
+
+	public float getHeight() {
 		return height;
 	}
 
@@ -57,6 +58,13 @@ public class Entity {
 	public void setY(float y) {
 		this.y = y;
 	}
-	
-	
+
+	public void setCollisionState(boolean state) {
+		this.collisionState = state;
+	}
+
+	public boolean collisionState() {
+		return this.collisionState;
+	}
+
 }
