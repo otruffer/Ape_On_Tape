@@ -259,6 +259,7 @@ function RenderingEngine(tileSize, playerSize) {
 	}
 }
 
+
 // returns the parameter that scales the game window to fullscreen
 var scale = function() {
 	var windowHeight = window.innerHeight - 2 - $('#header').height();
