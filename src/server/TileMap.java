@@ -72,7 +72,7 @@ public class TileMap {
 	public float[] getStartXY() {
 		//float[] xy = {START_TYLE[1]*tileHeight, START_TYLE[1]*tileWidth};
 		Tile randomWalk = this.getRandomWalkableTile();
-		float[] xy = {randomWalk.getY()*tileHeight, randomWalk.getX()*tileWidth};
+		float[] xy = {randomWalk.getX()*tileWidth, randomWalk.getY()*tileHeight};
 		return xy;
 	}
 }
