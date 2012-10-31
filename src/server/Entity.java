@@ -1,5 +1,8 @@
 package server;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import server.GsonExclusionStrategy.noGson;
 
 public abstract class Entity {
@@ -9,13 +12,17 @@ public abstract class Entity {
 	protected float height = 20f;
 	protected float width = 20f;
 	protected String type = "entity";
-
+	
+	@noGson
+	protected boolean wallHit = false;
 	@noGson
 	protected float speed = 5;
 	@noGson
 	protected boolean collisionResolving = false;
 	@noGson
 	private boolean collisionState;
+	protected int killCount = 0;
+	protected int deathCount = 0;
 
 	public Entity(int id, float x, float y) {
 		this.id = id;
@@ -35,21 +42,28 @@ public abstract class Entity {
 	 * @param game
 	 * @param dirX
 	 * @param dirY
-	 * @return whether or not you hit a wall
+	 * @return what collisions were resolved? for wall hit use: getWallHit
 	 */
-	public boolean moveOnMap(Game game, float deltax, float deltay) {
-		boolean hit = Util.moveOnMap(game, this, deltax, deltay);
+	public List<Entity> moveOnMap(Game game, float deltax, float deltay) {
+		this.wallHit = Util.moveOnMap(game, this, deltax, deltay);
+		List<Entity> overlapping = new LinkedList<Entity>();
 		if (this.collisionResolving)
-			this.resolveCollisions(game);
-		return hit;
+			overlapping = this.resolveCollisions(game);
+		return overlapping;
 	}
 
-	protected void resolveCollisions(Game game) {
-		for (Entity other : Util.getEntitiesOverlapping(game.getPlayersList(),
-				this)) {
+	protected List<Entity> resolveCollisions(Game game) {
+		List<Entity> overlapping = Util.getEntitiesOverlapping(game.getPlayersList(),
+				this);
+		for (Entity other : overlapping) {
 			if (other.isCollisionResolving())
 				Util.resolveCollision(game, this, other);
 		}
+		return overlapping;
+	}
+	
+	public boolean getWallHit(){
+		return this.wallHit;
 	}
 
 	public int getId() {
@@ -130,5 +144,9 @@ public abstract class Entity {
 
 	public String getType() {
 		return this.type;
+	}
+
+	public void incrementKillCount() {
+		this.killCount++;
 	}
 }

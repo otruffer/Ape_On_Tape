@@ -1,5 +1,7 @@
 package server;
 
+import java.util.List;
+
 import server.GsonExclusionStrategy.noGson;
 
 
@@ -43,11 +45,15 @@ public class Bullet extends Entity{
 			deltax/=Math.sqrt(2);
 			deltay/=Math.sqrt(2);
 		}
-		if(moveOnMap(game, deltax, deltay))
+		moveOnMap(game, deltax, deltay);
+		if(this.wallHit)
 			game.removeEntity(this);
-		for(Entity entity : Util.getEntitiesOverlapping(game.getPlayersList(), this)){
+		List<Entity> overlapping = Util.getEntitiesOverlapping(game.getPlayersList(), this);
+		for(Entity entity : overlapping){
 			entity.hitByBullet(game, this);
 		}
+		if(!overlapping.isEmpty())
+			game.removeEntity(this);
 	}
 	
 	@Override

@@ -100,13 +100,9 @@ function onMessage(incoming) {
 		gameState.entities = new Array();
 		for (id in entities) {
 			if(entities[id].type == "player")
-				gameState.players[id] = new Player(entities[id].x,
-					entities[id].y, id,
-					entities[id].name);
+				gameState.players[id] = entities[id];
 			else
-				gameState.entities[id] = new Entity(entities[id].x,
-					entities[id].y, id,
-					entities[id].type);
+				gameState.entities[id] = entities[id];
 		}
 		updatePlayerList();
 		break;

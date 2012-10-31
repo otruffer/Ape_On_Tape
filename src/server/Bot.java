@@ -2,6 +2,7 @@ package server;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 public class Bot extends Player {
 
@@ -23,7 +24,10 @@ public class Bot extends Player {
 		float sum = (float) Math
 				.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 		float factor = this.speed / sum;
-		moveOnMap(game, factor * deltaX, factor * deltaY);
+		List<Entity> overlapping = moveOnMap(game, factor * deltaX, factor * deltaY);
+		for(Entity entity : overlapping){
+			entity.hitByBullet(game, new Bullet(this, 0, 0, 0, 0));
+		}
 	}
 
 	private float deltaX(Player player) {
