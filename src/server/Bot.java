@@ -18,8 +18,9 @@ public class Bot extends Player {
 		if (this.equals(other)) {
 			other = it.next();
 		}
-		this.y += deltaY(other) / 10;
-		this.x += deltaX(other) / 10;
+		float deltaY = deltaY(other) / 10;
+		float deltaX = deltaX(other) / 10;
+		moveOnMap(game, deltaX, deltaY);
 	}
 
 	private float deltaX(Player player) {

@@ -24,15 +24,26 @@ public class Bullet extends Entity{
 		this.dirX = dirX;
 		this.dirY = dirY;
 		this.type = "bullet";
+		this.speed = 10;
 	}
 	
 	public void setRadius(float radius){
 		this.radius = radius;
 	}
+	
+	public Entity getOwner(){
+		return owner;
+	}
 
 	@Override
 	public void brain(Game game) {
-		if(moveOnMap(game, dirX*speed, dirY*speed))
+		float deltax = dirX*speed;
+		float deltay = dirY*speed;
+		if(deltax!=0 && deltay!=0){
+			deltax/=Math.sqrt(2);
+			deltay/=Math.sqrt(2);
+		}
+		if(moveOnMap(game, deltax, deltay))
 			game.removeEntity(this);
 		for(Entity entity : Util.getEntitiesOverlapping(game.getPlayersList(), this)){
 			entity.hitByBullet(this);
