@@ -54,11 +54,20 @@ public class Game {
 	}
 
 	public void addPlayer(int playerId, String playerName) {
+		float[] start = map.getStartXY();
+		Player player = new Player(playerId, start[0], start[1], playerName);
+		player.setId(playerId);
 		synchronized (this.players) {
-			float[] start = map.getStartXY();
-			Player player = new Player(playerId, start[0], start[1], playerName);
-			player.setId(playerId);
 			this.players.put(player.id, player);
+		}
+	}
+
+	public void addBot(int botId, String botName) {
+		float[] start = map.getStartXY();
+		Bot bot = new Bot(botId, start[0], start[1], botName);
+		bot.setId(botId);
+		synchronized (this.players) {
+			this.players.put(bot.id, bot);
 		}
 	}
 
@@ -176,4 +185,5 @@ public class Game {
 	public void noCollision(Entity e) {
 		e.setCollisionState(false);
 	}
+
 }
