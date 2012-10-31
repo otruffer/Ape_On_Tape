@@ -37,10 +37,10 @@ public class Game {
 		this.width = map[0].length;
 	}
 
-	public void addPlayer(int playerId) {
+	public void addPlayer(int playerId, String playerName) {
 		synchronized (this.players) {
 			float[] start = map.getStartXY();
-			Player player = new Player(playerId, start[0], start[1]);
+			Player player = new Player(playerId, start[0], start[1], playerName);
 			player.setId(playerId);
 			this.players.put(player.id, player);
 		}
@@ -57,8 +57,8 @@ public class Game {
 			return this.players;
 		}
 	}
-	
-	public List<Player> getPlayersList(){
+
+	public List<Player> getPlayersList() {
 		return new LinkedList<Player>(this.getPlayers().values());
 	}
 

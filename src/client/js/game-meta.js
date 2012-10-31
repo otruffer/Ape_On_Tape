@@ -43,6 +43,17 @@ function updateRoomList() {
 	initRooms();
 }
 
+function updatePlayerList() {
+	var list = $('#playerList ul');
+	list.empty();
+	for (i in gameState.players) {
+		var name = gameState.players[i].name;
+		var li = $('<li>');
+		li.text(name);
+		list.append(li);
+	}
+}
+
 function createRoom() {
 	roomSelection();
 }

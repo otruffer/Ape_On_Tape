@@ -23,8 +23,7 @@ function logText(msg) {
 }
 
 function clearLog() {
-	var textArea = document.getElementById('console');
-	textArea.value = "";
+	$('#console').empty();
 }
 
 // Perform login: Ask user for name, and send message to socket.
@@ -73,6 +72,7 @@ function changeToRoom(roomName) {
 		action : 'ROOM',
 		roomJoin : roomName
 	});
+	clearLog();
 }
 
 var lastTime;
@@ -99,8 +99,10 @@ function onMessage(incoming) {
 		gameState.players = new Array();
 		for (playerId in players) {
 			gameState.players[playerId] = new Player(players[playerId].x,
-					players[playerId].y, players[playerId].id);
+					players[playerId].y, players[playerId].id,
+					players[playerId].name);
 		}
+		updatePlayerList();
 		break;
 	case 'INIT_GAME':
 		gameState.map = incoming.map;
@@ -180,10 +182,11 @@ var GameState = function() {
 	this.players = new Array();
 }
 
-var Player = function(x, y, id) {
+var Player = function(x, y, id, name) {
 	this.x = x;
 	this.y = y;
 	this.id = id;
+	this.name = name;
 }
 
 function distroyPlayerCanvas(id) {
@@ -206,14 +209,14 @@ function initGame() {
 }
 
 function initBackgroundMusic() {
-//	toggleBackgroundMusic();
+	// toggleBackgroundMusic();
 	$('#music-control').click(toggleBackgroundMusic);
 }
 
 var bgMusicPlaying = false;
 var backgroundMusic = new Audio('sound/follies.mp3');
 function toggleBackgroundMusic() {
-//	var backgroundMusic = $('#background-music')[0];
+	// var backgroundMusic = $('#background-music')[0];
 	var control = $('#music-control');
 	if (!bgMusicPlaying) {
 		backgroundMusic.play();
@@ -229,7 +232,6 @@ function toggleBackgroundMusic() {
 
 function playCollisionSound() {
 	new Audio('sound/jab.mp3').play();
-//	$('#collision-sound')[0].play();
 }
 
 function loadGraphics() {

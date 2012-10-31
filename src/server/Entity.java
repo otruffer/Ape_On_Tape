@@ -15,20 +15,17 @@ public abstract class Entity {
 	protected boolean collisionResolving = false;
 	@noGson
 	private boolean collisionState;
-	static private int currentId = 0;
 	protected String type = "entity";
 	
 	public Entity(int id, float x, float y) {
 		this.id = id;
-		if(this.id >= currentId)
-			currentId = this.id+1;
+
 		this.x = x;
 		this.y = y;
 	}
 	
 	public Entity(float x, float y){
-		this.id = currentId;
-		currentId++;
+		this.id = IdFactory.getNextId();
 		this.x = x;
 		this.y = y;
 	}

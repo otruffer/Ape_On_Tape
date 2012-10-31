@@ -13,13 +13,16 @@ public class Player extends Entity{
 	private int dirX, dirY;
 	private int killCount = 0;
 	private int deathCount = 0;
-	
-	public Player(int id, float x, float y) {
+	protected String name;
+
+
+	public Player(int id, float x, float y, String name) {
 		super(id, x, y);
+		this.name = name;
 		this.collisionResolving = true;
 		this.type = "player";
 	}
-	
+
 	@Override
 	public void brain(Game game){
 		this.move(game);
@@ -34,9 +37,10 @@ public class Player extends Entity{
 		if(deltax!=0 && deltay!=0){
 			deltax/=Math.sqrt(2);
 			deltay/=Math.sqrt(2);
+
 		}
 		
-		Util.moveOnMap(game, this, deltax, deltay);
+		this.moveOnMap(game, deltax, deltay);
 	}
 	
 	public void setKeysPressed(List<Integer> keys){

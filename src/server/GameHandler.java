@@ -96,11 +96,19 @@ public class GameHandler implements Runnable {
 		gameThread.run();
 	}
 
-	public void joinPlayer(int playerId, String roomName) {
+	public void joinRoom(int id, String roomName) {
+		String user = playerNames.get(id);
+		playerRooms.put(id, roomName);
+		this.joinPlayer(id, roomName);
+		gameServer.sendJoinMessage(id, user, roomName, playersInRoomWith(id));
+		gameServer.sendNewRoomInfo(roomName, asList(id));
+	}
+
+	private void joinPlayer(int playerId, String roomName) {
 		if (!games.containsKey(roomName))
 			createRoom(roomName);
 
-		this.games.get(roomName).addPlayer(playerId);
+		this.games.get(roomName).addPlayer(playerId, playerNames.get(playerId));
 	}
 
 	private void createRoom(String roomName) {
@@ -109,7 +117,12 @@ public class GameHandler implements Runnable {
 			this.games.put(roomName, newRoom);
 			newRoom.addCollisionListener(new RealCollisionListener(this));
 			roomListUpdated();
+//			createBot(roomName);
 		}
+	}
+
+	private void createBot(String roomName) {
+		playerLogin(IdFactory.getNextId(), "uncleverbot");
 	}
 
 	public void leavePlayer(int playerId) {
@@ -170,14 +183,6 @@ public class GameHandler implements Runnable {
 		List<Integer> list = new ArrayList<Integer>(1);
 		list.add(id);
 		return list;
-	}
-
-	public void joinRoom(int id, String roomJoin) {
-		String user = playerNames.get(id);
-		playerRooms.put(id, roomJoin);
-		this.joinPlayer(id, roomJoin);
-		gameServer.sendJoinMessage(id, user, roomJoin, playersInRoomWith(id));
-		gameServer.sendNewRoomInfo(roomJoin, asList(id));
 	}
 
 	private void roomListUpdated() {
