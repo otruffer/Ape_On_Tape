@@ -16,7 +16,6 @@ public class GameServer extends BaseWebSocketHandler {
 	private final Gson json = new Gson();
 
 	public static final String ID_KEY = "id";
-	private static int CURRENT_ID = 0;
 	public GameHandler gameHandler;
 
 	static class Incoming {
@@ -80,8 +79,7 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	private int getCurrentId() {
-		CURRENT_ID++;
-		return CURRENT_ID;
+		return IdFactory.getAnId();
 	}
 
 	private void login(WebSocketConnection connection, String username) {

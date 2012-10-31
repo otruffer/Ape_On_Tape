@@ -94,6 +94,16 @@ body {
 	overflow-y: scroll;
 }
 
+#playerList {
+	background-color: rgba(0, 0, 0, 0.2);
+	padding: 4px;
+	width: 200px;
+	position: absolute;
+	right: 0;
+	height: 590px;
+	overflow-y: scroll;
+}
+
 #roomList {
 	position: absolute;
 	right: 208px;
@@ -103,11 +113,13 @@ body {
 	padding: 4px;
 }
 
-#roomList h3 {
+#roomList h3,
+#playerList h3 {
 	margin: 0.25em 0;
 }
 
-#roomList ul {
+#roomList ul,
+#playerList ul {
 	list-style: none;
 	margin: 0;
 	padding: 0;
