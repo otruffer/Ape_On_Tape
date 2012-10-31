@@ -41,7 +41,7 @@ public class GameHandler implements Runnable {
 			ExecutionException {
 		gameServer = new GameServer(this);
 		webServer = createWebServer(port)
-		.add("/chatsocket", gameServer).add(new StaticFileHandler(webRoot))
+		.add("/apesocket", gameServer).add(new StaticFileHandler(webRoot))
 				.start().get();
 
 		this.games = new HashMap<String, Game>();

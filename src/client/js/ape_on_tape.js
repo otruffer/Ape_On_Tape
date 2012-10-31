@@ -132,7 +132,7 @@ function connect() {
 
 	// connect to socket
 	logText('* Connecting...');
-	ws = new WebSocket('ws://' + document.location.host + '/chatsocket');
+	ws = new WebSocket('ws://' + document.location.host + '/apesocket');
 	ws.onopen = function(e) {
 		logText('* Connected!');
 		login();
