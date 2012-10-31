@@ -112,17 +112,17 @@ public class GameHandler implements Runnable {
 	}
 
 	private void createRoom(String roomName) {
+		Game newRoom = new Game(800, 400);
 		synchronized (this.games) {
-			Game newRoom = new Game(800, 400);
 			this.games.put(roomName, newRoom);
-			newRoom.addCollisionListener(new RealCollisionListener(this));
-			roomListUpdated();
-//			createBot(roomName);
 		}
+		newRoom.addCollisionListener(new RealCollisionListener(this));
+		roomListUpdated();
+		createBot(newRoom);
 	}
 
-	private void createBot(String roomName) {
-		playerLogin(IdFactory.getNextId(), "uncleverbot");
+	private void createBot(Game room) {
+		room.addBot(IdFactory.getNextId(), "uncleverbot");
 	}
 
 	public void leavePlayer(int playerId) {
@@ -139,7 +139,7 @@ public class GameHandler implements Runnable {
 		for (Game game : games.values()) {
 			for (int id : new LinkedList<Integer>(keysPressed.keySet())) {
 				List<Integer> keys = keysPressed.get(id);
-				if (game.hasPlayerWithId(id)) 
+				if (game.hasPlayerWithId(id))
 					game.setPlayerKeys(id, keys);
 				game.update();
 			}
@@ -157,10 +157,6 @@ public class GameHandler implements Runnable {
 	public void setKeysPressed(int id, List<Integer> keysPressed) {
 		this.keysPressed.put(id, keysPressed);
 	}
-
-
-
-
 
 	public int[][] getGameMap(String roomName) {
 		return Util.getArrayFromMap(games.get(roomName).getMap());
