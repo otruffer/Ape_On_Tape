@@ -15,7 +15,6 @@ public class Player extends Entity{
 	private int deathCount = 0;
 	protected String name;
 
-
 	public Player(int id, float x, float y, String name) {
 		super(id, x, y);
 		this.name = name;
