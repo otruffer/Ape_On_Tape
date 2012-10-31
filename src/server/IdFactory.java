@@ -4,7 +4,7 @@ public class IdFactory {
 
 	private static int CURRENT_ID = 0;
 	
-	public static int getAnId() {
+	public static int getNextId() {
 		return CURRENT_ID++;
 	}
 }

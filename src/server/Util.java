@@ -3,7 +3,13 @@ package server;
 import java.util.LinkedList;
 import java.util.List;
 
+
 public class Util {
+	final static int[] UP_KEYS = { 38, 119 };
+	final static int[] DOWN_KEYS = { 40, 115 };
+	final static int[] LEFT_KEYS = { 37, 97 };
+	final static int[] RIGHT_KEYS = { 100, 39 };
+	
 	static Tile[][] buildMap(TileMap map, int[][] intMap) {
 		Tile[][] tileMap = new Tile[intMap.length][intMap[0].length];
 		for (int i = 0; i < intMap.length; i++)
@@ -44,7 +50,6 @@ public class Util {
 		// collision state)
 		boolean collision = false;
 		TileMap map = game.getMap();
-		float x = e.getX(), y = e.getY();
 		boolean topleft = map.getTileXY(e.getX(), e.getY() + deltay)
 				.isWalkable();
 		boolean topright = map.getTileXY(e.getX() + e.getWidth(),
@@ -121,5 +126,36 @@ public class Util {
 			return;
 		dirx /= abs/delta; diry /= abs/delta;
 		moveOnMap(game, e1, -dirx, -diry);
+	}
+	
+	public static int[] makeXYCoordinatesFromKeys(List<Integer> keys) {
+		int x = 0;
+		int y = 0;
+		if (isKeyPressed(UP_KEYS, keys))
+			x = -1;
+		else if (isKeyPressed(DOWN_KEYS, keys))
+			x = 1;
+		if (isKeyPressed(RIGHT_KEYS, keys))
+			y = 1;
+		else if (isKeyPressed(LEFT_KEYS, keys))
+			y = -1;
+		int[] values = { x, y };
+		return values;
+	}
+	
+	/**
+	 * use as follows: isKeyPressed(UP_KEYS, keysPressed) TODO: move to utility
+	 * 
+	 * @param key
+	 * @param keysPressed
+	 * @return
+	 */
+	private static boolean isKeyPressed(int[] keys, List<Integer> keysPressed) {
+		List<Integer> keyList = new LinkedList<Integer>();
+		for (int a : keys)
+			keyList.add(a);
+		List<Integer> intersection = new LinkedList<Integer>(keysPressed);
+		intersection.retainAll(keyList);
+		return !intersection.isEmpty();
 	}
 }
