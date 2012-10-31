@@ -10,11 +10,13 @@ import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class GameServer extends BaseWebSocketHandler {
 
-	private final Gson json = new Gson();
-
+	Gson json = new GsonBuilder()
+    .setExclusionStrategies(new GsonExclusionStrategy(String.class))
+    .create();
 	public static final String ID_KEY = "id";
 	private static int CURRENT_ID = 0;
 	public GameHandler gameHandler;

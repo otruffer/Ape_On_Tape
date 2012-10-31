@@ -14,32 +14,16 @@ import com.google.gson.Gson;
 
 public class Game {
 
+	//store players separatly.
 	Map<Integer, Player> players;
+	Map<Integer, Entity> entities;
 	TileMap map;
-	final int[][] testMap = {
-			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
 	int width, height;
 	private Collection<CollisionListener> collisionListeners;
 
 	public Game(int width, int height) {
 		this.players = new HashMap<Integer, Player>();
+		this.entities = new HashMap<Integer, Entity>();
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
 		this.height = height;
@@ -78,25 +62,22 @@ public class Game {
 		return new LinkedList<Player>(this.getPlayers().values());
 	}
 
-	/**
-	 * 
-	 * @param playerId
-	 *            the id of the player
-	 * @param x
-	 *            either -1, 0, 1
-	 * @param y
-	 *            either -1, 0, 1
-	 */
-	public void movePlayer(int playerId, int x, int y) {
-		this.players.get(playerId).moveOnMap(this, x, y);
-	}
 
+	public void setPlayerKeys(int playerId, List<Integer> keys){
+		this.players.get(playerId).setKeysPressed(keys);
+	}
+	
 	public Map<Integer, Player> getPlayersAsMap() {
 		return this.players;
 	}
 
 	public TileMap getMap() {
 		return map;
+	}
+	
+	public void update(){
+		for(Entity entity : this.getEntitiesAndPlayers())
+			entity.brain(this);
 	}
 
 	public boolean hasPlayerWithId(int id) {
@@ -171,6 +152,28 @@ public class Game {
 		e.setCollisionState(true);
 		for (CollisionListener listener : collisionListeners)
 			listener.collisionOccured(this, e);
+	}
+	
+	public void addEntity(Entity e){
+		this.entities.put(e.getId(), e);
+	}
+	
+	public void removeEntity(Entity e){
+		this.entities.remove(e.getId());
+	}
+	
+	/**
+	 * 
+	 * @return all entities of this game INCLUDING the players
+	 */
+	public List<Entity> getEntitiesAndPlayers(){
+		List<Entity> list = new LinkedList<Entity>(this.entities.values());
+		list.addAll(this.players.values());
+		return list;
+	}
+	
+	public List<Entity> getEntities(){
+		return new LinkedList<Entity>(this.entities.values());
 	}
 
 	public void noCollision(Entity e) {

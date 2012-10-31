@@ -23,11 +23,7 @@ public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final static int WEB_SERVER_PORT = 9876;
-	final int[] UP_KEYS = { 38, 119 };
-	final int[] DOWN_KEYS = { 40, 115 };
-	final int[] LEFT_KEYS = { 37, 97 };
-	final int[] RIGHT_KEYS = { 100, 39 };
+	final static int WEB_SERVER_PORT = 9875;
 	final static boolean USE_EXTERNAL_WEB_ROOT = true;
 	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
 
@@ -130,10 +126,9 @@ public class GameHandler implements Runnable {
 		for (Game game : games.values()) {
 			for (int id : new LinkedList<Integer>(keysPressed.keySet())) {
 				List<Integer> keys = keysPressed.get(id);
-				if (game.hasPlayerWithId(id)) {
-					int[] xy = this.makeXYCoordinatesFromKeys(keys);
-					game.movePlayer(id, xy[0], xy[1]);
-				}
+				if (game.hasPlayerWithId(id)) 
+					game.setPlayerKeys(id, keys);
+				game.update();
 			}
 		}
 	}
@@ -150,36 +145,9 @@ public class GameHandler implements Runnable {
 		this.keysPressed.put(id, keysPressed);
 	}
 
-	/**
-	 * use as follows: isKeyPressed(UP_KEYS, keysPressed) TODO: move to utility
-	 * 
-	 * @param key
-	 * @param keysPressed
-	 * @return
-	 */
-	private boolean isKeyPressed(int[] keys, List<Integer> keysPressed) {
-		List<Integer> keyList = new LinkedList<Integer>();
-		for (int a : keys)
-			keyList.add(a);
-		List<Integer> intersection = new LinkedList<Integer>(keysPressed);
-		intersection.retainAll(keyList);
-		return !intersection.isEmpty();
-	}
 
-	private int[] makeXYCoordinatesFromKeys(List<Integer> keys) {
-		int x = 0;
-		int y = 0;
-		if (isKeyPressed(UP_KEYS, keys))
-			x = -1;
-		else if (isKeyPressed(DOWN_KEYS, keys))
-			x = 1;
-		if (isKeyPressed(RIGHT_KEYS, keys))
-			y = 1;
-		else if (isKeyPressed(LEFT_KEYS, keys))
-			y = -1;
-		int[] values = { x, y };
-		return values;
-	}
+
+
 
 	public int[][] getGameMap(String roomName) {
 		return Util.getArrayFromMap(games.get(roomName).getMap());

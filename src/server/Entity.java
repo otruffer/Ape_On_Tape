@@ -1,45 +1,63 @@
 package server;
 
-import java.util.HashSet;
-import java.util.Set;
+import server.GsonExclusionStrategy.noGson;
 
-public class Entity {
+public abstract class Entity {
 	protected int id;
 	protected float x;
 	protected float y;
 	protected float height = 20f;
 	protected float width = 20f;
+	@noGson
 	protected float speed = 5;
 	// XXX: Does nothing?
+	@noGson
 	protected boolean collisionResolving = false;
+	@noGson
 	private boolean collisionState;
-	static public Set<Integer> takenIds = new HashSet<Integer>();
 	static private int currentId = 0;
+	protected String type = "entity";
 	
 	public Entity(int id, float x, float y) {
 		this.id = id;
-		takenIds.add(id);
+		if(this.id >= currentId)
+			currentId = this.id+1;
 		this.x = x;
 		this.y = y;
 	}
 	
 	public Entity(float x, float y){
-		while(takenIds.contains(currentId))
-			currentId++;
 		this.id = currentId;
-		takenIds.add(currentId);
+		currentId++;
 		this.x = x;
 		this.y = y;
 	}
 
-	public void moveOnMap(Game game, int dirx, int diry) {
-		float deltax = this.speed * dirx;
-		float deltay = this.speed * diry;
+	/**
+	 * 
+	 * @param game
+	 * @param dirX
+	 * @param dirY
+	 * @return whether or not you hit a wall
+	 */
+	public boolean moveOnMap(Game game, float dirX, float dirY) {
+		float deltax = this.speed * dirX;
+		float deltay = this.speed * dirY;
 		if (deltax != 0 && deltay != 0) {
 			deltax /= Math.sqrt(2);
 			deltay /= Math.sqrt(2);
 		}
-		Util.moveOnMap(game, this, deltax, deltay);
+		boolean hit = Util.moveOnMap(game, this, deltax, deltay);
+		if(this.collisionResolving)
+			this.resolveCollisions(game);
+		return hit;
+	}
+	
+	protected void resolveCollisions(Game game){
+		for(Entity other : Util.getEntitiesOverlapping(game.getPlayersList(), this)){
+			if(other.isCollisionResolving())
+				Util.resolveCollision(game, this, other);
+		}
 	}
 
 	public int getId() {
@@ -82,6 +100,8 @@ public class Entity {
 		return this.collisionState;
 	}
 	
+	public abstract void brain(Game game);
+	
 	@Override
 	public boolean equals(Object o1){
 		return o1 instanceof Entity && ((Entity) o1).getId() == this.getId();
@@ -101,5 +121,17 @@ public class Entity {
 
 	public boolean isCollisionResolving() {
 		return this.collisionResolving;
+	}
+
+	public void setSpeed(float speed){
+		this.speed = speed;
+	}
+	
+	public void hitByBullet(){
+		//Empty
+	}
+	
+	public String getType() {
+		return this.type;
 	}
 }
