@@ -44,7 +44,7 @@ public class Player extends Entity{
 	}
 
 	@Override
-	public void hitByBullet(Bullet bullet){
+	public void hitByBullet(Game game, Bullet bullet){
 		if(!bullet.getOwner().equals(this))
 			System.out.println("ouch!");
 	} 

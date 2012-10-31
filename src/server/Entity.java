@@ -119,7 +119,7 @@ public abstract class Entity {
 		this.speed = speed;
 	}
 	
-	public void hitByBullet(Bullet bullet){
+	public void hitByBullet(Game game, Bullet bullet){
 		//Empty
 	}
 	

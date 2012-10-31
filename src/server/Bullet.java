@@ -46,7 +46,7 @@ public class Bullet extends Entity{
 		if(moveOnMap(game, deltax, deltay))
 			game.removeEntity(this);
 		for(Entity entity : Util.getEntitiesOverlapping(game.getPlayersList(), this)){
-			entity.hitByBullet(this);
+			entity.hitByBullet(game, this);
 		}
 	}
 	
