@@ -149,7 +149,7 @@ public class GameHandler implements Runnable {
 	private void syncLoop() {
 		synchronized (this.games) {
 			for (Game game : games.values()) {
-				this.gameServer.update(game.getEntitiesAndPlayersMap());
+				this.gameServer.update(game.getEntitiesAndPlayersMap(), game.popSoundEvents());
 			}
 		}
 	}
@@ -197,10 +197,6 @@ public class GameHandler implements Runnable {
 			if (room.noPlayers())
 				destroyRoom(roomName);
 		}
-	}
-
-	public void collision(Game game, Entity e) {
-		gameServer.sendCollisionAlert(game.getPlayers().keySet());
 	}
 
 	private Collection<String> allRooms() {

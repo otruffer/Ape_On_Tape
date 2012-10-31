@@ -6,9 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.Gson;
 
@@ -20,6 +22,7 @@ public class Game {
 	TileMap map;
 	int width, height;
 	private Collection<CollisionListener> collisionListeners;
+	private Set<String> soundEvents;
 
 	public Game(int width, int height) {
 		this.players = new HashMap<Integer, Player>();
@@ -27,6 +30,7 @@ public class Game {
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
 		this.height = height;
+		this.soundEvents = new HashSet<String>();
 		// this.map = new TileMap(testMap);
 		// TODO: replace map path
 		String mapPath = "src/client/maps/map.json"
@@ -160,6 +164,7 @@ public class Game {
 		e.setCollisionState(true);
 		for (CollisionListener listener : collisionListeners)
 			listener.collisionOccured(this, e);
+		this.soundEvents.add("wall-collision");
 	}
 
 	public void addEntity(Entity e) {
@@ -192,6 +197,12 @@ public class Game {
 		Map<Integer, Entity> e = new HashMap<Integer, Entity>(this.players);
 		e.putAll(this.entities);
 		return e;
+	}
+
+	public String[] popSoundEvents() {
+		String[] result = this.soundEvents.toArray(new String[0]);
+		this.soundEvents.clear();
+		return result;
 	}
 
 }

@@ -99,14 +99,15 @@ function onMessage(incoming) {
 		gameState.players = new Array();
 		gameState.entities = new Array();
 		for (id in entities) {
-			if(entities[id].type == "player")
+			if (entities[id].type == "player")
 				gameState.players[id] = new Player(entities[id].x,
-					entities[id].y, id,
-					entities[id].name);
+						entities[id].y, id, entities[id].name);
 			else
 				gameState.entities[id] = new Entity(entities[id].x,
-					entities[id].y, id,
-					entities[id].type);
+						entities[id].y, id, entities[id].type);
+		}
+		if (incoming.soundEvents) {
+			handleSoundEvents(incoming.soundEvents);
 		}
 		updatePlayerList();
 		break;
@@ -122,9 +123,6 @@ function onMessage(incoming) {
 	case 'NEW_ROOM':
 		window.localStorage.room = incoming.newRoom;
 		updateRoomInfo();
-		break;
-	case 'COLLISION':
-		playCollisionSound();
 		break;
 	}
 }
@@ -224,6 +222,11 @@ function initGame() {
 function initBackgroundMusic() {
 	// toggleBackgroundMusic();
 	$('#music-control').click(toggleBackgroundMusic);
+}
+
+function handleSoundEvents(events) {
+	if (events.indexOf('wall-collision') >= 0)
+		playCollisionSound();
 }
 
 var bgMusicPlaying = false;

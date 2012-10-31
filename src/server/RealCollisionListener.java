@@ -10,7 +10,7 @@ public class RealCollisionListener implements CollisionListener {
 
 	@Override
 	public void collisionOccured(Game game, Entity e) {
-		gameHander.collision(game, e);
+//		gameHander.collision(game, e);
 	}
 
 }

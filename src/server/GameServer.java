@@ -14,9 +14,8 @@ import com.google.gson.GsonBuilder;
 
 public class GameServer extends BaseWebSocketHandler {
 
-	Gson json = new GsonBuilder()
-    .setExclusionStrategies(new GsonExclusionStrategy(String.class))
-    .create();
+	Gson json = new GsonBuilder().setExclusionStrategies(
+			new GsonExclusionStrategy(String.class)).create();
 	public static final String ID_KEY = "id";
 	public GameHandler gameHandler;
 
@@ -34,7 +33,7 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM, COLLISION
+			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM
 		}
 
 		Action action;
@@ -45,6 +44,7 @@ public class GameServer extends BaseWebSocketHandler {
 		int playerId;
 		String[] rooms;
 		String newRoom;
+		String[] soundEvents;
 	}
 
 	public GameServer(GameHandler gameHandler) {
@@ -132,10 +132,11 @@ public class GameServer extends BaseWebSocketHandler {
 	// }
 	// }
 
-	public void update(Map<Integer, Entity> entities) {
+	public void update(Map<Integer, Entity> entities, String[] soundEvents) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.UPDATE;
 		outgoing.entities = entities;
+		outgoing.soundEvents = soundEvents;
 		broadcast(outgoing, entities.keySet());
 	}
 
@@ -191,12 +192,6 @@ public class GameServer extends BaseWebSocketHandler {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.NEW_ROOM;
 		outgoing.newRoom = newRoomName;
-		broadcast(outgoing, receipents);
-	}
-
-	public void sendCollisionAlert(Collection<Integer> receipents) {
-		Outgoing outgoing = new Outgoing();
-		outgoing.action = Outgoing.Action.COLLISION;
 		broadcast(outgoing, receipents);
 	}
 }
