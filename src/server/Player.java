@@ -25,6 +25,20 @@ public class Player extends Entity{
 	@Override
 	public void brain(Game game){
 		this.move(game);
+		this.shoot(game);
+	}
+	
+	private void shoot(Game game) {
+		if(Util.isShootKeyPressed(keysPressed)){
+			System.out.println("shoot");
+			Bullet bullet = new Bullet(this, this.x, this.y, dirX, dirY);
+			game.addEntity(bullet);
+		}
+	}
+
+	@Override
+	public void hitByBullet(Bullet bullet){
+		System.out.println("ouch!");
 	}
 	
 	private void move(Game game){
@@ -38,7 +52,6 @@ public class Player extends Entity{
 			deltay/=Math.sqrt(2);
 
 		}
-		
 		this.moveOnMap(game, deltax, deltay);
 	}
 	

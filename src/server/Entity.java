@@ -8,13 +8,14 @@ public abstract class Entity {
 	protected float y;
 	protected float height = 20f;
 	protected float width = 20f;
+	protected String type = "entity";
+
 	@noGson
 	protected float speed = 5;
 	@noGson
 	protected boolean collisionResolving = false;
 	@noGson
 	private boolean collisionState;
-	protected String type = "entity";
 
 	public Entity(int id, float x, float y) {
 		this.id = id;
@@ -123,7 +124,7 @@ public abstract class Entity {
 		this.speed = speed;
 	}
 
-	public void hitByBullet() {
+	public void hitByBullet(Bullet bullet) {
 		// Empty
 	}
 

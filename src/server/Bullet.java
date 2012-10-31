@@ -1,11 +1,21 @@
 package server;
 
+import server.GsonExclusionStrategy.noGson;
+
 
 public class Bullet extends Entity{
 	
+	@noGson
 	protected float dirX;
+	@noGson
 	protected float dirY;
+	@noGson
 	protected float radius = 0;
+	@noGson
+	protected float height = 1;
+	@noGson
+	protected float width = 1;
+	@noGson
 	protected Entity owner;
 	
 	public Bullet(Entity owner, float x, float y, float dirX, float dirY) {
@@ -22,10 +32,10 @@ public class Bullet extends Entity{
 
 	@Override
 	public void brain(Game game) {
-		if(super.moveOnMap(game, dirX, dirY))
+		if(moveOnMap(game, dirX*speed, dirY*speed))
 			game.removeEntity(this);
 		for(Entity entity : Util.getEntitiesOverlapping(game.getPlayersList(), this)){
-			entity.hitByBullet();
+			entity.hitByBullet(this);
 		}
 	}
 	

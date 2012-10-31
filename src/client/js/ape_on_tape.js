@@ -94,13 +94,19 @@ function onMessage(incoming) {
 		logText("[" + incoming.username + "] " + incoming.message);
 		break;
 	case 'UPDATE':
-		var players = incoming.players;
+		var entities = incoming.entities;
 		syncs++;
 		gameState.players = new Array();
-		for (playerId in players) {
-			gameState.players[playerId] = new Player(players[playerId].x,
-					players[playerId].y, players[playerId].id,
-					players[playerId].name);
+		gameState.entities = new Array();
+		for (id in entities) {
+			if(entities[id].type == "player")
+				gameState.players[id] = new Player(entities[id].x,
+					entities[id].y, id,
+					entities[id].name);
+			else
+				gameState.entities[id] = new Entity(entities[id].x,
+					entities[id].y, id,
+					entities[id].type);
 		}
 		updatePlayerList();
 		break;
@@ -187,6 +193,13 @@ var Player = function(x, y, id, name) {
 	this.y = y;
 	this.id = id;
 	this.name = name;
+}
+
+var Entity = function(x, y, id, type) {
+	this.x = x;
+	this.y = y;
+	this.id = id;
+	this.type = type;
 }
 
 function distroyPlayerCanvas(id) {

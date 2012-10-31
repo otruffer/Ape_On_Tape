@@ -189,4 +189,10 @@ public class Game {
 		e.setCollisionState(false);
 	}
 
+	public Map<Integer, Entity> getEntitiesAndPlayersMap() {
+		Map<Integer, Entity> e = new HashMap<Integer, Entity>(this.players);
+		e.putAll(this.entities);
+		return e;
+	}
+
 }
