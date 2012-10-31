@@ -77,7 +77,8 @@ function RenderingEngine(tileSize, playerSize) {
 					0, w, h);
 		}
 		self.drawPlayers();
-
+		self.drawEntities();
+		
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
 			$("#fps").text(
@@ -193,6 +194,17 @@ function RenderingEngine(tileSize, playerSize) {
 			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx,
 					self.mainPlayer.y - dy, self.P, self.P);
 		}
+	}
+	this.drawEntities = function(){
+		for(id in gameState.entities)
+			self.drawEntity(gameState.entities[id]);
+	}
+	
+	this.drawEntity = function(entity){
+		var dx = self.mainPlayer.absX - entity.y;
+		var dy = self.mainPlayer.absY - entity.x;
+		ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx,
+				self.mainPlayer.y - dy, self.P, self.P);
 	}
 
 	// draw background scene

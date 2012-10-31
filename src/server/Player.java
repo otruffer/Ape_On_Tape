@@ -1,5 +1,6 @@
 package server;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import server.GsonExclusionStrategy.noGson;
@@ -7,14 +8,18 @@ import server.GsonExclusionStrategy.noGson;
 public class Player extends Entity{
 
 	@noGson
-	private List<Integer> keysPressed;
+	private List<Integer> keysPressed = new LinkedList<Integer>();
 	//the direction the player is looking.
 	@noGson
-	private int dirX, dirY;
+	private int dirX = 1, dirY;
 	private int killCount = 0;
 	private int deathCount = 0;
 	protected String name;
-
+	
+	@noGson
+	protected final int SHOOT_DELAY = 10;
+	@noGson
+	protected int currentShootDelay = 0;
 
 	public Player(int id, float x, float y, String name) {
 		super(id, x, y);
@@ -30,28 +35,33 @@ public class Player extends Entity{
 	}
 	
 	private void shoot(Game game) {
-		if(Util.isShootKeyPressed(keysPressed)){
-			System.out.println("shoot");
+		currentShootDelay++;
+		if(Util.isShootKeyPressed(keysPressed) && currentShootDelay > SHOOT_DELAY){
 			Bullet bullet = new Bullet(this, this.x, this.y, dirX, dirY);
 			game.addEntity(bullet);
+			currentShootDelay = 0;
 		}
 	}
 
 	@Override
 	public void hitByBullet(Bullet bullet){
-		System.out.println("ouch!");
-	}
+		if(!bullet.getOwner().equals(this))
+			System.out.println("ouch!");
+	} 
 	
 	private void move(Game game){
 		int[] xy = Util.makeXYCoordinatesFromKeys(keysPressed);
-		dirX = xy[0]; dirY = xy[1];
+		int dirX = xy[0]; int dirY = xy[1];
+		if(dirX!=0 || dirY!=0){
+			this.dirX = dirX;
+			this.dirY = dirY;
+		}
 		float deltax = dirX*this.speed;
 		float deltay = dirY*this.speed;
 		
 		if(deltax!=0 && deltay!=0){
 			deltax/=Math.sqrt(2);
 			deltay/=Math.sqrt(2);
-
 		}
 		this.moveOnMap(game, deltax, deltay);
 	}
