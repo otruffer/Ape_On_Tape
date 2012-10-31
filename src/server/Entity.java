@@ -12,20 +12,19 @@ public abstract class Entity {
 
 	@noGson
 	protected float speed = 5;
-	// XXX: Does nothing?
 	@noGson
 	protected boolean collisionResolving = false;
 	@noGson
 	private boolean collisionState;
-	
+
 	public Entity(int id, float x, float y) {
 		this.id = id;
 
 		this.x = x;
 		this.y = y;
 	}
-	
-	public Entity(float x, float y){
+
+	public Entity(float x, float y) {
 		this.id = IdFactory.getNextId();
 		this.x = x;
 		this.y = y;
@@ -40,14 +39,15 @@ public abstract class Entity {
 	 */
 	public boolean moveOnMap(Game game, float deltax, float deltay) {
 		boolean hit = Util.moveOnMap(game, this, deltax, deltay);
-		if(this.collisionResolving)
+		if (this.collisionResolving)
 			this.resolveCollisions(game);
 		return hit;
 	}
-	
-	protected void resolveCollisions(Game game){
-		for(Entity other : Util.getEntitiesOverlapping(game.getPlayersList(), this)){
-			if(other.isCollisionResolving())
+
+	protected void resolveCollisions(Game game) {
+		for (Entity other : Util.getEntitiesOverlapping(game.getPlayersList(),
+				this)) {
+			if (other.isCollisionResolving())
 				Util.resolveCollision(game, this, other);
 		}
 	}
@@ -91,14 +91,19 @@ public abstract class Entity {
 	public boolean collisionState() {
 		return this.collisionState;
 	}
-	
+
+	/**
+	 * Defines "intelligence" of this Entity, is called once on every loop.
+	 * 
+	 * @param game
+	 */
 	public abstract void brain(Game game);
-	
+
 	@Override
-	public boolean equals(Object o1){
+	public boolean equals(Object o1) {
 		return o1 instanceof Entity && ((Entity) o1).getId() == this.getId();
 	}
-	
+
 	/**
 	 * we override the hashCode, as entities with the same id are equal.
 	 */
@@ -106,23 +111,23 @@ public abstract class Entity {
 	public int hashCode() {
 		return this.getId();
 	}
-	
-	public double getRadius(){
-		return Math.min(this.getWidth()/2, this.getHeight()/2);
+
+	public double getRadius() {
+		return Math.min(this.getWidth() / 2, this.getHeight() / 2);
 	}
 
 	public boolean isCollisionResolving() {
 		return this.collisionResolving;
 	}
 
-	public void setSpeed(float speed){
+	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
 	
 	public void hitByBullet(Game game, Bullet bullet){
 		//Empty
 	}
-	
+
 	public String getType() {
 		return this.type;
 	}
