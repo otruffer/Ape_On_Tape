@@ -1,5 +1,8 @@
 package server;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Util {
 	static Tile[][] buildMap(TileMap map, int[][] intMap) {
 		Tile[][] tileMap = new Tile[intMap.length][intMap[0].length];
@@ -17,7 +20,25 @@ public class Util {
 		return tiles;
 	}
 
-	static float[] moveOnMap(Game game, Entity e, float deltax, float deltay) {
+	static List<Entity> getEntitiesOverlapping(List<? extends Entity> allEntities, Entity entity){
+		double radius = entity.getRadius();
+		List<Entity> colliding = new LinkedList<Entity>();
+		for(Entity otherEntity : allEntities){
+			double otherRadius = otherEntity.getRadius();
+			if(euclidian(entity, otherEntity) < radius + otherRadius && !entity.equals(otherEntity))
+				colliding.add(otherEntity);
+		}
+		return colliding;
+	}
+	
+	static double euclidian(float x1, float y1, float x2, float y2){
+		return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
+	}
+	static double euclidian(Entity e1, Entity e2){
+		return euclidian(e1.getX(), e1.getY(), e2.getX(), e2.getY());
+	}
+	
+	static boolean moveOnMap(Game game, Entity e, float deltax, float deltay) {
 		// TODO: Just temporary. Later: Check at every possible direction and
 		// notify game that no collision occurred on that side (to release
 		// collision state)
@@ -81,7 +102,24 @@ public class Util {
 		}
 		if (!collision)
 			game.noCollision(e);
-		float[] xy = { x, y };
-		return xy;
+		return collision;
+	}
+
+	/**
+	 * only e1 gets moved!
+	 * @param game
+	 * @param e1
+	 * @param e2
+	 */
+	public static void resolveCollision(Game game, Entity e1, Entity e2) {
+		// the amount we have to move e1 away from e2
+		float delta = (float) (e1.getRadius() + e2.getRadius() - euclidian(e1, e2));
+		float dirx = e2.getX() - e1.getX();
+		float diry = e2.getY() - e1.getY();
+		float abs = (float) (euclidian(dirx, diry, 0, 0));
+		if(abs == 0)
+			return;
+		dirx /= abs/delta; diry /= abs/delta;
+		moveOnMap(game, e1, -dirx, -diry);
 	}
 }

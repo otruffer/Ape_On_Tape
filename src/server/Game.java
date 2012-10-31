@@ -73,6 +73,10 @@ public class Game {
 			return this.players;
 		}
 	}
+	
+	public List<Player> getPlayersList(){
+		return new LinkedList<Player>(this.getPlayers().values());
+	}
 
 	/**
 	 * 
