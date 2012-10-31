@@ -50,6 +50,7 @@ public class Player extends Entity {
 			float xy[] = game.getMap().getStartXY();
 			this.setX(xy[0]);
 			this.setY(xy[1]);
+			game.death(this);
 		}
 	}
 

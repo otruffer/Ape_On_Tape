@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 public class Game {
 
 	// store players separatly.
-	Map<Integer, Player> players;
+	volatile Map<Integer, Player> players;
 	Map<Integer, Entity> entities;
 	TileMap map;
 	int width, height;
@@ -203,6 +203,10 @@ public class Game {
 		String[] result = this.soundEvents.toArray(new String[0]);
 		this.soundEvents.clear();
 		return result;
+	}
+
+	public void death(Player player) {
+		this.soundEvents.add("kill");
 	}
 
 }

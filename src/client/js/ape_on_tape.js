@@ -225,6 +225,8 @@ function initBackgroundMusic() {
 function handleSoundEvents(events) {
 	if (events.indexOf('wall-collision') >= 0)
 		playCollisionSound();
+	if (events.indexOf('kill') >= 0)
+		playKillSound();
 }
 
 var bgMusicPlaying = false;
@@ -245,6 +247,10 @@ function toggleBackgroundMusic() {
 }
 
 function playCollisionSound() {
+	new Audio('sound/bump.wav').play();
+}
+
+function playKillSound() {
 	new Audio('sound/jab.mp3').play();
 }
 

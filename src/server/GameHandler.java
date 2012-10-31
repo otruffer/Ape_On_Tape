@@ -31,7 +31,7 @@ public class GameHandler implements Runnable {
 
 	private GameServer gameServer;
 	private WebServer webServer;
-	private Map<String, Game> games;
+	private volatile Map<String, Game> games;
 	private Map<Integer, List<Integer>> keysPressed;
 
 	private Map<Integer, String> playerNames;
@@ -41,9 +41,6 @@ public class GameHandler implements Runnable {
 			ExecutionException {
 		gameServer = new GameServer(this);
 		webServer = createWebServer(port)
-		/*
-		 * .add(new LoggingHandler( new SimpleLogSink(Chatroom.USERNAME_KEY)))
-		 */
 		.add("/chatsocket", gameServer).add(new StaticFileHandler(webRoot))
 				.start().get();
 
@@ -113,9 +110,7 @@ public class GameHandler implements Runnable {
 
 	private void createRoom(String roomName) {
 		Game newRoom = new Game(800, 400);
-		synchronized (this.games) {
-			this.games.put(roomName, newRoom);
-		}
+		this.games.put(roomName, newRoom);
 		newRoom.addCollisionListener(new RealCollisionListener(this));
 		roomListUpdated();
 		createBot(newRoom);
@@ -147,10 +142,9 @@ public class GameHandler implements Runnable {
 	}
 
 	private void syncLoop() {
-		synchronized (this.games) {
-			for (Game game : games.values()) {
-				this.gameServer.update(game.getEntitiesAndPlayersMap(), game.popSoundEvents());
-			}
+		for (Game game : games.values()) {
+			this.gameServer.update(game.getEntitiesAndPlayersMap(),
+					game.popSoundEvents());
 		}
 	}
 
