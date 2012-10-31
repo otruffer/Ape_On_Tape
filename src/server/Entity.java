@@ -37,13 +37,7 @@ public abstract class Entity {
 	 * @param dirY
 	 * @return whether or not you hit a wall
 	 */
-	public boolean moveOnMap(Game game, float dirX, float dirY) {
-		float deltax = this.speed * dirX;
-		float deltay = this.speed * dirY;
-		if (deltax != 0 && deltay != 0) {
-			deltax /= Math.sqrt(2);
-			deltay /= Math.sqrt(2);
-		}
+	public boolean moveOnMap(Game game, float deltax, float deltay) {
 		boolean hit = Util.moveOnMap(game, this, deltax, deltay);
 		if(this.collisionResolving)
 			this.resolveCollisions(game);
