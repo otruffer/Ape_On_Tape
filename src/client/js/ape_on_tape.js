@@ -103,6 +103,7 @@ function onMessage(incoming) {
 				gameState.players[id] = entities[id];
 			else
 				gameState.entities[id] = entities[id];
+				}
 		if (incoming.soundEvents) {
 			handleSoundEvents(incoming.soundEvents);
 		}
