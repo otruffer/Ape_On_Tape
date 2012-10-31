@@ -20,7 +20,10 @@ public class Bot extends Player {
 		}
 		float deltaY = deltaY(other) / 10;
 		float deltaX = deltaX(other) / 10;
-		moveOnMap(game, deltaX, deltaY);
+		float sum = (float) Math
+				.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+		float factor = this.speed / sum;
+		moveOnMap(game, factor * deltaX, factor * deltaY);
 	}
 
 	private float deltaX(Player player) {

@@ -14,7 +14,7 @@ import com.google.gson.Gson;
 
 public class Game {
 
-	//store players separatly.
+	// store players separatly.
 	Map<Integer, Player> players;
 	Map<Integer, Entity> entities;
 	TileMap map;
@@ -71,11 +71,10 @@ public class Game {
 		return new LinkedList<Player>(this.getPlayers().values());
 	}
 
-
-	public void setPlayerKeys(int playerId, List<Integer> keys){
+	public void setPlayerKeys(int playerId, List<Integer> keys) {
 		this.players.get(playerId).setKeysPressed(keys);
 	}
-	
+
 	public Map<Integer, Player> getPlayersAsMap() {
 		return this.players;
 	}
@@ -83,9 +82,9 @@ public class Game {
 	public TileMap getMap() {
 		return map;
 	}
-	
-	public void update(){
-		for(Entity entity : this.getEntitiesAndPlayers())
+
+	public void update() {
+		for (Entity entity : this.getEntitiesAndPlayers())
 			entity.brain(this);
 	}
 
@@ -162,26 +161,26 @@ public class Game {
 		for (CollisionListener listener : collisionListeners)
 			listener.collisionOccured(this, e);
 	}
-	
-	public void addEntity(Entity e){
+
+	public void addEntity(Entity e) {
 		this.entities.put(e.getId(), e);
 	}
-	
-	public void removeEntity(Entity e){
+
+	public void removeEntity(Entity e) {
 		this.entities.remove(e.getId());
 	}
-	
+
 	/**
 	 * 
 	 * @return all entities of this game INCLUDING the players
 	 */
-	public List<Entity> getEntitiesAndPlayers(){
+	public List<Entity> getEntitiesAndPlayers() {
 		List<Entity> list = new LinkedList<Entity>(this.entities.values());
 		list.addAll(this.players.values());
 		return list;
 	}
-	
-	public List<Entity> getEntities(){
+
+	public List<Entity> getEntities() {
 		return new LinkedList<Entity>(this.entities.values());
 	}
 
