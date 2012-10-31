@@ -12,8 +12,6 @@ public class Player extends Entity {
 	// the direction the player is looking.
 	@noGson
 	private int dirX = 1, dirY;
-	private int killCount = 0;
-	private int deathCount = 0;
 	protected String name;
 
 	@noGson
@@ -45,9 +43,14 @@ public class Player extends Entity {
 	}
 
 	@Override
-	public void hitByBullet(Bullet bullet) {
-		if (!bullet.getOwner().equals(this))
-			System.out.println("ouch!");
+	public void hitByBullet(Game game, Bullet bullet){
+		if(!bullet.getOwner().equals(this)){
+			this.deathCount++;
+			bullet.getOwner().incrementKillCount();
+			float xy[] = game.getMap().getStartXY();
+			this.setX(xy[0]);
+			this.setY(xy[1]);
+		}
 	}
 
 	private void move(Game game) {

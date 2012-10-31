@@ -47,7 +47,7 @@ function updatePlayerList() {
 	var list = $('#playerList ul');
 	list.empty();
 	for (i in gameState.players) {
-		var name = gameState.players[i].name;
+		var name = gameState.players[i].name + ": " + gameState.players[i].killCount + "/" +gameState.players[i].deathCount;
 		var li = $('<li>');
 		li.text(name);
 		list.append(li);
