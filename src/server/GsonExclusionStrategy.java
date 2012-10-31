@@ -17,7 +17,7 @@ public class GsonExclusionStrategy implements ExclusionStrategy {
     }
 
     public boolean shouldSkipClass(Class<?> clazz) {
-      return (clazz == typeToSkip);
+      return false;
     }
 
     public boolean shouldSkipField(FieldAttributes f) {

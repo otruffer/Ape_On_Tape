@@ -179,4 +179,10 @@ public class Game {
 	public void noCollision(Entity e) {
 		e.setCollisionState(false);
 	}
+
+	public Map<Integer, Entity> getEntitiesAndPlayersMap() {
+		Map<Integer, Entity> e = new HashMap<Integer, Entity>(this.players);
+		e.putAll(this.entities);
+		return e;
+	}
 }

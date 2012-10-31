@@ -9,6 +9,7 @@ public class Util {
 	final static int[] DOWN_KEYS = { 40, 115 };
 	final static int[] LEFT_KEYS = { 37, 97 };
 	final static int[] RIGHT_KEYS = { 100, 39 };
+	final static int[] SHOOT_KEYS = { 32 };
 	
 	static Tile[][] buildMap(TileMap map, int[][] intMap) {
 		Tile[][] tileMap = new Tile[intMap.length][intMap[0].length];
@@ -157,5 +158,9 @@ public class Util {
 		List<Integer> intersection = new LinkedList<Integer>(keysPressed);
 		intersection.retainAll(keyList);
 		return !intersection.isEmpty();
+	}
+
+	public static boolean isShootKeyPressed(List<Integer> keysPressed) {
+		return isKeyPressed(SHOOT_KEYS, keysPressed);
 	}
 }

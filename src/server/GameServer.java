@@ -40,7 +40,7 @@ public class GameServer extends BaseWebSocketHandler {
 		Action action;
 		String username;
 		String message;
-		Map<Integer, Player> players;
+		Map<Integer, Entity> entities;
 		int[][] map;
 		int playerId;
 		String[] rooms;
@@ -132,11 +132,11 @@ public class GameServer extends BaseWebSocketHandler {
 	// }
 	// }
 
-	public void update(Map<Integer, Player> players) {
+	public void update(Map<Integer, Entity> entities) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.UPDATE;
-		outgoing.players = players;
-		broadcast(outgoing, players.keySet());
+		outgoing.entities = entities;
+		broadcast(outgoing, entities.keySet());
 	}
 
 	public void sendGameInfo(WebSocketConnection connection, int[][] map) {

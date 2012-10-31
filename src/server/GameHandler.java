@@ -149,7 +149,7 @@ public class GameHandler implements Runnable {
 	private void syncLoop() {
 		synchronized (this.games) {
 			for (Game game : games.values()) {
-				this.gameServer.update(game.getPlayers());
+				this.gameServer.update(game.getEntitiesAndPlayersMap());
 			}
 		}
 	}
