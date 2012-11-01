@@ -3,8 +3,14 @@ var width = 800;
 var height = 600;
 var ctx, c; // Main drawing canvas context
 var gameState; // Holds the array of current players
-var apeImg; // The player image
 var renderEngine;
+var lastSocketMessage = new Date();
+var socketDelta = 0;
+var syncs = 0;
+
+var loginReady;
+var roomChosen;
+var rooms;
 
 // Log text to main window.
 function logText(msg) {
@@ -38,9 +44,44 @@ function login() {
 	} else {
 		ws.close();
 	}
+
+	loginReady = true;
 }
 
+function roomSelection() {
+	var defaultRoom = (window.localStorage && window.localStorage.room)
+			|| 'soup';
+	var room = prompt('Choose game room', defaultRoom);
+	if (room) {
+		if (window.localStorage) { // store in browser localStorage, so we
+			// remember next next
+			window.localStorage.room = room;
+		}
+		send({
+			action : 'ROOM',
+			roomJoin : room
+		});
+	} else {
+		ws.close();
+	}
+
+	roomChosen = true;
+}
+
+function changeToRoom(roomName) {
+	send({
+		action : 'ROOM',
+		roomJoin : roomName
+	});
+}
+
+var lastTime;
+
 function onMessage(incoming) {
+	var time = new Date();
+	// lastTime = time;
+	socketDelta = time - lastSocketMessage;
+	lastSocketMessage = time;
 	switch (incoming.action) {
 	case 'JOIN':
 		logText("* User '" + incoming.username + "' joined.");
@@ -54,6 +95,7 @@ function onMessage(incoming) {
 		break;
 	case 'UPDATE':
 		var players = incoming.players;
+		syncs++;
 		gameState.players = new Array();
 		for (playerId in players) {
 			gameState.players.push(new Player(players[playerId].x,
@@ -61,7 +103,20 @@ function onMessage(incoming) {
 			// logText("a player is at position: ("+players[playerId].x+",
 			// "+players[playerId].y+")");
 		}
-
+		break;
+	case 'MAP':
+		gameState.map = incoming.map;
+		renderEngine.bgLoaded = false;
+		// console.log('incoming map');
+		break;
+	case 'ROOMS':
+		rooms = incoming.rooms;
+		updateRoomList();
+		break;
+	case 'NEW_ROOM':
+		window.localStorage.room = incoming.newRoom;
+		updateRoomInfo();
+		break;
 	}
 }
 
@@ -76,6 +131,7 @@ function connect() {
 	ws.onopen = function(e) {
 		logText('* Connected!');
 		login();
+		roomSelection();
 		initGame();
 	};
 	ws.onclose = function(e) {
@@ -127,19 +183,6 @@ var Player = function(x, y, id) {
 	this.x = x;
 	this.y = y;
 	this.id = id;
-	// Preload player canvas if not loaded yet
-	this.canvas = document.getElementById('player' + this.id);
-	if (!this.canvas) {
-		this.canvas = document.createElement('canvas');
-		this.canvas.setAttribute('id', 'player' + this.id);
-		this.canvas.setAttribute('width', 100);
-		this.canvas.setAttribute('height', 100);
-		this.canvas.setAttribute('style', 'position: absolute; top: ' + x
-				+ 'px; left: ' + y + 'px');
-		var canvasCtx = this.canvas.getContext('2d');
-		canvasCtx.drawImage(apeImg, 0, 0, 60, 60);
-		$('body').append(this.canvas);
-	}
 }
 
 function distroyPlayerCanvas(id) {
@@ -156,13 +199,62 @@ var initGame = function() {
 	c.width = width;
 	c.height = height;
 	gameState = new GameState();
-	renderEngine = new RenderingEngine(16, 12); // load with 16x12 tiles
+	renderEngine = new RenderingEngine(30, 20);
 	renderEngine.draw(); // start drawing loop
 }
 
 function loadGraphics() {
-	apeImg = new Image();
-	apeImg.src = "img/ape_1.png";
+	preloadImage('ape', 'img/ape.png');
+	var tileSetPath = 'img/tiles/material_tileset.png';
+	loadTileSet('mat', tileSetPath, 25, 25);
+}
+
+// preload images -> images can be accessed using imagePreload['name'].
+var imagePreload = {};
+function preloadImage(name, imgPath) {
+	var img = new Image();
+	img.src = imgPath;
+	imagePreload[name] = img;
+}
+
+var tilePreload = {};
+/*
+ * Loads an image tile set as an array of pre-rendered canvas elements into the
+ * tilePreload variable which can be accessed using tilePreload['name'].
+ * tileWidth and tileHeight is the size of a subdivided tile in the tile set.
+ */
+function loadTileSet(name, imgPath, tileWidth, tileHeight) {
+	tilePreload[name] = new Array();
+	// push an empty tile to array position 0
+	var emptyTile = document.createElement('canvas');
+	emptyTile.width = tileWidth;
+	emptyTile.height = tileHeight;
+	tilePreload[name].push(emptyTile);
+	// create tiles from tileset
+	var img = new Image();
+	img.src = imgPath;
+	img.onload = function() {
+		var cols = img.width / tileWidth;
+		var rows = img.height / tileHeight;
+		var t_canvas, t_ctx;
+		for ( var y = 0; y < cols; y++) {
+			for ( var x = 0; x < cols; x++) {
+				t_canvas = document.createElement('canvas');
+				t_canvas.width = tileWidth;
+				t_canvas.height = tileHeight;
+				t_ctx = t_canvas.getContext('2d');
+				t_ctx.drawImage(img, x * tileWidth, y * tileWidth, tileWidth,
+						tileHeight, 0, 0, tileWidth, tileHeight);
+				tilePreload[name].push(t_canvas);
+			}
+		}
+	}
+}
+
+function resizeHandler(e) {
+	if (renderEngine) {
+		renderEngine.needCanvasReload = true;
+	}
 }
 
 // Connect on load.
@@ -171,3 +263,4 @@ $(document).ready(loadGraphics); // TODO evaluation order?
 $(document).ready(connect);
 $(window).bind("keydown", keyHandler.keyDown);
 $(window).bind("keyup", keyHandler.keyUp);
+$(window).resize(resizeHandler);
