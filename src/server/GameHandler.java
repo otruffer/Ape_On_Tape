@@ -23,18 +23,14 @@ public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final static int WEB_SERVER_PORT = 9875;
-	final int[] UP_KEYS = { 38, 119 };
-	final int[] DOWN_KEYS = { 40, 115 };
-	final int[] LEFT_KEYS = { 37, 97 };
-	final int[] RIGHT_KEYS = { 100, 39 };
+	final static int WEB_SERVER_PORT = 9877;
 	final static boolean USE_EXTERNAL_WEB_ROOT = true;
 	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
 	private final String DEFAULT_ROOMNAME = "soup";
 
 	private GameServer gameServer;
 	private WebServer webServer;
-	private Map<String, Game> games;
+	private volatile Map<String, Game> games;
 	private Map<Integer, List<Integer>> keysPressed;
 
 	private Map<Integer, String> playerNames;
@@ -44,10 +40,7 @@ public class GameHandler implements Runnable {
 			ExecutionException {
 		gameServer = new GameServer(this);
 		webServer = createWebServer(port)
-		/*
-		 * .add(new LoggingHandler( new SimpleLogSink(Chatroom.USERNAME_KEY)))
-		 */
-		.add("/chatsocket", gameServer).add(new StaticFileHandler(webRoot))
+		.add("/apesocket", gameServer).add(new StaticFileHandler(webRoot))
 				.start().get();
 
 		this.games = new HashMap<String, Game>();
@@ -99,16 +92,31 @@ public class GameHandler implements Runnable {
 		gameThread.run();
 	}
 
-	public void joinPlayer(int playerId, String roomName) {
+	public void joinRoom(int id, String roomName) {
+		String user = playerNames.get(id);
+		playerRooms.put(id, roomName);
+		this.joinPlayer(id, roomName);
+		gameServer.sendJoinMessage(id, user, roomName, playersInRoomWith(id));
+		gameServer.sendNewRoomInfo(roomName, asList(id));
+	}
+
+	private void joinPlayer(int playerId, String roomName) {
 		if (!games.containsKey(roomName))
 			createRoom(roomName);
 
-		this.games.get(roomName).addPlayer(playerId);
+		this.games.get(roomName).addPlayer(playerId, playerNames.get(playerId));
 	}
 
 	private void createRoom(String roomName) {
-		this.games.put(roomName, new Game(800, 400));
+		Game newRoom = new Game(800, 400);
+		this.games.put(roomName, newRoom);
+		newRoom.addCollisionListener(new RealCollisionListener(this));
 		roomListUpdated();
+		createBot(newRoom);
+	}
+
+	private void createBot(Game room) {
+		room.addBot(IdFactory.getNextId(), "uncleverbot");
 	}
 
 	public void leavePlayer(int playerId) {
@@ -125,55 +133,22 @@ public class GameHandler implements Runnable {
 		for (Game game : games.values()) {
 			for (int id : new LinkedList<Integer>(keysPressed.keySet())) {
 				List<Integer> keys = keysPressed.get(id);
-				if (game.hasPlayerWithId(id)) {
-					int[] xy = this.makeXYCoordinatesFromKeys(keys);
-					game.movePlayer(id, xy[0], xy[1]);
-				}
+				if (game.hasPlayerWithId(id))
+					game.setPlayerKeys(id, keys);
+				game.update();
 			}
 		}
 	}
 
 	private void syncLoop() {
-		synchronized (this.games) {
-			for (Game game : games.values()) {
-				this.gameServer.update(game.getPlayers());
-			}
+		for (Game game : games.values()) {
+			this.gameServer.update(game.getEntitiesAndPlayersMap(),
+					game.popSoundEvents());
 		}
 	}
 
 	public void setKeysPressed(int id, List<Integer> keysPressed) {
 		this.keysPressed.put(id, keysPressed);
-	}
-
-	/**
-	 * use as follows: isKeyPressed(UP_KEYS, keysPressed)
-	 * 
-	 * @param key
-	 * @param keysPressed
-	 * @return
-	 */
-	private boolean isKeyPressed(int[] keys, List<Integer> keysPressed) {
-		List<Integer> keyList = new LinkedList<Integer>();
-		for (int a : keys)
-			keyList.add(a);
-		List<Integer> intersection = new LinkedList<Integer>(keysPressed);
-		intersection.retainAll(keyList);
-		return !intersection.isEmpty();
-	}
-
-	private int[] makeXYCoordinatesFromKeys(List<Integer> keys) {
-		int x = 0;
-		int y = 0;
-		if (isKeyPressed(UP_KEYS, keys))
-			x = -1;
-		else if (isKeyPressed(DOWN_KEYS, keys))
-			x = 1;
-		if (isKeyPressed(RIGHT_KEYS, keys))
-			y = 1;
-		else if (isKeyPressed(LEFT_KEYS, keys))
-			y = -1;
-		int[] values = { x, y };
-		return values;
 	}
 
 	public int[][] getGameMap(String roomName) {
@@ -197,14 +172,6 @@ public class GameHandler implements Runnable {
 		List<Integer> list = new ArrayList<Integer>(1);
 		list.add(id);
 		return list;
-	}
-
-	public void joinRoom(int id, String roomJoin) {
-		String user = playerNames.get(id);
-		playerRooms.put(id, roomJoin);
-		this.joinPlayer(id, roomJoin);
-		gameServer.sendJoinMessage(id, user, roomJoin, playersInRoomWith(id));
-		gameServer.sendNewRoomInfo(roomJoin, asList(id));
 	}
 
 	private void roomListUpdated() {
@@ -237,7 +204,8 @@ public class GameHandler implements Runnable {
 	}
 
 	private List<Integer> playersInRoomWith(int id) {
-		return idsFromPlayers(games.get(playerRooms.get(id)).getPlayers());
+		return new LinkedList<Integer>(games.get(playerRooms.get(id))
+				.getPlayers().keySet());
 	}
 
 	public List<Integer> idsFromPlayers(List<Player> players) {

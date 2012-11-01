@@ -1,29 +1,69 @@
 package server;
 
-public class Entity {
+import java.util.LinkedList;
+import java.util.List;
+
+import server.GsonExclusionStrategy.noGson;
+
+public abstract class Entity {
 	protected int id;
-	float x;
-	float y;
-	float height = 20f;
-	float width = 20f;
-	float speed = 5;
+	protected float x;
+	protected float y;
+	protected float height = 20f;
+	protected float width = 20f;
+	protected String type = "entity";
+	
+	@noGson
+	protected boolean wallHit = false;
+	@noGson
+	protected float speed = 5;
+	@noGson
+	protected boolean collisionResolving = false;
+	@noGson
+	private boolean collisionState;
+	protected int killCount = 0;
+	protected int deathCount = 0;
 
 	public Entity(int id, float x, float y) {
 		this.id = id;
+
 		this.x = x;
 		this.y = y;
 	}
 
-	public void moveOnMap(TileMap map, int dirx, int diry) {
-		float deltax = this.speed * dirx;
-		float deltay = this.speed * diry;
-		if (deltax != 0 && deltay != 0) {
-			deltax /= Math.sqrt(2);
-			deltay /= Math.sqrt(2);
+	public Entity(float x, float y) {
+		this.id = IdFactory.getNextId();
+		this.x = x;
+		this.y = y;
+	}
+
+	/**
+	 * 
+	 * @param game
+	 * @param dirX
+	 * @param dirY
+	 * @return what collisions were resolved? for wall hit use: getWallHit
+	 */
+	public List<Entity> moveOnMap(Game game, float deltax, float deltay) {
+		this.wallHit = Util.moveOnMap(game, this, deltax, deltay);
+		List<Entity> overlapping = new LinkedList<Entity>();
+		if (this.collisionResolving)
+			overlapping = this.resolveCollisions(game);
+		return overlapping;
+	}
+
+	protected List<Entity> resolveCollisions(Game game) {
+		List<Entity> overlapping = Util.getEntitiesOverlapping(game.getPlayersList(),
+				this);
+		for (Entity other : overlapping) {
+			if (other.isCollisionResolving())
+				Util.resolveCollision(game, this, other);
 		}
-		this.x = Util.moveOnMapVertical(map, this, deltax);
-		this.y = Util.moveOnMapHorizontal(map, this, deltay);
-		
+		return overlapping;
+	}
+	
+	public boolean getWallHit(){
+		return this.wallHit;
 	}
 
 	public int getId() {
@@ -37,16 +77,76 @@ public class Entity {
 	public float getX() {
 		return x;
 	}
-	
+
 	public float getY() {
 		return y;
 	}
-	
-	public float getWidth(){
+
+	public float getWidth() {
 		return width;
 	}
-	
-	public float getHeight(){
+
+	public float getHeight() {
 		return height;
+	}
+
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	public void setCollisionState(boolean state) {
+		this.collisionState = state;
+	}
+
+	public boolean collisionState() {
+		return this.collisionState;
+	}
+
+	/**
+	 * Defines "intelligence" of this Entity, is called once on every loop.
+	 * 
+	 * @param game
+	 */
+	public abstract void brain(Game game);
+
+	@Override
+	public boolean equals(Object o1) {
+		return o1 instanceof Entity && ((Entity) o1).getId() == this.getId();
+	}
+
+	/**
+	 * we override the hashCode, as entities with the same id are equal.
+	 */
+	@Override
+	public int hashCode() {
+		return this.getId();
+	}
+
+	public double getRadius() {
+		return Math.min(this.getWidth() / 2, this.getHeight() / 2);
+	}
+
+	public boolean isCollisionResolving() {
+		return this.collisionResolving;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
+	
+	public void hitByBullet(Game game, Bullet bullet){
+		//Empty
+	}
+
+	public String getType() {
+		return this.type;
+	}
+
+	public void incrementKillCount() {
+		this.killCount++;
 	}
 }

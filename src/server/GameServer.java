@@ -3,19 +3,20 @@ package server;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class GameServer extends BaseWebSocketHandler {
 
-	private final Gson json = new Gson();
-
+	Gson json = new GsonBuilder().setExclusionStrategies(
+			new GsonExclusionStrategy(String.class)).create();
 	public static final String ID_KEY = "id";
-	private static int CURRENT_ID = 0;
 	public GameHandler gameHandler;
 
 	static class Incoming {
@@ -32,16 +33,18 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, MAP, ROOMS, NEW_ROOM
+			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM
 		}
 
 		Action action;
 		String username;
 		String message;
-		List<Player> players;
+		Map<Integer, Entity> entities;
 		int[][] map;
+		int playerId;
 		String[] rooms;
 		String newRoom;
+		String[] soundEvents;
 	}
 
 	public GameServer(GameHandler gameHandler) {
@@ -78,8 +81,7 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	private int getCurrentId() {
-		CURRENT_ID++;
-		return CURRENT_ID;
+		return IdFactory.getNextId();
 	}
 
 	private void login(WebSocketConnection connection, String username) {
@@ -103,7 +105,7 @@ public class GameServer extends BaseWebSocketHandler {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.JOIN;
 		outgoing.username = user;
-		this.sendMap(findConnection(id), gameHandler.getGameMap(roomJoin));
+		this.sendGameInfo(findConnection(id), gameHandler.getGameMap(roomJoin));
 		broadcast(outgoing, receipants);
 	}
 
@@ -130,16 +132,18 @@ public class GameServer extends BaseWebSocketHandler {
 	// }
 	// }
 
-	public void update(List<Player> players) {
+	public void update(Map<Integer, Entity> entities, String[] soundEvents) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.UPDATE;
-		outgoing.players = players;
-		broadcast(outgoing, gameHandler.idsFromPlayers(players));
+		outgoing.entities = entities;
+		outgoing.soundEvents = soundEvents;
+		broadcast(outgoing, entities.keySet());
 	}
 
-	public void sendMap(WebSocketConnection connection, int[][] map) {
+	public void sendGameInfo(WebSocketConnection connection, int[][] map) {
 		Outgoing outgoing = new Outgoing();
-		outgoing.action = Outgoing.Action.MAP;
+		outgoing.action = Outgoing.Action.INIT_GAME;
+		outgoing.playerId = (Integer) connection.data().get(ID_KEY);
 		outgoing.map = map;
 		String jsonStr = this.json.toJson(outgoing);
 		connection.send(jsonStr);
@@ -162,11 +166,11 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	public void sendDisconnectMessage(int id, String user,
-			List<Integer> receipants) {
+			List<Integer> receipents) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.LEAVE;
 		outgoing.username = user;
-		broadcast(outgoing, receipants);
+		broadcast(outgoing, receipents);
 	}
 
 	public void disconnect(int id) {
@@ -176,18 +180,18 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	public void sendRoomList(Collection<String> rooms,
-			Collection<Integer> receivers) {
+			Collection<Integer> receipent) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.ROOMS;
 		outgoing.rooms = rooms.toArray(new String[0]);
-		broadcast(outgoing, receivers);
+		broadcast(outgoing, receipent);
 	}
 
 	public void sendNewRoomInfo(String newRoomName,
-			Collection<Integer> receipants) {
+			Collection<Integer> receipents) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.NEW_ROOM;
 		outgoing.newRoom = newRoomName;
-		broadcast(outgoing, receipants);
+		broadcast(outgoing, receipents);
 	}
 }

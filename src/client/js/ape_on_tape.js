@@ -23,8 +23,7 @@ function logText(msg) {
 }
 
 function clearLog() {
-	var textArea = document.getElementById('console');
-	textArea.value = "";
+	$('#console').empty();
 }
 
 // Perform login: Ask user for name, and send message to socket.
@@ -73,6 +72,7 @@ function changeToRoom(roomName) {
 		action : 'ROOM',
 		roomJoin : roomName
 	});
+	clearLog();
 }
 
 var lastTime;
@@ -94,20 +94,25 @@ function onMessage(incoming) {
 		logText("[" + incoming.username + "] " + incoming.message);
 		break;
 	case 'UPDATE':
-		var players = incoming.players;
+		var entities = incoming.entities;
 		syncs++;
 		gameState.players = new Array();
-		for (playerId in players) {
-			gameState.players.push(new Player(players[playerId].x,
-					players[playerId].y, players[playerId].id));
-			// logText("a player is at position: ("+players[playerId].x+",
-			// "+players[playerId].y+")");
+		gameState.entities = new Array();
+		for (id in entities) {
+			if (entities[id].type == "player")
+				gameState.players[id] = entities[id];
+			else
+				gameState.entities[id] = entities[id];
 		}
+		if (incoming.soundEvents) {
+			handleSoundEvents(incoming.soundEvents);
+		}
+		updatePlayerList();
 		break;
-	case 'MAP':
+	case 'INIT_GAME':
 		gameState.map = incoming.map;
+		gameState.playerId = incoming.playerId;
 		renderEngine.bgLoaded = false;
-		// console.log('incoming map');
 		break;
 	case 'ROOMS':
 		rooms = incoming.rooms;
@@ -127,7 +132,7 @@ function connect() {
 
 	// connect to socket
 	logText('* Connecting...');
-	ws = new WebSocket('ws://' + document.location.host + '/chatsocket');
+	ws = new WebSocket('ws://' + document.location.host + '/apesocket');
 	ws.onopen = function(e) {
 		logText('* Connected!');
 		login();
@@ -179,10 +184,18 @@ var GameState = function() {
 	this.players = new Array();
 }
 
-var Player = function(x, y, id) {
+var Player = function(x, y, id, name) {
 	this.x = x;
 	this.y = y;
 	this.id = id;
+	this.name = name;
+}
+
+var Entity = function(x, y, id, type) {
+	this.x = x;
+	this.y = y;
+	this.id = id;
+	this.type = type;
 }
 
 function distroyPlayerCanvas(id) {
@@ -194,13 +207,51 @@ function send(outgoing) {
 	ws.send(JSON.stringify(outgoing));
 }
 
-var initGame = function() {
+function initGame() {
 	c = document.getElementById('canvas'), ctx = c.getContext('2d');
 	c.width = width;
 	c.height = height;
 	gameState = new GameState();
 	renderEngine = new RenderingEngine(30, 20);
 	renderEngine.draw(); // start drawing loop
+	initBackgroundMusic();
+}
+
+function initBackgroundMusic() {
+	// toggleBackgroundMusic();
+	$('#music-control').click(toggleBackgroundMusic);
+}
+
+function handleSoundEvents(events) {
+	if (events.indexOf('wall-collision') >= 0)
+		playCollisionSound();
+	if (events.indexOf('kill') >= 0)
+		playKillSound();
+}
+
+var bgMusicPlaying = false;
+var backgroundMusic = new Audio('sound/follies.mp3');
+function toggleBackgroundMusic() {
+	// var backgroundMusic = $('#background-music')[0];
+	var control = $('#music-control');
+	if (!bgMusicPlaying) {
+		backgroundMusic.play();
+		control.addClass('playing');
+		control.text('Stop Music');
+	} else {
+		backgroundMusic.pause();
+		control.removeClass('playing');
+		control.text('Play Music');
+	}
+	bgMusicPlaying = !bgMusicPlaying;
+}
+
+function playCollisionSound() {
+	new Audio('sound/bump.wav').play();
+}
+
+function playKillSound() {
+	new Audio('sound/jab.mp3').play();
 }
 
 function loadGraphics() {

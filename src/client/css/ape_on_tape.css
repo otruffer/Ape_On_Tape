@@ -57,6 +57,24 @@ body {
 	color: black;
 }
 
+#music-control {
+	font-family: 'Marcellus';
+	color: #06a;
+	text-shadow: none;
+	padding: 0 6px;
+}
+
+#music-control.playing {
+	box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.5) inset;
+	background-color: #DDD;
+}
+
+#music-control:hover {
+	cursor: pointer;
+	color: #eee;
+	background-color: #69e;
+}
+
 #canvas {
 	float: left;
 	box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
@@ -76,6 +94,16 @@ body {
 	overflow-y: scroll;
 }
 
+#playerList {
+	background-color: rgba(0, 0, 0, 0.2);
+	padding: 4px;
+	width: 200px;
+	position: absolute;
+	right: 0;
+	height: 590px;
+	overflow-y: scroll;
+}
+
 #roomList {
 	position: absolute;
 	right: 208px;
@@ -85,11 +113,13 @@ body {
 	padding: 4px;
 }
 
-#roomList h3 {
+#roomList h3,
+#playerList h3 {
 	margin: 0.25em 0;
 }
 
-#roomList ul {
+#roomList ul,
+#playerList ul {
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -118,7 +148,7 @@ body {
 	overflow-x: scroll;
 	position: absolute;
 	right: 416px;
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
 #delay-graph .delay {

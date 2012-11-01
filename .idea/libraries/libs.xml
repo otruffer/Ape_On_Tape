@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="libs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/netty-3.5.2.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/junit-4.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/mockito-all-1.9.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/autojar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jarjar-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/gson-1.7.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
