@@ -256,8 +256,11 @@ function playKillSound() {
 
 function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
-	var tileSetPath = 'img/tiles/material_tileset.png';
-	loadTileSet('mat', tileSetPath, 25, 25);
+	preloadImage('bot', 'img/bot.png');
+	var materialPath = 'img/tiles/material_25px.png';
+	var bulletsPath = 'img/tiles/bullets_24px.png'
+	loadTileSet('mat', materialPath, 25, 25);
+	loadTileSet('bullet', bulletsPath, 24, 24);
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
@@ -273,6 +276,7 @@ var tilePreload = {};
  * Loads an image tile set as an array of pre-rendered canvas elements into the
  * tilePreload variable which can be accessed using tilePreload['name'].
  * tileWidth and tileHeight is the size of a subdivided tile in the tile set.
+ * NOTE: index [0] is an empty (fully transparent) tile
  */
 function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 	tilePreload[name] = new Array();
