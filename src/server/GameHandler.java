@@ -136,8 +136,8 @@ public class GameHandler implements Runnable {
 				List<Integer> keys = keysPressed.get(id);
 				if (game.hasPlayerWithId(id))
 					game.setPlayerKeys(id, keys);
-				game.update();
 			}
+			game.update();
 		}
 	}
 

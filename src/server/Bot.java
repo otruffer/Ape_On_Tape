@@ -13,29 +13,41 @@ public class Bot extends Player {
 	@Override
 	public void brain(Game game) {
 		// chase a player
-		Collection<Player> players = game.getPlayers().values();
-		Iterator<Player> it = players.iterator();
-		Player other = it.next();
-		if (this.equals(other)) {
-			other = it.next();
-		}
-		float deltaY = deltaY(other) / 10;
-		float deltaX = deltaX(other) / 10;
-		float sum = (float) Math
-				.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+		Player other = closestPlayer(game);
+		float sum = distanceTo(other);
 		float factor = this.speed / sum;
-		List<Entity> overlapping = moveOnMap(game, factor * deltaX, factor * deltaY);
-		for(Entity entity : overlapping){
+		float dX = deltaX(other);
+		float dY = deltaY(other);
+		List<Entity> overlapping = moveOnMap(game, factor * dX, factor * dY);
+		for (Entity entity : overlapping) {
 			entity.hitByBullet(game, new Bullet(this, 0, 0, 0, 0));
 		}
 	}
 
-	private float deltaX(Player player) {
-		return player.x - this.x;
+	private Player closestPlayer(Game game) {
+		Collection<Player> players = game.getPlayers().values();
+		Player closest = this; // just a fallback if none around
+		for (Player p : players) {
+			if (this.equals(closest))
+				closest = p;
+			else if (!this.equals(p)
+					&& this.distanceTo(p) < this.distanceTo(closest))
+				closest = p;
+		}
+		return closest;
 	}
 
-	private float deltaY(Player player) {
-		return player.y - this.y;
+	public float distanceTo(Entity entity) {
+		return (float) Math.sqrt(Math.pow(deltaX(entity), 2)
+				+ Math.pow(deltaY(entity), 2));
+	}
+
+	private float deltaX(Entity entity) {
+		return entity.x - this.x;
+	}
+
+	private float deltaY(Entity entity) {
+		return entity.y - this.y;
 	}
 
 }
