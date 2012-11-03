@@ -59,6 +59,15 @@ public class Game {
 		}
 	}
 
+	public void addDrunkBot(int botId, String botName) {
+		float[] start = map.getStartXY();
+		Bot bot = new DrunkBot(botId, start[0], start[1], botName);
+		bot.setId(botId);
+		synchronized (this.players) {
+			this.players.put(bot.id, bot);
+		}
+	}
+
 	public void removePlayer(int playerId) {
 		synchronized (this.players) {
 			this.players.remove(playerId);

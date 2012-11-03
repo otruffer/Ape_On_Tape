@@ -1,27 +1,34 @@
 package server;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class Bot extends Player {
 
+	protected float MOVE_DIRECTION_MEMORY;
+
+	float lastDX = 0, lastDY = 0;
+
 	public Bot(int id, float x, float y, String name) {
 		super(id, x, y, name);
+		this.MOVE_DIRECTION_MEMORY = 0;
 	}
 
 	@Override
 	public void brain(Game game) {
 		// chase a player
 		Player other = closestPlayer(game);
-		float sum = distanceTo(other);
-		float factor = this.speed / sum;
-		float dX = deltaX(other);
-		float dY = deltaY(other);
+		float dX = deltaX(other) + lastDX * this.MOVE_DIRECTION_MEMORY;
+		float dY = deltaY(other) + lastDY * this.MOVE_DIRECTION_MEMORY;
+		float distance = euclideanLength(dX, dY);
+		float factor = this.speed / distance;
 		List<Entity> overlapping = moveOnMap(game, factor * dX, factor * dY);
 		for (Entity entity : overlapping) {
 			entity.hitByBullet(game, new Bullet(this, 0, 0, 0, 0));
 		}
+
+		lastDX = dX * factor;
+		lastDY = dY * factor;
 	}
 
 	private Player closestPlayer(Game game) {
@@ -30,24 +37,11 @@ public class Bot extends Player {
 		for (Player p : players) {
 			if (this.equals(closest))
 				closest = p;
-			else if (!this.equals(p)
+			else if (!Bot.class.isAssignableFrom(p.getClass())
 					&& this.distanceTo(p) < this.distanceTo(closest))
 				closest = p;
 		}
 		return closest;
-	}
-
-	public float distanceTo(Entity entity) {
-		return (float) Math.sqrt(Math.pow(deltaX(entity), 2)
-				+ Math.pow(deltaY(entity), 2));
-	}
-
-	private float deltaX(Entity entity) {
-		return entity.x - this.x;
-	}
-
-	private float deltaY(Entity entity) {
-		return entity.y - this.y;
 	}
 
 }
