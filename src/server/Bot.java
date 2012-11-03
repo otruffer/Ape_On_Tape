@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Bot extends Player {
 
+	protected float RANDOMNESS;
+
 	protected float MOVE_DIRECTION_MEMORY;
 
 	float lastDX = 0, lastDY = 0;
@@ -12,14 +14,17 @@ public class Bot extends Player {
 	public Bot(int id, float x, float y, String name) {
 		super(id, x, y, name);
 		this.MOVE_DIRECTION_MEMORY = 0;
+		this.RANDOMNESS = 0;
 	}
 
 	@Override
 	public void brain(Game game) {
 		// chase a player
 		Player other = closestPlayer(game);
-		float dX = deltaX(other) + lastDX * this.MOVE_DIRECTION_MEMORY;
-		float dY = deltaY(other) + lastDY * this.MOVE_DIRECTION_MEMORY;
+		float dX = (float) (deltaX(other) + lastDX * this.MOVE_DIRECTION_MEMORY + (Math
+				.random() * RANDOMNESS - RANDOMNESS / 2));
+		float dY = (float) (deltaY(other) + lastDY * this.MOVE_DIRECTION_MEMORY + (Math
+				.random() * RANDOMNESS - RANDOMNESS / 2));
 		float distance = euclideanLength(dX, dY);
 		float factor = this.speed / distance;
 		List<Entity> overlapping = moveOnMap(game, factor * dX, factor * dY);

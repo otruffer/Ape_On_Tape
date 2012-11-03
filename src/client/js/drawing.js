@@ -192,7 +192,7 @@ function RenderingEngine(tileSize, playerSize) {
 		} else { // draw other players relative to main player
 			var dx = self.mainPlayer.absX - player.y;
 			var dy = self.mainPlayer.absY - player.x;
-			if (player.name == "uncleverbot") { // TODO: replace effective
+			if (player.name == "uncleverbot" || player.name == "drunkbot") { // TODO: replace effective
 				ctx.drawImage(imagePreload['bot'], self.mainPlayer.x - dx,
 						self.mainPlayer.y - dy, self.P, self.P);
 			} else {
