@@ -1,2 +1,3 @@
 - For first time of logging in after starting the server, no bot is created
 - Mp3 sounds are not supported in Firefox
+- Probably something wrong with jab.wav (not working in FF, workaround with .ogg running)
