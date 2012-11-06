@@ -43,8 +43,8 @@ public class Player extends Entity {
 	}
 
 	@Override
-	public void hitByBullet(Game game, Bullet bullet){
-		if(!bullet.getOwner().equals(this)){
+	public void hitByBullet(Game game, Bullet bullet) {
+		if (!bullet.getOwner().equals(this)) {
 			this.deathCount++;
 			bullet.getOwner().incrementKillCount();
 			float xy[] = game.getMap().getStartXY();
