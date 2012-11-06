@@ -49,6 +49,8 @@ public class Bullet extends Entity {
 			game.removeEntity(this);
 		List<Entity> overlapping = Util.getEntitiesOverlapping(
 				game.getPlayersList(), this);
+		overlapping
+				.addAll(Util.getEntitiesOverlapping(game.getBotList(), this));
 		overlapping.remove(this.owner);
 		for (Entity entity : overlapping) {
 			entity.hitByBullet(game, this);
