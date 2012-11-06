@@ -40,9 +40,8 @@ public class GameHandler implements Runnable {
 	public GameHandler(int port, File webRoot) throws InterruptedException,
 			ExecutionException {
 		gameServer = new GameServer(this);
-		webServer = createWebServer(port)
-		.add("/apesocket", gameServer).add(new StaticFileHandler(webRoot))
-				.start().get();
+		webServer = createWebServer(port).add("/apesocket", gameServer)
+				.add(new StaticFileHandler(webRoot)).start().get();
 
 		this.games = new HashMap<String, Game>();
 		games.put(DEFAULT_ROOMNAME, new Game(800, 400));
@@ -133,18 +132,26 @@ public class GameHandler implements Runnable {
 
 	private void gameLoop() {
 		for (Game game : games.values()) {
-			for (int id : new LinkedList<Integer>(keysPressed.keySet())) {
-				List<Integer> keys = keysPressed.get(id);
-				if (game.hasPlayerWithId(id))
-					game.setPlayerKeys(id, keys);
-			}
-			game.update();
+			updateGame(game);
 		}
+	}
+
+	private void updateGame(Game game) {
+		if (!game.isRunning() && game.getPlayers().size() > 1) {
+			game.start();
+		}
+
+		for (int id : new LinkedList<Integer>(keysPressed.keySet())) {
+			List<Integer> keys = keysPressed.get(id);
+			if (game.hasPlayerWithId(id))
+				game.setPlayerKeys(id, keys);
+		}
+		game.update();
 	}
 
 	private void syncLoop() {
 		for (Game game : games.values()) {
-			this.gameServer.update(game.getEntitiesAndPlayersMap(),
+			this.gameServer.update(game.isRunning(), game.getEntitiesAndPlayersMap(),
 					game.popSoundEvents());
 		}
 	}

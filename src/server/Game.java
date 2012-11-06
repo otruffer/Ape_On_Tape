@@ -23,6 +23,11 @@ public class Game {
 	int width, height;
 	private Collection<CollisionListener> collisionListeners;
 	private Set<String> soundEvents;
+	/**
+	 * True if game has already started, false if waiting for
+	 * <code>start()</code> signal
+	 */
+	private boolean running;
 
 	public Game(int width, int height) {
 		this.players = new HashMap<Integer, Player>();
@@ -39,6 +44,14 @@ public class Game {
 		this.map = new TileMap(map);
 		this.height = map.length;
 		this.width = map[0].length;
+		this.running = false;
+	}
+
+	/**
+	 * Launch this game
+	 */
+	public void start() {
+		this.running = true;
 	}
 
 	public void addPlayer(int playerId, String playerName) {
@@ -55,7 +68,7 @@ public class Game {
 		Bot bot = new Bot(botId, start[0], start[1], botName);
 		bot.setId(botId);
 		synchronized (this.players) {
-			this.players.put(bot.id, bot);
+			this.entities.put(bot.id, bot);
 		}
 	}
 
@@ -64,7 +77,7 @@ public class Game {
 		Bot bot = new DrunkBot(botId, start[0], start[1], botName);
 		bot.setId(botId);
 		synchronized (this.players) {
-			this.players.put(bot.id, bot);
+			this.entities.put(bot.id, bot);
 		}
 	}
 
@@ -216,6 +229,10 @@ public class Game {
 
 	public void death(Player player) {
 		this.soundEvents.add("kill");
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 
 }

@@ -118,6 +118,8 @@ function onMessage(incoming) {
 			handleSoundEvents(incoming.soundEvents);
 		}
 		updatePlayerList();
+		if (incoming.gameRunning)
+			hideWaitInfo();
 		break;
 	case 'INIT_GAME':
 		gameState.map = incoming.map;
