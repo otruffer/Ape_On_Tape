@@ -35,7 +35,7 @@ public class Game {
 		// TODO: replace map path
 		String mapPath = "src/client/maps/map.json"
 				.replace("/", File.separator);
-		int[][] map = loadJsonMap(mapPath);
+		int[][] map = loadJsonMap(GameHandler.WEB_ROOT+"/maps/map.json");
 		this.map = new TileMap(map);
 		this.height = map.length;
 		this.width = map[0].length;

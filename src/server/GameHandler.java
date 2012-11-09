@@ -24,8 +24,7 @@ public class GameHandler implements Runnable {
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
 	final static int WEB_SERVER_PORT = 9877;
-	final static boolean USE_EXTERNAL_WEB_ROOT = true;
-	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
+	public static String WEB_ROOT = "/var/www/Ape_On_Tape/";
 	private final String DEFAULT_ROOMNAME = "soup";
 
 	private GameServer gameServer;
@@ -86,6 +85,7 @@ public class GameHandler implements Runnable {
 			webRoot = new File(args[1]);
 		else
 			webRoot = ClientDirUtil.getClientDirectory();
+		WEB_ROOT = webRoot.getAbsolutePath();
 
 		GameHandler gameHandler = new GameHandler(port, webRoot);
 		Thread gameThread = new Thread(gameHandler);
@@ -135,8 +135,9 @@ public class GameHandler implements Runnable {
 				List<Integer> keys = keysPressed.get(id);
 				if (game.hasPlayerWithId(id))
 					game.setPlayerKeys(id, keys);
-				game.update();
 			}
+			game.update();
+
 		}
 	}
 
