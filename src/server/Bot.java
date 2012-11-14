@@ -3,24 +3,28 @@ package server;
 import java.util.Collection;
 import java.util.List;
 
-public class Bot extends Player {
+import server.GsonExclusionStrategy.noGson;
 
+public class Bot extends Entity {
+
+	@noGson
 	protected float RANDOMNESS;
-
+	@noGson
 	protected float MOVE_DIRECTION_MEMORY;
-
+	@noGson
 	float lastDX = 0, lastDY = 0;
 
 	public Bot(int id, float x, float y, String name) {
-		super(id, x, y, name);
+		super(id, x, y);
 		this.MOVE_DIRECTION_MEMORY = 0;
 		this.RANDOMNESS = 0;
+		this.type = "bot";
 	}
 
 	@Override
 	public void brain(Game game) {
 		// chase a player
-		Player other = closestPlayer(game);
+		Entity other = closestPlayer(game);
 		float dX = (float) (deltaX(other) + lastDX * this.MOVE_DIRECTION_MEMORY + (Math
 				.random() * RANDOMNESS - RANDOMNESS / 2));
 		float dY = (float) (deltaY(other) + lastDY * this.MOVE_DIRECTION_MEMORY + (Math
@@ -36,9 +40,9 @@ public class Bot extends Player {
 		lastDY = dY * factor;
 	}
 
-	private Player closestPlayer(Game game) {
+	private Entity closestPlayer(Game game) {
 		Collection<Player> players = game.getPlayers().values();
-		Player closest = this; // just a fallback if none around
+		Entity closest = this; // just a fallback if none around
 		for (Player p : players) {
 			if (this.equals(closest))
 				closest = p;

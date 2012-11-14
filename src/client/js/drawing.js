@@ -192,15 +192,11 @@ function RenderingEngine(tileSize, playerSize) {
 		} else { // draw other players relative to main player
 			var dx = self.mainPlayer.absX - player.y;
 			var dy = self.mainPlayer.absY - player.x;
-			if (player.name == "uncleverbot" || player.name == "drunkbot") { // TODO: replace effective
-				ctx.drawImage(imagePreload['bot'], self.mainPlayer.x - dx,
-						self.mainPlayer.y - dy, self.P, self.P);
-			} else {
-				ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx,
-						self.mainPlayer.y - dy, self.P, self.P);
-			}
+			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx,
+					self.mainPlayer.y - dy, self.P, self.P);
 		}
 	}
+
 	this.drawEntities = function() {
 		for (id in gameState.entities)
 			self.drawEntity(gameState.entities[id]);
@@ -210,9 +206,18 @@ function RenderingEngine(tileSize, playerSize) {
 		var dx = self.mainPlayer.absX - entity.y;
 		var dy = self.mainPlayer.absY - entity.x;
 		var offset = (self.P - self.E) / 2; // center the entity TODO: check
-		ctx.drawImage(tilePreload['bullet'][3],
-				self.mainPlayer.x - dx + offset, self.mainPlayer.y - dy
-						+ offset, self.E, self.E);
+
+		var tile;
+		switch (entity.type) {
+		case 'bot':
+			tile = imagePreload['bot'];
+			break;
+		case 'bullet':
+			tile = tilePreload['bullet'][3];
+		}
+
+		ctx.drawImage(tile, self.mainPlayer.x - dx + offset, self.mainPlayer.y
+				- dy + offset, self.E, self.E);
 	}
 
 	// draw background scene

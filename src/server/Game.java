@@ -18,7 +18,6 @@ public class Game {
 
 	// store players separatly.
 	private volatile Map<Integer, Player> players;
-	private volatile Map<Integer, Bot> bots;
 	private volatile Map<Integer, Entity> entities;
 	TileMap map;
 	int width, height;
@@ -32,7 +31,6 @@ public class Game {
 
 	public Game(int width, int height) {
 		this.players = new HashMap<Integer, Player>();
-		this.bots = new HashMap<Integer, Bot>();
 		this.entities = new HashMap<Integer, Entity>();
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
@@ -67,14 +65,14 @@ public class Game {
 		float[] start = map.getStartXY();
 		Bot bot = new Bot(botId, start[0], start[1], botName);
 		bot.setId(botId);
-		this.bots.put(bot.id, bot);
+		this.entities.put(bot.id, bot);
 	}
 
 	public void addDrunkBot(int botId, String botName) {
 		float[] start = map.getStartXY();
 		Bot bot = new DrunkBot(botId, start[0], start[1], botName);
 		bot.setId(botId);
-		this.bots.put(bot.id, bot);
+		this.entities.put(bot.id, bot);
 	}
 
 	public void removePlayer(int playerId) {
@@ -95,14 +93,6 @@ public class Game {
 
 	public Map<Integer, Player> getPlayersAsMap() {
 		return this.players;
-	}
-
-	public Map<Integer, Bot> getBots() {
-		return this.bots;
-	}
-
-	public List<Bot> getBotList() {
-		return new LinkedList<Bot>(this.getBots().values());
 	}
 
 	public TileMap getMap() {
@@ -204,7 +194,6 @@ public class Game {
 	public List<Entity> getAllEntites() {
 		List<Entity> list = new LinkedList<Entity>(this.entities.values());
 		list.addAll(this.getPlayersList());
-		list.addAll(this.getBotList());
 		return list;
 	}
 
@@ -219,7 +208,6 @@ public class Game {
 	public Map<Integer, Entity> getAllEntitiesMap() {
 		Map<Integer, Entity> e = new HashMap<Integer, Entity>(this.players);
 		e.putAll(this.entities);
-		e.putAll(this.bots);
 		return e;
 	}
 

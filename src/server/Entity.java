@@ -6,6 +6,7 @@ import java.util.List;
 import server.GsonExclusionStrategy.noGson;
 
 public abstract class Entity {
+	
 	protected int id;
 	protected float x;
 	protected float y;
