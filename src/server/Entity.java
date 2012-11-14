@@ -6,13 +6,14 @@ import java.util.List;
 import server.GsonExclusionStrategy.noGson;
 
 public abstract class Entity {
+	
 	protected int id;
 	protected float x;
 	protected float y;
-	protected float height = 20f;
-	protected float width = 20f;
+	protected float height;
+	protected float width;
 	protected String type = "entity";
-	
+
 	@noGson
 	protected boolean wallHit = false;
 	@noGson
@@ -29,12 +30,15 @@ public abstract class Entity {
 
 		this.x = x;
 		this.y = y;
+		this.height = 20f;
+		this.width = 20f;
 	}
 
 	public Entity(float x, float y) {
 		this.id = IdFactory.getNextId();
 		this.x = x;
 		this.y = y;
+		this.type = this.getClass().getSimpleName().toLowerCase();
 	}
 
 	/**
@@ -53,16 +57,16 @@ public abstract class Entity {
 	}
 
 	protected List<Entity> resolveCollisions(Game game) {
-		List<Entity> overlapping = Util.getEntitiesOverlapping(game.getPlayersList(),
-				this);
+		List<Entity> overlapping = Util.getEntitiesOverlapping(
+				game.getPlayersList(), this);
 		for (Entity other : overlapping) {
 			if (other.isCollisionResolving())
 				Util.resolveCollision(game, this, other);
 		}
 		return overlapping;
 	}
-	
-	public boolean getWallHit(){
+
+	public boolean getWallHit() {
 		return this.wallHit;
 	}
 
@@ -137,9 +141,9 @@ public abstract class Entity {
 	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
-	
-	public void hitByBullet(Game game, Bullet bullet){
-		//Empty
+
+	public void hitByBullet(Game game, Bullet bullet) {
+		// Empty
 	}
 
 	public String getType() {
@@ -148,5 +152,21 @@ public abstract class Entity {
 
 	public void incrementKillCount() {
 		this.killCount++;
+	}
+
+	protected float euclideanLength(float x, float y) {
+		return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+	}
+
+	public float distanceTo(Entity entity) {
+		return euclideanLength(deltaX(entity), deltaY(entity));
+	}
+
+	protected float deltaX(Entity entity) {
+		return entity.x - this.x;
+	}
+
+	protected float deltaY(Entity entity) {
+		return entity.y - this.y;
 	}
 }

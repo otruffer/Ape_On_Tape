@@ -31,7 +31,7 @@ public class GameHandler implements Runnable {
 
 	private GameServer gameServer;
 	private WebServer webServer;
-	private Map<String, Game> games;
+	private volatile Map<String, Game> games;
 	private Map<Integer, List<Integer>> keysPressed;
 
 	private Map<Integer, String> playerNames;
@@ -40,12 +40,8 @@ public class GameHandler implements Runnable {
 	public GameHandler(int port, File webRoot) throws InterruptedException,
 			ExecutionException {
 		gameServer = new GameServer(this);
-		webServer = createWebServer(port)
-		/*
-		 * .add(new LoggingHandler( new SimpleLogSink(Chatroom.USERNAME_KEY)))
-		 */
-		.add("/chatsocket", gameServer).add(new StaticFileHandler(webRoot))
-				.start().get();
+		webServer = createWebServer(port).add("/apesocket", gameServer)
+				.add(new StaticFileHandler(webRoot)).start().get();
 
 		this.games = new HashMap<String, Game>();
 		games.put(DEFAULT_ROOMNAME, new Game(800, 400));
@@ -113,16 +109,15 @@ public class GameHandler implements Runnable {
 
 	private void createRoom(String roomName) {
 		Game newRoom = new Game(800, 400);
-		synchronized (this.games) {
-			this.games.put(roomName, newRoom);
-		}
+		this.games.put(roomName, newRoom);
 		newRoom.addCollisionListener(new RealCollisionListener(this));
 		roomListUpdated();
-		createBot(newRoom);
+		createBots(newRoom);
 	}
 
-	private void createBot(Game room) {
+	private void createBots(Game room) {
 		room.addBot(IdFactory.getNextId(), "uncleverbot");
+		room.addDrunkBot(IdFactory.getNextId(), "drunkbot");
 	}
 
 	public void leavePlayer(int playerId) {
@@ -146,12 +141,24 @@ public class GameHandler implements Runnable {
 		}
 	}
 
+	private void updateGame(Game game) {
+		if (!game.isRunning() && game.getPlayers().size() > 1) {
+			game.start();
+		}
+
+		for (int id : new LinkedList<Integer>(keysPressed.keySet())) {
+			List<Integer> keys = keysPressed.get(id);
+			if (game.hasPlayerWithId(id))
+				game.setPlayerKeys(id, keys);
+		}
+		game.update();
+	}
+
 	private void syncLoop() {
-/*		synchronized (this.games) {
-*/			for (Game game : games.values()) {
-				this.gameServer.update(game.getEntitiesAndPlayersMap(), game.popSoundEvents());
-/*			}
-*/		}
+		for (Game game : games.values()) {
+			this.gameServer.update(game.isRunning(), game.getAllEntitiesMap(),
+					game.popSoundEvents());
+		}
 	}
 
 	public void setKeysPressed(int id, List<Integer> keysPressed) {

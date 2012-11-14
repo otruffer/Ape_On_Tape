@@ -12,6 +12,16 @@ var loginReady;
 var roomChosen;
 var rooms;
 
+// audio support of browser
+var mp3Suppport = audioSupport("mp3");
+var oggSupport = audioSupport("ogg");
+var wavSupport = audioSupport("wav");
+
+function audioSupport(type) {
+	var response = new Audio().canPlayType("audio/" + type);
+	return response.length != 0 && response != "no";
+}
+
 // Log text to main window.
 function logText(msg) {
 	consoleDOM = $('#console');
@@ -108,6 +118,8 @@ function onMessage(incoming) {
 			handleSoundEvents(incoming.soundEvents);
 		}
 		updatePlayerList();
+		if (incoming.gameRunning)
+			hideWaitInfo();
 		break;
 	case 'INIT_GAME':
 		gameState.map = incoming.map;
@@ -132,7 +144,7 @@ function connect() {
 
 	// connect to socket
 	logText('* Connecting...');
-	ws = new WebSocket('ws://' + document.location.host + '/chatsocket');
+	ws = new WebSocket('ws://' + document.location.host + '/apesocket');
 	ws.onopen = function(e) {
 		logText('* Connected!');
 		login();
@@ -217,18 +229,23 @@ function initGame() {
 	initBackgroundMusic();
 }
 
+var backgroundMusic;
 function initBackgroundMusic() {
-	// toggleBackgroundMusic();
+	if (mp3Suppport)
+		backgroundMusic = new Audio('sound/follies.mp3');
+	else
+		backgroundMusic = new Audio('sound/follies.ogg');
 	$('#music-control').click(toggleBackgroundMusic);
 }
 
 function handleSoundEvents(events) {
 	if (events.indexOf('wall-collision') >= 0)
 		playCollisionSound();
+	if (events.indexOf('kill') >= 0)
+		playKillSound();
 }
 
 var bgMusicPlaying = false;
-var backgroundMusic = new Audio('sound/follies.mp3');
 function toggleBackgroundMusic() {
 	// var backgroundMusic = $('#background-music')[0];
 	var control = $('#music-control');
@@ -245,13 +262,28 @@ function toggleBackgroundMusic() {
 }
 
 function playCollisionSound() {
-	new Audio('sound/jab.mp3').play();
+	if (wavSupport)
+		new Audio('sound/bump.wav').play();
+	else
+		new Audio('sound/bump.mp3').play();
+}
+
+function playKillSound() {
+	if (mp3Suppport)
+		new Audio('sound/jab.mp3').play();
+	else if (oggSupport)
+		new Audio('sound/jab.ogg').play();
+	else
+		new Audio('sound/jab.wav').play();
 }
 
 function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
-	var tileSetPath = 'img/tiles/material_tileset.png';
-	loadTileSet('mat', tileSetPath, 25, 25);
+	preloadImage('bot', 'img/bot.png');
+	var materialPath = 'img/tiles/material_25px.png';
+	var bulletsPath = 'img/tiles/bullets_24px.png'
+	loadTileSet('mat', materialPath, 25, 25);
+	loadTileSet('bullet', bulletsPath, 24, 24);
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
@@ -267,6 +299,7 @@ var tilePreload = {};
  * Loads an image tile set as an array of pre-rendered canvas elements into the
  * tilePreload variable which can be accessed using tilePreload['name'].
  * tileWidth and tileHeight is the size of a subdivided tile in the tile set.
+ * NOTE: index [0] is an empty (fully transparent) tile
  */
 function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 	tilePreload[name] = new Array();

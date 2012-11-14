@@ -48,6 +48,7 @@ public class GameServer extends BaseWebSocketHandler {
 		String[] rooms;
 		String newRoom;
 		String[] soundEvents;
+		public boolean gameRunning;
 	}
 
 	public GameServer(GameHandler gameHandler) {
@@ -135,8 +136,10 @@ public class GameServer extends BaseWebSocketHandler {
 	// }
 	// }
 
-	public void update(Map<Integer, Entity> entities, String[] soundEvents) {
+	public void update(boolean gameRunning, Map<Integer, Entity> entities, String[] soundEvents) {
 		Outgoing outgoing = new Outgoing();
+		if (gameRunning)
+			outgoing.gameRunning = gameRunning;
 		outgoing.action = Outgoing.Action.UPDATE;
 		outgoing.entities = entities;
 		outgoing.soundEvents = soundEvents;

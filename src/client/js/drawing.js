@@ -36,6 +36,7 @@ function RenderingEngine(tileSize, playerSize) {
 	// TODO: make dynamic
 	this.T = 15; // half tile size
 	this.P = 20; // full player size
+	this.E = 20; // entity size (bullets, etc.)
 	this.sc = 1 / 0.6; // scaling parameter
 
 	/* preloaded offline background canvas */
@@ -78,7 +79,7 @@ function RenderingEngine(tileSize, playerSize) {
 		}
 		self.drawPlayers();
 		self.drawEntities();
-		
+
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
 			$("#fps").text(
@@ -195,19 +196,32 @@ function RenderingEngine(tileSize, playerSize) {
 					self.mainPlayer.y - dy, self.P, self.P);
 		}
 	}
-	this.drawEntities = function(){
-		for(id in gameState.entities)
+
+	this.drawEntities = function() {
+		for (id in gameState.entities)
 			self.drawEntity(gameState.entities[id]);
 	}
-	
-	this.drawEntity = function(entity){
+
+	this.drawEntity = function(entity) {
 		var dx = self.mainPlayer.absX - entity.y;
 		var dy = self.mainPlayer.absY - entity.x;
-		ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx,
-				self.mainPlayer.y - dy, self.P, self.P);
+		var offset = (self.P - self.E) / 2; // center the entity TODO: check
+
+		var tile;
+		switch (entity.type) {
+		case 'bot':
+			tile = imagePreload['bot'];
+			break;
+		case 'bullet':
+			tile = tilePreload['bullet'][3];
+		}
+
+		ctx.drawImage(tile, self.mainPlayer.x - dx + offset, self.mainPlayer.y
+				- dy + offset, self.E, self.E);
 	}
 
 	// draw background scene
+	// @depricated: read and draw map from json reader ('loadMap()')
 	this.loadBackground = function() {
 		self.bgCanvas = document.createElement('canvas');
 		self.bgCanvas.width = c.width;
@@ -270,7 +284,6 @@ function RenderingEngine(tileSize, playerSize) {
 		});
 	}
 }
-
 
 // returns the parameter that scales the game window to fullscreen
 var scale = function() {
