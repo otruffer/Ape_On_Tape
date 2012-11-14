@@ -99,11 +99,11 @@ function onMessage(incoming) {
 		gameState.players = new Array();
 		gameState.entities = new Array();
 		for (id in entities) {
-			if(entities[id].type == "player")
+			if (entities[id].type == "player")
 				gameState.players[id] = entities[id];
 			else
 				gameState.entities[id] = entities[id];
-				}
+		}
 		if (incoming.soundEvents) {
 			handleSoundEvents(incoming.soundEvents);
 		}

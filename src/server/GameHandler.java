@@ -23,7 +23,7 @@ public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final static int WEB_SERVER_PORT = 9877;
+	final static int WEB_SERVER_PORT = 9876;
 	final static boolean USE_EXTERNAL_WEB_ROOT = true;
 	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
 
@@ -141,17 +141,17 @@ public class GameHandler implements Runnable {
 				List<Integer> keys = keysPressed.get(id);
 				if (game.hasPlayerWithId(id))
 					game.setPlayerKeys(id, keys);
-				game.update();
 			}
+			game.update();
 		}
 	}
 
 	private void syncLoop() {
-		synchronized (this.games) {
-			for (Game game : games.values()) {
+/*		synchronized (this.games) {
+*/			for (Game game : games.values()) {
 				this.gameServer.update(game.getEntitiesAndPlayersMap(), game.popSoundEvents());
-			}
-		}
+/*			}
+*/		}
 	}
 
 	public void setKeysPressed(int id, List<Integer> keysPressed) {

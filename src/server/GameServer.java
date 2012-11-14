@@ -1,5 +1,7 @@
 package server;
 
+import java.net.Socket;
+import java.net.SocketOptions;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +20,7 @@ public class GameServer extends BaseWebSocketHandler {
 			new GsonExclusionStrategy(String.class)).create();
 	public static final String ID_KEY = "id";
 	public GameHandler gameHandler;
+	
 
 	static class Incoming {
 		enum Action {

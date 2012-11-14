@@ -173,6 +173,7 @@ public class NettyWebServer implements WebServer {
 
                 // Configure the server.
                 bootstrap = new ServerBootstrap();
+                bootstrap.setOption("tcpNoDelay", true);
 
                 // Set up the event pipeline factory.
                 bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
@@ -198,6 +199,7 @@ public class NettyWebServer implements WebServer {
                         return pipeline;
                     }
                 });
+
 
                 staleConnectionTrackingHandler = new StaleConnectionTrackingHandler(staleConnectionTimeout, executor);
                 ScheduledExecutorService staleCheckExecutor = Executors.newSingleThreadScheduledExecutor(new NamingThreadFactory("WEBBIT-STALE-CONNECTION-CHECK-THREAD"));
