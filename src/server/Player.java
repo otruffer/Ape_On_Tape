@@ -9,9 +9,6 @@ public class Player extends Entity {
 
 	@noGson
 	private List<Integer> keysPressed = new LinkedList<Integer>();
-	// the direction the player is looking.
-	@noGson
-	private int dirX = 1, dirY;
 	protected String name;
 
 	@noGson

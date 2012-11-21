@@ -281,9 +281,11 @@ function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
 	preloadImage('bot', 'img/bot.png');
 	var materialPath = 'img/tiles/material_25px.png';
-	var bulletsPath = 'img/tiles/bullets_24px.png'
+	var bulletsPath = 'img/tiles/bullets_24px.png';
+	var botPath = 'img/tiles/bot_48x48px.png';
 	loadTileSet('mat', materialPath, 25, 25);
 	loadTileSet('bullet', bulletsPath, 24, 24);
+	loadTileSet('bot', botPath, 48, 48);
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
@@ -315,7 +317,7 @@ function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 		var cols = img.width / tileWidth;
 		var rows = img.height / tileHeight;
 		var t_canvas, t_ctx;
-		for ( var y = 0; y < cols; y++) {
+		for ( var y = 0; y < rows; y++) {
 			for ( var x = 0; x < cols; x++) {
 				t_canvas = document.createElement('canvas');
 				t_canvas.width = tileWidth;

@@ -39,6 +39,15 @@ public class Bot extends Entity {
 
 		lastDX = dX * factor;
 		lastDY = dY * factor;
+
+		// for rendering in JavaScript: move direction:
+		if (Math.abs(lastDX) > Math.abs(lastDY)) {
+			dirX = (lastDX >= 0) ? 1 : -1;
+			dirY = 0;
+		} else {
+			dirY = (lastDY >= 0) ? 1 : -1;
+			dirX = 0;
+		}
 	}
 
 	private Entity closestPlayer(Game game) {
@@ -53,9 +62,9 @@ public class Bot extends Entity {
 		}
 		return closest;
 	}
-	
+
 	@Override
-	public void hitByBullet(Game game, Bullet bullet){
+	public void hitByBullet(Game game, Bullet bullet) {
 		if (!bullet.getOwner().equals(this)) {
 			this.deathCount++;
 			bullet.getOwner().incrementKillCount();

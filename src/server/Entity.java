@@ -6,12 +6,15 @@ import java.util.List;
 import server.GsonExclusionStrategy.noGson;
 
 public abstract class Entity {
-	
+
 	protected int id;
 	protected float x;
 	protected float y;
 	protected float height;
 	protected float width;
+	// the direction the entity is looking.
+	protected int dirX = 1;
+	protected int dirY;
 	protected String type = "entity";
 
 	@noGson
