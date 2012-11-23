@@ -14,6 +14,8 @@ public class Bullet extends Entity {
 	protected Entity owner;
 	@noGson
 	protected float radius;
+	@noGson
+	protected boolean killOnWallHit;
 
 	public Bullet(Entity owner, float x, float y, float dirX, float dirY) {
 		super(x, y);
@@ -25,6 +27,7 @@ public class Bullet extends Entity {
 		this.radius = 0;
 		this.height = 1;
 		this.width = 1;
+		this.killOnWallHit = true;
 	}
 
 	public void setRadius(float radius) {
@@ -37,17 +40,12 @@ public class Bullet extends Entity {
 
 	@Override
 	public void brain(Game game) {
-		float deltax = dirX * speed;
-		float deltay = dirY * speed;
-		if (deltax != 0 && deltay != 0) {
-			deltax /= Math.sqrt(2);
-			deltay /= Math.sqrt(2);
-		}
-		moveOnMap(game, deltax, deltay);
-		if (this.wallHit){
-			game.removeEntity(this);
-			System.out.println(this.getWidth());
-		}
+
+		this.moveInDirection(game);
+		
+		if (this.wallHit)
+			this.doWallHit(game);
+		
 		List<Entity> overlapping = Util.getEntitiesOverlapping(
 				game.getAllEntites(), this);
 		overlapping.remove(this.owner);
@@ -55,12 +53,38 @@ public class Bullet extends Entity {
 			entity.hitByBullet(game, this);
 		}
 		if (!overlapping.isEmpty())
-			game.removeEntity(this);
+			this.doEntityHit(game, overlapping);
+	}
+	
+	protected void moveInDirection(Game game){
+		float deltax = dirX * speed;
+		float deltay = dirY * speed;
+		if (deltax != 0 && deltay != 0) {
+			deltax /= Math.sqrt(2);
+			deltay /= Math.sqrt(2);
+		}
+		moveOnMap(game, deltax, deltay);
+	}
+	
+	protected void doWallHit(Game game){
+		game.removeEntity(this);
 	}
 
+	protected void doEntityHit(Game game, List<Entity> entities){
+		if(this.killOnWallHit)
+			game.removeEntity(this);
+	}
+	
 	@Override
 	public double getRadius() {
 		return radius;
 	}
 
+	public boolean isKillOnWallHit() {
+		return killOnWallHit;
+	}
+
+	public void setKillOnWallHit(boolean killOnWallHit) {
+		this.killOnWallHit = killOnWallHit;
+	}
 }
