@@ -59,6 +59,7 @@ public class Game {
 	}
 
 	public void addBot(int botId, String botName) {
+		System.out.println("bot added");
 		float[] start = map.getStartXY();
 		Bot bot = new Bot(botId, start[0], start[1], botName);
 		bot.setId(botId);

@@ -32,12 +32,19 @@
 function RenderingEngine(tileSize, playerSize) {
 	var self = this; // assure callback to right element
 
+	/* Game server properties */
+	this.BULLET_SIZE = 1;
+	this.PLAYER_SIZE = 20;
+	this.ENTITY_SIZE = 20;
+	this.TILE_SIZE = 30;
+
 	/* display properties */
-	// TODO: make dynamic
-	this.T = 15; // half tile size
-	this.P = 20; // full player size
-	this.E = 20; // entity size (bullets, etc.)
+	this.T = this.TILE_SIZE / 2; // half tile size
 	this.sc = 1 / 0.6; // scaling parameter
+	// effective drawing sizes of different entities
+	this.P = this.PLAYER_SIZE + 4;
+	this.E = this.ENTITY_SIZE;
+	this.B = this.BULLET_SIZE * 10;
 
 	/* preloaded offline background canvas */
 	this.bgCanvas = document.createElement('canvas');
@@ -101,18 +108,19 @@ function RenderingEngine(tileSize, playerSize) {
 		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, width, height);
 		if (!self.bgLoaded && !self.bgLoading) {
-			// self.loadBackground();
 			self.loadMap('maps/map.json'); // use when loading map from json
 		}
 	}
 
+	// Computes the bounding box parameters (offset positions sx and sy) if the
+	// map is too big to be drawn completely into the game's canvas.
 	this.computePlayerBoundingBox = function(player) {
 		if (!player)
 			return;
 
 		// effective, scaled position of the main player
 		if (self.bbox.canScrollX) {
-			var pCenterX = (player.y + (self.P / 2)) * self.sc;
+			var pCenterX = (player.y + (self.PLAYER_SIZE / 2)) * self.sc;
 			var sx = pCenterX - (c.width / 2);
 			sx = (sx < 0) ? 0 : sx; // overlapping left edge
 			sx = (sx + c.width > self.bgCanvas.width) ? self.bgCanvas.width
@@ -123,7 +131,7 @@ function RenderingEngine(tileSize, playerSize) {
 		}
 
 		if (self.bbox.canScrollY) {
-			var pCenterY = (player.x + (self.P / 2)) * self.sc;
+			var pCenterY = (player.x + (self.PLAYER_SIZE / 2)) * self.sc;
 			var sy = pCenterY - (c.height / 2);
 			sy = (sy < 0) ? 0 : sy; // overlapping upper edge
 			sy = (sy + c.height > self.bgCanvas.height) ? self.bgCanvas.height
@@ -134,36 +142,41 @@ function RenderingEngine(tileSize, playerSize) {
 		}
 	}
 
-	// computes the effective positions (top left corner of the tile) of
-	// the player (main player) as non-scaled parameters
+	// Computes the effective position of the main player on the screen in the
+	// non-scaled coordinate system considering that the game canvas only draws
+	// the bounding box content. The x, y position represents the top left
+	// corner of the player-tile. The information is stored in the
+	// self.mainPlayer object
 	this.computePlayerEffectivePosition = function(player) {
-		// player relative to map (absolute position)
+		// player relative to map (absolute position - non scaled)
 		self.mainPlayer.absX = player.y;
 		self.mainPlayer.absY = player.x;
 
-		if (self.bbox.canScrollX) { // if scrolling possible
-			// effective player position in x direction
+		if (self.bbox.canScrollX) { // if scrolling in x-direction possible..
+			// effective player position in x direction:
 			if (self.bbox.sx == 0) {
 				self.mainPlayer.x = self.mainPlayer.absX;
 			} else if (self.bbox.sx >= self.bgCanvas.width - c.width) {
 				self.mainPlayer.x = self.mainPlayer.absX
 						- (self.bgCanvas.width - c.width) / self.sc;
 			} else {
-				self.mainPlayer.x = (c.width / self.sc) / 2 - (self.P / 2);
+				self.mainPlayer.x = (c.width / self.sc) / 2
+						- (self.PLAYER_SIZE / 2);
 			}
 		} else { // use the absolute position
 			self.mainPlayer.x = self.mainPlayer.absX;
 		}
 
-		if (self.bbox.canScrollY) { // if scrolling possible
-			// effective player position in y direction
+		if (self.bbox.canScrollY) { // if scrolling in y-direction possible..
+			// effective player position in y direction:
 			if (self.bbox.sy == 0) {
 				self.mainPlayer.y = self.mainPlayer.absY;
 			} else if (self.bbox.sy >= self.bgCanvas.height - c.height) {
 				self.mainPlayer.y = self.mainPlayer.absY
 						- (self.bgCanvas.height - c.height) / self.sc;
 			} else {
-				self.mainPlayer.y = (c.height / self.sc) / 2 - (self.P / 2);
+				self.mainPlayer.y = (c.height / self.sc) / 2
+						- (self.PLAYER_SIZE / 2);
 			}
 		} else { // use the absolute position
 			self.mainPlayer.y = self.mainPlayer.absY;
@@ -179,21 +192,22 @@ function RenderingEngine(tileSize, playerSize) {
 			}
 		}
 
-		// draw players relative to main player
+		// draw all players relative to main player
 		ctx.scale(self.sc, self.sc);
 		for (id in gameState.players)
 			self.drawPlayer(gameState.players[id], id == gameState.playerId);
 	}
 
 	this.drawPlayer = function(player, isself) {
+		var offset = (self.PLAYER_SIZE - self.P) / 2;
 		if (isself) {
-			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x,
-					self.mainPlayer.y, self.P, self.P);
+			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x + offset,
+					self.mainPlayer.y + offset, self.P, self.P);
 		} else { // draw other players relative to main player
 			var dx = self.mainPlayer.absX - player.y;
 			var dy = self.mainPlayer.absY - player.x;
-			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx,
-					self.mainPlayer.y - dy, self.P, self.P);
+			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx + offset,
+					self.mainPlayer.y - dy + offset, self.P, self.P);
 		}
 	}
 
@@ -203,21 +217,35 @@ function RenderingEngine(tileSize, playerSize) {
 	}
 
 	this.drawEntity = function(entity) {
-		var dx = self.mainPlayer.absX - entity.y;
-		var dy = self.mainPlayer.absY - entity.x;
-		var offset = (self.P - self.E) / 2; // center the entity if other size
-
+		// choose right entity size and tile to calculate deltas and to show the
+		// right image
 		var tile;
+		var entitySize;
+		var effectiveSize;
 		switch (entity.type) {
 		case 'bot':
+			entitySize = self.ENTITY_SIZE;
+			effectiveSize = self.E;
 			tile = tilePreload['bot'][animIndex(entity.dirX, entity.dirY)];
 			break;
 		case 'bullet':
+			entitySize = self.BULLET_SIZE;
+			effectiveSize = self.B;
 			tile = tilePreload['bullet'][3];
+			break;
 		}
 
+		// calculate center-to-center distances
+		var dx = (self.mainPlayer.absX + self.PLAYER_SIZE / 2)
+				- (entity.y + entitySize / 2);
+		var dy = (self.mainPlayer.absY + self.PLAYER_SIZE / 2)
+				- (entity.x + entitySize / 2);
+
+		// calculate offset to center the entity to it's effective drawn size
+		var offset = (self.PLAYER_SIZE - effectiveSize) / 2;
+
 		ctx.drawImage(tile, self.mainPlayer.x - dx + offset, self.mainPlayer.y
-				- dy + offset, self.E, self.E);
+				- dy + offset, effectiveSize, effectiveSize);
 	}
 
 	this.loadMap = function(path) {
@@ -235,9 +263,11 @@ function RenderingEngine(tileSize, playerSize) {
 			var i = 0;
 			for ( var iy = 0; iy < json.height; iy++) {
 				for ( var ix = 0; ix < json.width; ix++) {
+					// background-layer
 					bg_ctx.drawImage(
 							tilePreload['mat'][json.layers[0].data[i]], ix
 									* self.T, iy * self.T, self.T, self.T);
+					// foreground-layer
 					bg_ctx.drawImage(
 							tilePreload['mat'][json.layers[1].data[i]], ix
 									* self.T, iy * self.T, self.T, self.T);
@@ -262,22 +292,23 @@ var _ = function(argument) {
 }
 
 var animIndex = function(dirX, dirY) {
-	if(Math.abs(dirX)>Math.abs(dirY)){
+	if (Math.abs(dirX) > Math.abs(dirY)) {
 		if (dirX > 0)
 			return 9;
 		else
-			return  4;
+			return 4;
 	} else {
-		if(dirY > 0)
-			return  10;
+		if (dirY > 0)
+			return 10;
 		else
 			return 3;
 	}
 }
 
+/* ================================ TRASHBOX ================================ */
 /*
- * TRASHBOX // draw background scene // @depricated: read and draw map from json
- * reader ('loadMap()') this.loadBackground = function() { self.bgCanvas =
+ * // draw background scene // @depricated: read and draw map from json reader
+ * ('loadMap()') this.loadBackground = function() { self.bgCanvas =
  * document.createElement('canvas'); self.bgCanvas.width = c.width;
  * self.bgCanvas.height = c.height; var bctx = self.bgCanvas.getContext('2d');
  * bctx.scale(self.sc, self.sc); for (ix in gameState.map) { for (iy in
