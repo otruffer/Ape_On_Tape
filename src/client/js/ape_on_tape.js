@@ -282,7 +282,7 @@ function loadGraphics() {
 	preloadImage('bot', 'img/bot.png');
 	var materialPath = 'img/tiles/material_25px.png';
 	var bulletsPath = 'img/tiles/bullets_24px.png';
-	var botPath = 'img/tiles/bot_48x48px.png';
+	var botPath = 'img/tiles/bot_48px.png';
 	loadTileSet('mat', materialPath, 25, 25);
 	loadTileSet('bullet', bulletsPath, 24, 24);
 	loadTileSet('bot', botPath, 48, 48);

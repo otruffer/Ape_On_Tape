@@ -262,14 +262,16 @@ var _ = function(argument) {
 }
 
 var animIndex = function(dirX, dirY) {
-	if (dirX > 0) {
-		return 8;
-	} else if (dirX < 0) {
-		return 5;
-	} else if (dirY > 0) {
-		return 2;
+	if(Math.abs(dirX)>Math.abs(dirY)){
+		if (dirX > 0)
+			return 9;
+		else
+			return  4;
 	} else {
-		return 11;
+		if(dirY > 0)
+			return  10;
+		else
+			return 3;
 	}
 }
 

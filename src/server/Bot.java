@@ -40,14 +40,9 @@ public class Bot extends Entity {
 		lastDX = dX * factor;
 		lastDY = dY * factor;
 
-		// for rendering in JavaScript: move direction:
-		if (Math.abs(lastDX) > Math.abs(lastDY)) {
-			dirX = (lastDX >= 0) ? 1 : -1;
-			dirY = 0;
-		} else {
-			dirY = (lastDY >= 0) ? 1 : -1;
-			dirX = 0;
-		}
+		// direction for rendering
+		dirX = Math.round(lastDX);
+		dirY = Math.round(lastDY);
 	}
 
 	private Entity closestPlayer(Game game) {

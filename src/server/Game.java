@@ -20,7 +20,7 @@ public class Game {
 	private volatile Map<Integer, Player> players;
 	private volatile Map<Integer, Entity> entities;
 	TileMap map;
-	int width, height;
+	int width, height; // TODO: unused? (also in constructor)
 	private Collection<CollisionListener> collisionListeners;
 	private Set<String> soundEvents;
 	/**
@@ -36,14 +36,11 @@ public class Game {
 		this.width = width;
 		this.height = height;
 		this.soundEvents = new HashSet<String>();
-		// this.map = new TileMap(testMap);
-		// TODO: replace map path
+		// TODO: replace map path (make dynamic choice)
 		String mapPath = "src/client/maps/map.json"
 				.replace("/", File.separator);
-		int[][] map = loadJsonMap(mapPath);
-		this.map = new TileMap(map);
-		this.height = map.length;
-		this.width = map[0].length;
+		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
+		this.map = mapInfo.getCollisionMap();
 		this.running = true;
 	}
 
@@ -113,55 +110,6 @@ public class Game {
 	 */
 	public boolean noPlayers() {
 		return this.players.isEmpty();
-	}
-
-	// TODO: fix map.layers.get(1) in case there the JSON file has only one
-	// layer (by now the test map has a 'foreground' and a 'background layer'
-	public int[][] loadJsonMap(String path) {
-		BufferedReader br = null; // TODO: still ugly
-
-		try {
-			br = new BufferedReader(new FileReader(path));
-		} catch (FileNotFoundException e) {
-			System.err.println("File \"" + path + "\" not found!");
-			e.printStackTrace();
-			// return testMap;
-		}
-
-		// read json file
-		Gson json = new Gson();
-		JsonMap map = json.fromJson(br, JsonMap.class);
-
-		// calculate binary map proportions
-		JsonMapLayer layer = map.layers.get(1); // this is the foreground
-		int width = layer.width / 2;
-		int height = layer.height / 2;
-		int[] data = layer.data;
-
-		// shrink json map to binary collision map
-		int[][] newMap = new int[width][height];
-		int i;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				i = (y * 2) * layer.width + (x * 2);
-				newMap[x][y] = (data[i] == 0) ? 0 : 1;
-			}
-		}
-
-		return newMap;
-	}
-
-	static class JsonMap {
-		int width;
-		int height;
-		List<JsonMapLayer> layers;
-	}
-
-	static class JsonMapLayer {
-		int[] data;
-		String name;
-		int height;
-		int width;
 	}
 
 	public void addCollisionListener(CollisionListener listener) {
