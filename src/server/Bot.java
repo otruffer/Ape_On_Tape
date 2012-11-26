@@ -8,16 +8,10 @@ import server.GsonExclusionStrategy.noGson;
 public class Bot extends Entity {
 
 	@noGson
-	protected float RANDOMNESS;
-	@noGson
-	protected float MOVE_DIRECTION_MEMORY;
-	@noGson
-	float lastDX = 0, lastDY = 0;
+	protected float lastDX = 0, lastDY = 0;
 
 	public Bot(int id, float x, float y, String name) {
 		super(id, x, y);
-		this.MOVE_DIRECTION_MEMORY = 0;
-		this.RANDOMNESS = 0;
 		this.type = "bot";
 		this.collisionResolving = true;
 	}
@@ -26,10 +20,8 @@ public class Bot extends Entity {
 	public void brain(Game game) {
 		// chase a player
 		Entity other = closestPlayer(game);
-		float dX = (float) (deltaX(other) + lastDX * this.MOVE_DIRECTION_MEMORY + (Math
-				.random() * RANDOMNESS - RANDOMNESS / 2));
-		float dY = (float) (deltaY(other) + lastDY * this.MOVE_DIRECTION_MEMORY + (Math
-				.random() * RANDOMNESS - RANDOMNESS / 2));
+		float dX = deltaX(other);
+		float dY = deltaY(other);
 		float distance = euclideanLength(dX, dY);
 		float factor = this.speed / distance;
 		List<Entity> overlapping = moveOnMap(game, factor * dX, factor * dY);
@@ -37,12 +29,12 @@ public class Bot extends Entity {
 			entity.hitByBullet(game, new Bullet(this, 0, 0, 0, 0));
 		}
 
+		// move direction for rendering
+		dirX = dX * factor - lastDX;
+		dirY = dY * factor - lastDY;
+
 		lastDX = dX * factor;
 		lastDY = dY * factor;
-
-		// direction for rendering
-		dirX = Math.round(lastDX);
-		dirY = Math.round(lastDY);
 	}
 
 	private Entity closestPlayer(Game game) {

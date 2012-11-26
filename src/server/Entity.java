@@ -13,8 +13,8 @@ public abstract class Entity {
 	protected float height;
 	protected float width;
 	// the direction the entity is looking.
-	protected int dirX = 1;
-	protected int dirY;
+	protected float dirX = 1;
+	protected float dirY;
 	protected String type = "entity";
 
 	@noGson

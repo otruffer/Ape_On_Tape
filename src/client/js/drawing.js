@@ -226,7 +226,8 @@ function RenderingEngine(tileSize, playerSize) {
 		case 'bot':
 			entitySize = self.ENTITY_SIZE;
 			effectiveSize = self.E;
-			tile = tilePreload['bot'][animIndex(entity.dirX, entity.dirY)];
+			tile = tilePreload['bot'][animIndex(entity.dirX, entity.dirY,
+					entity.id)];
 			break;
 		case 'bullet':
 			entitySize = self.BULLET_SIZE;
@@ -291,18 +292,22 @@ var _ = function(argument) {
 	return argument * scale();
 }
 
-var animIndex = function(dirX, dirY) {
+var lastIndex = new Array();
+var animIndex = function(dirX, dirY, id) {
+	var index = (lastIndex[id] == undefined) ? 3 : lastIndex[id];
+
 	if (Math.abs(dirX) > Math.abs(dirY)) {
 		if (dirX > 0)
-			return 9;
-		else
-			return 4;
+			index = 4;
+		else if (dirX < 0)
+			index = 9;
 	} else {
 		if (dirY > 0)
-			return 10;
-		else
-			return 3;
+			index = 10;
+		else if (dirY < 0)
+			index = 3;
 	}
+	return index;
 }
 
 /* ================================ TRASHBOX ================================ */
