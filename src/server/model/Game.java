@@ -168,6 +168,7 @@ public class Game {
 		for (String soundEvent : this.soundEvents) {
 			GameEvent event = new GameEvent(GameEvent.Type.SOUND);
 			event.content = soundEvent;
+			result.add(event);
 		}
 		this.soundEvents.clear();
 		return result.toArray(new GameEvent[0]);

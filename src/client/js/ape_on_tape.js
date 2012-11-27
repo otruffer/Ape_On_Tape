@@ -240,7 +240,6 @@ function handleEvents(events) {
 }
 
 function handleSoundEvent(event) {
-	alert('sound');
 	if (event == 'wall-collision')
 		playCollisionSound();
 	if (event == 'kill')
