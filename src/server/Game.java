@@ -1,9 +1,6 @@
 package server;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,8 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.gson.Gson;
 
 public class Game {
 
@@ -40,7 +35,7 @@ public class Game {
 		String mapPath = "src/client/maps/map.json"
 				.replace("/", File.separator);
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
-		this.map = mapInfo.getCollisionMap();
+		this.map = new TileMap(mapInfo);
 		this.running = true;
 	}
 
@@ -52,7 +47,7 @@ public class Game {
 	}
 
 	public void addPlayer(int playerId, String playerName) {
-		float[] start = map.getStartXY();
+		float[] start = map.getTileXY(PositionType.PlayerStart);
 		Player player = new Player(playerId, start[0], start[1], playerName);
 		player.setId(playerId);
 		this.players.put(player.id, player);
@@ -60,14 +55,14 @@ public class Game {
 
 	public void addBot(int botId, String botName) {
 		System.out.println("bot added");
-		float[] start = map.getStartXY();
+		float[] start = map.getTileXY(PositionType.BotStart);
 		Bot bot = new Bot(botId, start[0], start[1], botName);
 		bot.setId(botId);
 		this.entities.put(bot.id, bot);
 	}
 
 	public void addDrunkBot(int botId, String botName) {
-		float[] start = map.getStartXY();
+		float[] start = map.getTileXY(PositionType.BotStart);
 		Bot bot = new DrunkBot(botId, start[0], start[1], botName);
 		bot.setId(botId);
 		this.entities.put(bot.id, bot);
