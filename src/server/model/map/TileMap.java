@@ -1,8 +1,10 @@
-package server;
+package server.model.map;
 
 import java.awt.Point;
 import java.util.List;
 import java.util.Random;
+
+import server.util.Util;
 
 // random starting pos atm.
 // private static int[] START_TYLE = {1,1};
@@ -91,5 +93,15 @@ public class TileMap {
 					randomWalk.getY() * tileHeight };
 			return xy;
 		}
+	}
+
+	public boolean inFinish(float x, float y) {
+		List<Point> finishPoints = mapInfo
+				.getEntities(PositionType.PlayerFinish);
+		for (Point upLeft : finishPoints) {
+			if (x - upLeft.x < tileWidth && y - upLeft.y < tileHeight)
+				return true;
+		}
+		return false;
 	}
 }

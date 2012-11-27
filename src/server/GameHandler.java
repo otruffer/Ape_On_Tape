@@ -17,6 +17,13 @@ import java.util.concurrent.ExecutionException;
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
 
+import server.listeners.RealCollisionListener;
+import server.model.Game;
+import server.model.Player;
+import server.network.GameServer;
+import server.util.IdFactory;
+import server.util.Util;
+
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
@@ -225,7 +232,7 @@ public class GameHandler implements Runnable {
 	public List<Integer> idsFromPlayers(List<Player> players) {
 		List<Integer> ids = new LinkedList<Integer>();
 		for (Player p : players)
-			ids.add(p.id);
+			ids.add(p.getId());
 		return ids;
 	}
 }

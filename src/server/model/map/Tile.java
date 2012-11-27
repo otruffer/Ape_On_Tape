@@ -1,4 +1,4 @@
-package server;
+package server.model.map;
 
 public class Tile {
 	private TileMap map;

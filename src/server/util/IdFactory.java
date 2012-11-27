@@ -1,4 +1,4 @@
-package server;
+package server.util;
 
 public class IdFactory {
 

@@ -1,4 +1,4 @@
-package server;
+package server.network;
 
 import java.net.Socket;
 import java.net.SocketOptions;
@@ -10,6 +10,10 @@ import java.util.Set;
 
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
+
+import server.GameHandler;
+import server.model.Entity;
+import server.util.IdFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

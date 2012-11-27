@@ -1,8 +1,9 @@
-package server;
+package server.model;
 
 import java.util.List;
 
-import server.GsonExclusionStrategy.noGson;
+import server.network.GsonExclusionStrategy.noGson;
+import server.util.Util;
 
 public class Bullet extends Entity {
 

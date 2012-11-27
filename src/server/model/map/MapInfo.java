@@ -1,4 +1,4 @@
-package server;
+package server.model.map;
 
 import java.awt.Point;
 import java.io.BufferedReader;
@@ -33,7 +33,7 @@ public class MapInfo {
 			PositionType.None, // symbol #09
 			PositionType.None, // symbol #10
 			PositionType.None, // symbol #11
-			PositionType.None, // symbol #12
+			PositionType.PlayerFinish, // symbol #12
 			PositionType.None, // symbol #13
 			PositionType.None, // symbol #14
 			PositionType.None, // symbol #15

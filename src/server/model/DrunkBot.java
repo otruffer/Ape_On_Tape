@@ -1,6 +1,6 @@
-package server;
+package server.model;
 
-import server.GsonExclusionStrategy.noGson;
+import server.network.GsonExclusionStrategy.noGson;
 
 public class DrunkBot extends Bot {
 

@@ -1,15 +1,19 @@
-package server;
+package server.model;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import server.GsonExclusionStrategy.noGson;
+import server.listeners.MoveListener;
+import server.network.GsonExclusionStrategy.noGson;
+import server.util.IdFactory;
+import server.util.Util;
 
 public abstract class Entity {
 
-	protected int id;
-	protected float x;
-	protected float y;
+	private int id;
+	private float x;
+	private float y;
 	protected float height;
 	protected float width;
 	// the direction the entity is looking.
@@ -27,6 +31,7 @@ public abstract class Entity {
 	private boolean collisionState;
 	protected int killCount = 0;
 	protected int deathCount = 0;
+	private Collection<MoveListener> moveListeners;
 
 	public Entity(int id, float x, float y) {
 		this.id = id;
@@ -35,6 +40,8 @@ public abstract class Entity {
 		this.y = y;
 		this.height = 20f;
 		this.width = 20f;
+
+		this.moveListeners = new LinkedList<MoveListener>();
 
 		this.setType();
 	}
@@ -102,10 +109,17 @@ public abstract class Entity {
 
 	public void setX(float x) {
 		this.x = x;
+		positionChanged();
 	}
 
 	public void setY(float y) {
 		this.y = y;
+		positionChanged();
+	}
+
+	private void positionChanged() {
+		for (MoveListener listener : moveListeners)
+			listener.positionChanged(this);
 	}
 
 	public void setCollisionState(boolean state) {
@@ -167,10 +181,14 @@ public abstract class Entity {
 	}
 
 	protected float deltaX(Entity entity) {
-		return entity.x - this.x;
+		return entity.getX() - this.getX();
 	}
 
 	protected float deltaY(Entity entity) {
-		return entity.y - this.y;
+		return entity.getY() - this.getY();
+	}
+
+	public void addMoveListener(MoveListener listener) {
+		this.moveListeners.add(listener);
 	}
 }

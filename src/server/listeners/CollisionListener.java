@@ -1,4 +1,7 @@
-package server;
+package server.listeners;
+
+import server.model.Entity;
+import server.model.Game;
 
 public interface CollisionListener {
 	

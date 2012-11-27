@@ -1,4 +1,4 @@
-package server;
+package server.model;
 
 import java.io.File;
 import java.util.Collection;
@@ -8,6 +8,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import server.listeners.CollisionListener;
+import server.listeners.PlayerMoveListener;
+import server.model.map.MapInfo;
+import server.model.map.PositionType;
+import server.model.map.TileMap;
 
 public class Game {
 
@@ -50,7 +56,8 @@ public class Game {
 		float[] start = map.getTileXY(PositionType.PlayerStart);
 		Player player = new Player(playerId, start[0], start[1], playerName);
 		player.setId(playerId);
-		this.players.put(player.id, player);
+		player.addMoveListener(new PlayerMoveListener(this, map));
+		this.players.put(player.getId(), player);
 	}
 
 	public void addBot(int botId, String botName) {
@@ -58,14 +65,14 @@ public class Game {
 		float[] start = map.getTileXY(PositionType.BotStart);
 		Bot bot = new Bot(botId, start[0], start[1], botName);
 		bot.setId(botId);
-		this.entities.put(bot.id, bot);
+		this.entities.put(bot.getId(), bot);
 	}
 
 	public void addDrunkBot(int botId, String botName) {
 		float[] start = map.getTileXY(PositionType.BotStart);
 		Bot bot = new DrunkBot(botId, start[0], start[1], botName);
 		bot.setId(botId);
-		this.entities.put(bot.id, bot);
+		this.entities.put(bot.getId(), bot);
 	}
 
 	public void removePlayer(int playerId) {
@@ -167,6 +174,10 @@ public class Game {
 
 	public boolean isRunning() {
 		return running;
+	}
+
+	public void playerFinished(Player p) {
+		// TODO
 	}
 
 }

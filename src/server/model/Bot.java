@@ -1,9 +1,10 @@
-package server;
+package server.model;
 
 import java.util.Collection;
 import java.util.List;
 
-import server.GsonExclusionStrategy.noGson;
+import server.model.map.PositionType;
+import server.network.GsonExclusionStrategy.noGson;
 
 public class Bot extends Entity {
 

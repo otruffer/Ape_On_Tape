@@ -1,4 +1,4 @@
-package server;
+package server.network;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

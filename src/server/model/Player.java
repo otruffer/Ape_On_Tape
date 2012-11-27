@@ -1,9 +1,11 @@
-package server;
+package server.model;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import server.GsonExclusionStrategy.noGson;
+import server.model.map.PositionType;
+import server.network.GsonExclusionStrategy.noGson;
+import server.util.Util;
 
 public class Player extends Entity {
 
@@ -33,7 +35,7 @@ public class Player extends Entity {
 		currentShootDelay++;
 		if (Util.isShootKeyPressed(keysPressed)
 				&& currentShootDelay > SHOOT_DELAY) {
-			Bullet bullet = new Bullet(this, this.x, this.y, dirX, dirY);
+			Bullet bullet = new Bullet(this, this.getX(), this.getX(), dirX, dirY);
 			game.addEntity(bullet);
 			currentShootDelay = 0;
 		}
