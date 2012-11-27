@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.awt.Point;
 
 import server.exceptions.MapParseException;
@@ -24,7 +26,7 @@ public class MapInfo {
 
 	// defines the entity type of a symbol TODO: set up
 	public static final EntityType[] entitySymbols = {//
-	EntityType.None, // symbol #01
+	EntityType.PlayerStart, // symbol #01
 			EntityType.None, // symbol #02
 			EntityType.None, // symbol #03
 			EntityType.None, // symbol #04
@@ -53,11 +55,11 @@ public class MapInfo {
 
 	// FIELDS
 	private TileMap collisionMap;
-	private List<Touple<EntityType, Point>> entities;
+	private Map<EntityType, List<Point>> entities;
 
 	// CONSTRUCTOR
 	public MapInfo() {
-		this.entities = new ArrayList<Touple<EntityType, Point>>();
+		this.entities = new HashMap<EntityType, List<Point>>();
 	}
 
 	public void setCollisionMap(TileMap map) {
@@ -68,7 +70,7 @@ public class MapInfo {
 		return this.collisionMap;
 	}
 
-	public List<Touple<EntityType, Point>> getEntities() {
+	public Map<EntityType, List<Point>> getEntities() {
 		return this.entities;
 	}
 
@@ -77,7 +79,10 @@ public class MapInfo {
 		if (EntityType.None.equals(t))
 			return;
 
-		this.entities.add(new Touple<EntityType, Point>(t, new Point(x, y)));
+		if (!entities.containsKey(t)) {
+			entities.put(t, new ArrayList<Point>());
+		}
+		this.entities.get(t).add(new Point(x, y));
 	}
 
 	public static MapInfo fromJSON(String filename) {
