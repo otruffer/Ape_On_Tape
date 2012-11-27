@@ -1,6 +1,7 @@
 package server.model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -162,10 +163,14 @@ public class Game {
 		return e;
 	}
 
-	public String[] popSoundEvents() {
-		String[] result = this.soundEvents.toArray(new String[0]);
+	public GameEvent[] popEvents() {
+		Collection<GameEvent> result = new ArrayList<GameEvent>();
+		for (String soundEvent : this.soundEvents) {
+			GameEvent event = new GameEvent(GameEvent.Type.SOUND);
+			event.content = soundEvent;
+		}
 		this.soundEvents.clear();
-		return result;
+		return result.toArray(new GameEvent[0]);
 	}
 
 	public void death(Player player) {

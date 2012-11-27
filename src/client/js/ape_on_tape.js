@@ -114,8 +114,8 @@ function onMessage(incoming) {
 			else
 				gameState.entities[id] = entities[id];
 		}
-		if (incoming.soundEvents) {
-			handleSoundEvents(incoming.soundEvents);
+		if (incoming.events) {
+			handleEvents(incoming.events);
 		}
 		updatePlayerList();
 		if (incoming.gameRunning)
@@ -229,6 +229,24 @@ function initGame() {
 	initBackgroundMusic();
 }
 
+function handleEvents(events) {
+	for (var i in events) {
+		var event = events[i];
+		switch (event.type) {
+		case 'SOUND':
+			handleSoundEvent(event.content);
+		}
+	}
+}
+
+function handleSoundEvent(event) {
+	alert('sound');
+	if (event == 'wall-collision')
+		playCollisionSound();
+	if (event == 'kill')
+		playKillSound();
+}
+
 var backgroundMusic;
 function initBackgroundMusic() {
 	if (mp3Suppport)
@@ -236,13 +254,6 @@ function initBackgroundMusic() {
 	else
 		backgroundMusic = new Audio('sound/follies.ogg');
 	$('#music-control').click(toggleBackgroundMusic);
-}
-
-function handleSoundEvents(events) {
-	if (events.indexOf('wall-collision') >= 0)
-		playCollisionSound();
-	if (events.indexOf('kill') >= 0)
-		playKillSound();
 }
 
 var bgMusicPlaying = false;

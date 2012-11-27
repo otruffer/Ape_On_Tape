@@ -1,7 +1,5 @@
 package server.network;
 
-import java.net.Socket;
-import java.net.SocketOptions;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +11,7 @@ import org.webbitserver.WebSocketConnection;
 
 import server.GameHandler;
 import server.model.Entity;
+import server.model.GameEvent;
 import server.util.IdFactory;
 
 import com.google.gson.Gson;
@@ -24,7 +23,6 @@ public class GameServer extends BaseWebSocketHandler {
 			new GsonExclusionStrategy(String.class)).create();
 	public static final String ID_KEY = "id";
 	public GameHandler gameHandler;
-	
 
 	static class Incoming {
 		enum Action {
@@ -51,7 +49,7 @@ public class GameServer extends BaseWebSocketHandler {
 		int playerId;
 		String[] rooms;
 		String newRoom;
-		String[] soundEvents;
+		GameEvent[] events;
 		public boolean gameRunning;
 	}
 
@@ -140,13 +138,14 @@ public class GameServer extends BaseWebSocketHandler {
 	// }
 	// }
 
-	public void update(boolean gameRunning, Map<Integer, Entity> entities, String[] soundEvents) {
+	public void update(boolean gameRunning, Map<Integer, Entity> entities,
+			GameEvent[] events) {
 		Outgoing outgoing = new Outgoing();
 		if (gameRunning)
 			outgoing.gameRunning = gameRunning;
 		outgoing.action = Outgoing.Action.UPDATE;
 		outgoing.entities = entities;
-		outgoing.soundEvents = soundEvents;
+		outgoing.events = events;
 		broadcast(outgoing, entities.keySet());
 	}
 

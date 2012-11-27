@@ -23,7 +23,6 @@ import server.model.Player;
 import server.network.GameServer;
 import server.util.IdFactory;
 import server.util.Util;
-
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
@@ -164,7 +163,7 @@ public class GameHandler implements Runnable {
 	private void syncLoop() {
 		for (Game game : games.values()) {
 			this.gameServer.update(game.isRunning(), game.getAllEntitiesMap(),
-					game.popSoundEvents());
+					game.popEvents());
 		}
 	}
 
