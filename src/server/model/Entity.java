@@ -116,7 +116,7 @@ public abstract class Entity {
 		this.y = y;
 		positionChanged();
 	}
-
+	
 	private void positionChanged() {
 		for (MoveListener listener : moveListeners)
 			listener.positionChanged(this);

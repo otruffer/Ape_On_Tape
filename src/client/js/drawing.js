@@ -296,14 +296,14 @@ var lastIndex = new Array();
 var animIndex = function(dirX, dirY, id) {
 	var index = (lastIndex[id] == undefined) ? 3 : lastIndex[id];
 
-	if (dirY > 0) // moving upwards
+	if (dirY < 0) // moving upwards
 		index = 10;
-	else if (dirY < 0) // moving downwards
+	else if (dirY > 0) // moving downwards
 		index = 3;
 	else { // moving either right, left or nowhere
-		if (dirX > 0) // moving right
+		if (dirX < 0) // moving left
 			index = 4;
-		else if (dirX < 0) // moving left
+		else if (dirX > 0) // moving right
 			index = 9;
 	}
 

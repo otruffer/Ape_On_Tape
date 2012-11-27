@@ -41,15 +41,7 @@ public class MapInfo {
 			PositionType.None, // symbol #17
 	};
 
-	public static PositionType getEntityType(int number, int entityFirstgrid) {
-		int index = number - entityFirstgrid;
-		if (index < 0 || index >= entitySymbols.length)
-			return PositionType.None;
-		else
-			return entitySymbols[index];
-	}
-
-	// FIELDS
+	// DYNAMIC FIELDS
 	private int[][] collisionMap;
 	private Map<PositionType, List<Point>> entities;
 
@@ -66,11 +58,11 @@ public class MapInfo {
 		return this.collisionMap;
 	}
 
-	public Map<PositionType, List<Point>> getEntitiesMap() {
+	public Map<PositionType, List<Point>> getPositionsMap() {
 		return this.entities;
 	}
 
-	public List<Point> getEntities(PositionType type) {
+	public List<Point> getPositions(PositionType type) {
 		return this.entities.get(type);
 	}
 
@@ -109,7 +101,6 @@ public class MapInfo {
 		MapInfo mapInfo = new MapInfo();
 
 		// == GENERATE COLLISION MAP =====================================
-		// search for collision map data
 		JsonMapLayer layer = searchLayer(FOREGROUND, map);
 
 		// set collision map properties
@@ -131,7 +122,8 @@ public class MapInfo {
 
 		// == GENERATE ENTITY STARTING POSITIONS =========================
 		int entityFirstgrid = 0;
-		// search for displacement index of entities
+		// search for displacement index for entity symbol numbers (depending on
+		// tileset and it's "firstgrid")
 		for (JsonTileSet tileSet : map.tilesets) {
 			if (ENTITIES.equals(tileSet.name)) {
 				entityFirstgrid = tileSet.firstgid;
@@ -163,6 +155,14 @@ public class MapInfo {
 		}
 
 		return mapInfo;
+	}
+
+	public static PositionType getEntityType(int number, int entityFirstgrid) {
+		int index = number - entityFirstgrid;
+		if (index < 0 || index >= entitySymbols.length)
+			return PositionType.None;
+		else
+			return entitySymbols[index];
 	}
 
 	private static JsonMapLayer searchLayer(String layerName, JsonMap map)

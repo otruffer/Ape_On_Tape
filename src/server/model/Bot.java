@@ -10,9 +10,12 @@ public class Bot extends Entity {
 
 	@noGson
 	protected float lastDX = 0, lastDY = 0;
+	private float lastX, lastY;
 
 	public Bot(int id, float x, float y, String name) {
 		super(id, x, y);
+		this.lastX = x;
+		this.lastY = y;
 		this.type = "bot";
 		this.collisionResolving = true;
 		this.speed *= 0.75;
@@ -61,26 +64,37 @@ public class Bot extends Entity {
 
 	@Override
 	public void setX(float x) {
-		// update viewing direction
-		float dirXnew = x - this.dirX;
-		if (dirXnew != 0) {
-			dirXnew /= Math.abs(dirXnew);
-		}
-		this.dirX = Math.round(dirXnew);
-		// perform setX
+		this.lastX = this.getX();
+		this.updateLookingDirection(x, this.getY());
 		super.setX(x);
 	}
 
 	@Override
 	public void setY(float y) {
-		// update viewing direction
-		float dirYnew = y - this.dirY;
-		if (dirYnew != 0) {
-			dirYnew /= Math.abs(dirYnew);
-		}
-		this.dirY = Math.round(dirYnew);
-		// perform setY
+		this.lastY = this.getY();
+		this.updateLookingDirection(y, this.getY());
 		super.setY(y);
 	}
 
+	private void updateLookingDirection(float xNew, float yNew) {
+		float dirXnew = xNew - this.lastX;
+		float dirYnew = yNew - this.lastY;
+		// calculate normalized (unit length) looking direction
+		if (dirXnew == dirYnew) {
+			if (dirXnew == 0)
+				return;
+			else { // exact diagonal movement
+				dirXnew /= Math.abs(dirXnew);
+				dirYnew /= Math.abs(dirYnew);
+			}
+		} else if (Math.abs(dirXnew) > Math.abs(dirYnew)) {
+			dirXnew /= Math.abs(dirXnew);
+			dirYnew = 0;
+		} else {
+			dirYnew /= Math.abs(dirYnew);
+			dirXnew = 0;
+		}
+		this.dirX = Math.round(dirXnew);
+		this.dirY = Math.round(dirYnew);
+	}
 }

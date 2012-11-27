@@ -83,7 +83,7 @@ public class TileMap {
 	public float[] getTileXY(PositionType type) {
 		// TODO: second, third etc.
 		if (mapInfo.containsType(type)) {
-			List<Point> startPoints = mapInfo.getEntities(type);
+			List<Point> startPoints = mapInfo.getPositions(type);
 			Point firstPoint = startPoints.get(0);
 			float[] xy = { firstPoint.x * tileWidth, firstPoint.y * tileHeight };
 			return xy;
@@ -97,7 +97,7 @@ public class TileMap {
 
 	public boolean inFinish(float x, float y) {
 		List<Point> finishPoints = mapInfo
-				.getEntities(PositionType.PlayerFinish);
+				.getPositions(PositionType.PlayerFinish);
 		for (Point upLeft : finishPoints) {
 			if (x - upLeft.x < tileWidth && y - upLeft.y < tileHeight)
 				return true;
