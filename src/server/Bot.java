@@ -14,6 +14,7 @@ public class Bot extends Entity {
 		super(id, x, y);
 		this.type = "bot";
 		this.collisionResolving = true;
+		this.speed *= 0.75;
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class Bot extends Entity {
 		if (!bullet.getOwner().equals(this)) {
 			this.deathCount++;
 			bullet.getOwner().incrementKillCount();
-			float xy[] = game.getMap().getStartXY();
+			float xy[] = game.getMap().getTileXY(PositionType.BotStart);
 			this.setX(xy[0]);
 			this.setY(xy[1]);
 		}

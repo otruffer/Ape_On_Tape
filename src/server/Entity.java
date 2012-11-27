@@ -35,12 +35,15 @@ public abstract class Entity {
 		this.y = y;
 		this.height = 20f;
 		this.width = 20f;
+
+		this.setType();
 	}
 
 	public Entity(float x, float y) {
-		this.id = IdFactory.getNextId();
-		this.x = x;
-		this.y = y;
+		this(IdFactory.getNextId(), x, y);
+	}
+
+	private void setType() {
 		this.type = this.getClass().getSimpleName().toLowerCase();
 	}
 

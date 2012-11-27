@@ -47,7 +47,7 @@ public class Player extends Entity {
 		if (!bullet.getOwner().equals(this)) {
 			this.deathCount++;
 			bullet.getOwner().incrementKillCount();
-			float xy[] = game.getMap().getStartXY();
+			float xy[] = game.getMap().getTileXY(PositionType.PlayerStart);
 			this.setX(xy[0]);
 			this.setY(xy[1]);
 			game.death(this);

@@ -1,5 +1,6 @@
 package server;
 
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.awt.Point;
 
 import server.exceptions.MapParseException;
 
@@ -20,63 +20,67 @@ public class MapInfo {
 	public static final String BACKGROUND = "background"; // (unused)
 	public static final String ENTITIES = "entities";
 
-	public enum EntityType { // TODO: change
-		None, PlayerStart, BotStart
-	};
-
 	// defines the entity type of a symbol TODO: set up
-	public static final EntityType[] entitySymbols = {//
-	EntityType.PlayerStart, // symbol #01
-			EntityType.None, // symbol #02
-			EntityType.None, // symbol #03
-			EntityType.None, // symbol #04
-			EntityType.None, // symbol #05
-			EntityType.None, // symbol #06
-			EntityType.None, // symbol #07
-			EntityType.None, // symbol #08
-			EntityType.None, // symbol #09
-			EntityType.None, // symbol #10
-			EntityType.None, // symbol #11
-			EntityType.None, // symbol #12
-			EntityType.None, // symbol #13
-			EntityType.None, // symbol #14
-			EntityType.None, // symbol #15
-			EntityType.None, // symbol #16
-			EntityType.None, // symbol #17
+	public static final PositionType[] entitySymbols = {//
+	PositionType.PlayerStart, // symbol #01
+			PositionType.None, // symbol #02
+			PositionType.None, // symbol #03
+			PositionType.None, // symbol #04
+			PositionType.BotStart, // symbol #05
+			PositionType.None, // symbol #06
+			PositionType.None, // symbol #07
+			PositionType.None, // symbol #08
+			PositionType.None, // symbol #09
+			PositionType.None, // symbol #10
+			PositionType.None, // symbol #11
+			PositionType.None, // symbol #12
+			PositionType.None, // symbol #13
+			PositionType.None, // symbol #14
+			PositionType.None, // symbol #15
+			PositionType.None, // symbol #16
+			PositionType.None, // symbol #17
 	};
 
-	public static EntityType getEntityType(int number, int entityFirstgrid) {
+	public static PositionType getEntityType(int number, int entityFirstgrid) {
 		int index = number - entityFirstgrid;
 		if (index < 0 || index >= entitySymbols.length)
-			return EntityType.None;
+			return PositionType.None;
 		else
 			return entitySymbols[index];
 	}
 
 	// FIELDS
-	private TileMap collisionMap;
-	private Map<EntityType, List<Point>> entities;
+	private int[][] collisionMap;
+	private Map<PositionType, List<Point>> entities;
 
 	// CONSTRUCTOR
 	public MapInfo() {
-		this.entities = new HashMap<EntityType, List<Point>>();
+		this.entities = new HashMap<PositionType, List<Point>>();
 	}
 
-	public void setCollisionMap(TileMap map) {
+	public void setCollisionMap(int[][] map) {
 		this.collisionMap = map;
 	}
 
-	public TileMap getCollisionMap() {
+	public int[][] getCollisionMap() {
 		return this.collisionMap;
 	}
 
-	public Map<EntityType, List<Point>> getEntities() {
+	public Map<PositionType, List<Point>> getEntitiesMap() {
 		return this.entities;
 	}
 
-	public void addEntityInfo(EntityType t, int x, int y) {
+	public List<Point> getEntities(PositionType type) {
+		return this.entities.get(type);
+	}
+
+	public boolean containsType(PositionType type) {
+		return this.entities.containsKey(type);
+	}
+
+	public void addEntityInfo(PositionType t, int x, int y) {
 		// only add entity if not Type.None
-		if (EntityType.None.equals(t))
+		if (PositionType.None.equals(t))
 			return;
 
 		if (!entities.containsKey(t)) {
@@ -93,12 +97,12 @@ public class MapInfo {
 		} catch (FileNotFoundException e) {
 			System.err.println("File not found!: \"" + filename + "\"");
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (MapParseException e) {
 			System.err.println("Could not parse JSON map:");
 			System.err.println(e.getMessage());
+			throw new RuntimeException(e);
 		}
-
-		return null;
 	}
 
 	private static MapInfo parseMap(JsonMap map) throws MapParseException {
@@ -123,7 +127,7 @@ public class MapInfo {
 			}
 		}
 
-		mapInfo.setCollisionMap(new TileMap(collisionMap));
+		mapInfo.setCollisionMap(collisionMap);
 
 		// == GENERATE ENTITY STARTING POSITIONS =========================
 		int entityFirstgrid = 0;
@@ -136,25 +140,25 @@ public class MapInfo {
 
 		layer = searchLayer(ENTITIES, map);
 		data = layer.data;
-		EntityType type;
+		PositionType type;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				// 4 entities possible (because the representation is 1/2 tile)
 				i = (y * 2) * layer.width + (x * 2);
 				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, x, y);
+				mapInfo.addEntityInfo(type, y, x);
 
 				i = (y * 2) * layer.width + (x * 2 + 1);
 				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, x, y);
+				mapInfo.addEntityInfo(type, y, x);
 
 				i = (y * 2 + 1) * layer.width + (x * 2);
 				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, x, y);
+				mapInfo.addEntityInfo(type, y, x);
 
 				i = (y * 2 + 1) * layer.width + (x * 2 + 1);
 				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, x, y);
+				mapInfo.addEntityInfo(type, y, x);
 			}
 		}
 
