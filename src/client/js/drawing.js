@@ -294,7 +294,6 @@ var _ = function(argument) {
 
 var lastIndex = new Array();
 var animIndex = function(dirX, dirY, id) {
-//	console.log("x:" + dirX + " y:" + dirY);
 	var index = (lastIndex[id] == undefined) ? 3 : lastIndex[id];
 
 	if (dirY > 0) // moving upwards

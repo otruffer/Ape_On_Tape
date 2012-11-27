@@ -117,7 +117,7 @@ public class GameHandler implements Runnable {
 
 	private void createBots(Game room) {
 		room.addBot(IdFactory.getNextId(), "uncleverbot");
-		room.addDrunkBot(IdFactory.getNextId(), "drunkbot");
+//		room.addDrunkBot(IdFactory.getNextId(), "drunkbot");
 	}
 
 	public void leavePlayer(int playerId) {
