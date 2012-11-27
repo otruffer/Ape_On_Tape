@@ -29,10 +29,6 @@ public class Bot extends Entity {
 			entity.hitByBullet(game, new Bullet(this, 0, 0, 0, 0));
 		}
 
-		// move direction for rendering
-		dirX = dX * factor - lastDX;
-		dirY = dY * factor - lastDY;
-
 		lastDX = dX * factor;
 		lastDY = dY * factor;
 	}
@@ -59,6 +55,30 @@ public class Bot extends Entity {
 			this.setX(xy[0]);
 			this.setY(xy[1]);
 		}
+	}
+
+	@Override
+	public void setX(float x) {
+		// update viewing direction
+		float dirXnew = x - this.dirX;
+		if (dirXnew != 0) {
+			dirXnew /= Math.abs(dirXnew);
+		}
+		this.dirX = Math.round(dirXnew);
+		// perform setX
+		super.setX(x);
+	}
+
+	@Override
+	public void setY(float y) {
+		// update viewing direction
+		float dirYnew = y - this.dirY;
+		if (dirYnew != 0) {
+			dirYnew /= Math.abs(dirYnew);
+		}
+		this.dirY = Math.round(dirYnew);
+		// perform setY
+		super.setY(y);
 	}
 
 }

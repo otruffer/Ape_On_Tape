@@ -42,10 +42,10 @@ public class Bullet extends Entity {
 	public void brain(Game game) {
 
 		this.moveInDirection(game);
-		
+
 		if (this.wallHit)
 			this.doWallHit(game);
-		
+
 		List<Entity> overlapping = Util.getEntitiesOverlapping(
 				game.getAllEntites(), this);
 		overlapping.remove(this.owner);
@@ -55,8 +55,8 @@ public class Bullet extends Entity {
 		if (!overlapping.isEmpty())
 			this.doEntityHit(game, overlapping);
 	}
-	
-	protected void moveInDirection(Game game){
+
+	protected void moveInDirection(Game game) {
 		float deltax = dirX * speed;
 		float deltay = dirY * speed;
 		if (deltax != 0 && deltay != 0) {
@@ -65,16 +65,16 @@ public class Bullet extends Entity {
 		}
 		moveOnMap(game, deltax, deltay);
 	}
-	
-	protected void doWallHit(Game game){
+
+	protected void doWallHit(Game game) {
 		game.removeEntity(this);
 	}
 
-	protected void doEntityHit(Game game, List<Entity> entities){
-		if(this.killOnWallHit)
+	protected void doEntityHit(Game game, List<Entity> entities) {
+		if (this.killOnWallHit)
 			game.removeEntity(this);
 	}
-	
+
 	@Override
 	public double getRadius() {
 		return radius;
@@ -86,5 +86,10 @@ public class Bullet extends Entity {
 
 	public void setKillOnWallHit(boolean killOnWallHit) {
 		this.killOnWallHit = killOnWallHit;
+	}
+
+	@Override
+	public void hitByBullet(Game game, Bullet bullet) {
+		// nothing happens
 	}
 }

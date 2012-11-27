@@ -13,8 +13,8 @@ public abstract class Entity {
 	protected float height;
 	protected float width;
 	// the direction the entity is looking.
-	protected float dirX = 1;
-	protected float dirY;
+	protected int dirX = 1;
+	protected int dirY;
 	protected String type = "entity";
 
 	@noGson
@@ -47,8 +47,8 @@ public abstract class Entity {
 	/**
 	 * 
 	 * @param game
-	 * @param dirX
-	 * @param dirY
+	 * @param deltax
+	 * @param deltay
 	 * @return what collisions were resolved? for wall hit use: getWallHit
 	 */
 	public List<Entity> moveOnMap(Game game, float deltax, float deltay) {
@@ -120,6 +120,8 @@ public abstract class Entity {
 	 */
 	public abstract void brain(Game game);
 
+	public abstract void hitByBullet(Game game, Bullet bullet);
+
 	@Override
 	public boolean equals(Object o1) {
 		return o1 instanceof Entity && ((Entity) o1).getId() == this.getId();
@@ -143,10 +145,6 @@ public abstract class Entity {
 
 	public void setSpeed(float speed) {
 		this.speed = speed;
-	}
-
-	public void hitByBullet(Game game, Bullet bullet) {
-		// Empty
 	}
 
 	public String getType() {
