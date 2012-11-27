@@ -138,13 +138,13 @@ public class Util {
 		int x = 0;
 		int y = 0;
 		if (isKeyPressed(UP_KEYS, keys))
-			x = -1;
-		else if (isKeyPressed(DOWN_KEYS, keys))
-			x = 1;
-		if (isKeyPressed(RIGHT_KEYS, keys))
-			y = 1;
-		else if (isKeyPressed(LEFT_KEYS, keys))
 			y = -1;
+		else if (isKeyPressed(DOWN_KEYS, keys))
+			y = 1;
+		if (isKeyPressed(RIGHT_KEYS, keys))
+			x = 1;
+		else if (isKeyPressed(LEFT_KEYS, keys))
+			x = -1;
 		int[] values = { x, y };
 		return values;
 	}

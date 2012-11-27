@@ -63,7 +63,6 @@ public class Bot extends Entity {
 	public void setX(float x) {
 		// update viewing direction
 		float dirXnew = x - this.dirX;
-		System.out.print("x:" + dirXnew);
 		if (dirXnew != 0) {
 			dirXnew /= Math.abs(dirXnew);
 		}

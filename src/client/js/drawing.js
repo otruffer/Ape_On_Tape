@@ -120,7 +120,7 @@ function RenderingEngine(tileSize, playerSize) {
 
 		// effective, scaled position of the main player
 		if (self.bbox.canScrollX) {
-			var pCenterX = (player.y + (self.PLAYER_SIZE / 2)) * self.sc;
+			var pCenterX = (player.x + (self.PLAYER_SIZE / 2)) * self.sc;
 			var sx = pCenterX - (c.width / 2);
 			sx = (sx < 0) ? 0 : sx; // overlapping left edge
 			sx = (sx + c.width > self.bgCanvas.width) ? self.bgCanvas.width
@@ -131,7 +131,7 @@ function RenderingEngine(tileSize, playerSize) {
 		}
 
 		if (self.bbox.canScrollY) {
-			var pCenterY = (player.x + (self.PLAYER_SIZE / 2)) * self.sc;
+			var pCenterY = (player.y + (self.PLAYER_SIZE / 2)) * self.sc;
 			var sy = pCenterY - (c.height / 2);
 			sy = (sy < 0) ? 0 : sy; // overlapping upper edge
 			sy = (sy + c.height > self.bgCanvas.height) ? self.bgCanvas.height
@@ -149,8 +149,8 @@ function RenderingEngine(tileSize, playerSize) {
 	// self.mainPlayer object
 	this.computePlayerEffectivePosition = function(player) {
 		// player relative to map (absolute position - non scaled)
-		self.mainPlayer.absX = player.y;
-		self.mainPlayer.absY = player.x;
+		self.mainPlayer.absX = player.x;
+		self.mainPlayer.absY = player.y;
 
 		if (self.bbox.canScrollX) { // if scrolling in x-direction possible..
 			// effective player position in x direction:
@@ -204,8 +204,8 @@ function RenderingEngine(tileSize, playerSize) {
 			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x + offset,
 					self.mainPlayer.y + offset, self.P, self.P);
 		} else { // draw other players relative to main player
-			var dx = self.mainPlayer.absX - player.y;
-			var dy = self.mainPlayer.absY - player.x;
+			var dx = self.mainPlayer.absX - player.x;
+			var dy = self.mainPlayer.absY - player.y;
 			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx + offset,
 					self.mainPlayer.y - dy + offset, self.P, self.P);
 		}
@@ -238,9 +238,9 @@ function RenderingEngine(tileSize, playerSize) {
 
 		// calculate center-to-center distances
 		var dx = (self.mainPlayer.absX + self.PLAYER_SIZE / 2)
-				- (entity.y + entitySize / 2);
-		var dy = (self.mainPlayer.absY + self.PLAYER_SIZE / 2)
 				- (entity.x + entitySize / 2);
+		var dy = (self.mainPlayer.absY + self.PLAYER_SIZE / 2)
+				- (entity.y + entitySize / 2);
 
 		// calculate offset to center the entity to it's effective drawn size
 		var offset = (self.PLAYER_SIZE - effectiveSize) / 2;

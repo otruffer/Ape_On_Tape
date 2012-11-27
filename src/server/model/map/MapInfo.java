@@ -118,12 +118,12 @@ public class MapInfo {
 		int[] data = layer.data;
 
 		// shrink json map (1/2 tiles) to binary collision map
-		int[][] collisionMap = new int[width][height];
+		int[][] collisionMap = new int[height][width];
 		int i;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				i = (y * 2) * layer.width + (x * 2);
-				collisionMap[x][y] = (data[i] == 0) ? 0 : 1;
+				collisionMap[y][x] = (data[i] == 0) ? 0 : 1;
 			}
 		}
 
@@ -146,19 +146,19 @@ public class MapInfo {
 				// 4 entities possible (because the representation is 1/2 tile)
 				i = (y * 2) * layer.width + (x * 2);
 				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, y, x);
+				mapInfo.addEntityInfo(type, x, y);
 
 				i = (y * 2) * layer.width + (x * 2 + 1);
 				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, y, x);
+				mapInfo.addEntityInfo(type, x, y);
 
 				i = (y * 2 + 1) * layer.width + (x * 2);
 				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, y, x);
+				mapInfo.addEntityInfo(type, x, y);
 
 				i = (y * 2 + 1) * layer.width + (x * 2 + 1);
 				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, y, x);
+				mapInfo.addEntityInfo(type, x, y);
 			}
 		}
 
