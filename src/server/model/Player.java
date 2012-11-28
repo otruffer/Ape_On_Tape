@@ -40,7 +40,7 @@ public class Player extends Entity {
 		currentShootDelay++;
 		if (Util.isShootKeyPressed(keysPressed)
 				&& currentShootDelay > SHOOT_DELAY) {
-			Bullet bullet = new Bullet(this, this.getX(), this.getY(), dirX,
+			Bullet bullet = new Bullet(this, this.getX() + this.getWidth()/2, this.getY() + this.getHeight() / 2, dirX,
 					dirY);
 			game.addEntity(bullet);
 			currentShootDelay = 0;

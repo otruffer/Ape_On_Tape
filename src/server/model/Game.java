@@ -44,7 +44,9 @@ public class Game {
 				.replace("/", File.separator);
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
-		initBarriers();
+//		this.initBarriers();
+		this.initEntities(mapInfo);
+//		initBarriers();
 
 		// XXX: hack to avoid waiting for all players
 //		this.start();
@@ -54,6 +56,11 @@ public class Game {
 		for (Point p : map.getAllTileXY(PositionType.Barrier)) {
 			this.addEntity(new Barrier(p.x, p.y));
 		}
+	}
+	
+	private void initEntities(MapInfo mapInfo){
+		for(Entity e: mapInfo.createEntities(this.getMap()))
+			this.addEntity(e);
 	}
 
 	/**

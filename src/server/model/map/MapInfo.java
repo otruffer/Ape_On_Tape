@@ -5,11 +5,18 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import server.exceptions.MapParseException;
+import server.model.Barrier;
+import server.model.Bot;
+import server.model.Entity;
+import server.model.Turret;
+import server.util.IdFactory;
 
 import com.google.gson.Gson;
 
@@ -79,6 +86,52 @@ public class MapInfo {
 			entities.put(t, new ArrayList<Point>());
 		}
 		this.entities.get(t).add(new Point(x, y));
+	}
+	
+	public List<Entity> createEntities(TileMap map){
+		List<Entity> entities = new LinkedList<Entity>();
+		for(PositionType type : PositionType.values()){
+			if(this.containsType(type))
+				entities.addAll(this.createEntitesOfType(type, map));
+		}
+		return entities;
+	}
+
+	private List<Entity> createEntitesOfType(PositionType type, TileMap map) {
+		List<Entity> entities = new LinkedList<Entity>();
+		for(Point position : this.getPositions(type)){
+			Entity e = this.createEntity(type, position, map);
+			if(e != null)
+				entities.add(e);
+		}
+		return entities;
+	}
+
+	
+	private Entity createEntity(PositionType type, Point position, TileMap map) {
+		Entity entity = null;
+		float x = position.x * map.getTileWidth();
+		float y = position.y * map.getTileHeight();
+
+		switch (type) {
+		case Barrier:
+			entity = new Barrier(x, y);
+			break;
+		case Turret:
+			entity = new Turret(x, y);
+			break;
+		case BotStart:
+			entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
+			break;
+		case PlayerStart:
+			break;
+		case PlayerFinish:
+			break;
+		default:
+			System.err.println("WARNING the specified type '"+ type +"' doesn't get created yet. See MapInfo.createEntity");
+			break;
+		}
+		return entity;
 	}
 
 	public static MapInfo fromJSON(String filename) {
@@ -182,8 +235,8 @@ public class MapInfo {
 	private static class JsonMap {
 		int width;
 		int height;
-		int tilewidth;
-		int tileheight;
+		public int tilewidth = 30;
+		public int tileheight = 30;
 		List<JsonMapLayer> layers;
 		List<JsonTileSet> tilesets;
 	}

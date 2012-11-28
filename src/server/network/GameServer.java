@@ -170,6 +170,9 @@ public class GameServer extends BaseWebSocketHandler {
 
 	@Override
 	public void onClose(WebSocketConnection connection) {
+		//due concurrency issues the connection may already have been lost strange but true (maybe).
+		if(connection == null)
+			return;
 		int id = (Integer) connection.data(ID_KEY);
 		gameHandler.playerDisconnected(id);
 	}

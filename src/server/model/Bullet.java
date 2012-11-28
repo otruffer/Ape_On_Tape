@@ -54,7 +54,7 @@ public class Bullet extends Entity {
 			entity.hitByBullet(game, this);
 		}
 		if (!overlapping.isEmpty())
-			this.doEntityHit(game, overlapping);
+			this.doEntityWallHit(game, overlapping);
 	}
 
 	protected void moveInDirection(Game game) {
@@ -71,7 +71,7 @@ public class Bullet extends Entity {
 		game.removeEntity(this);
 	}
 
-	protected void doEntityHit(Game game, List<Entity> entities) {
+	protected void doEntityWallHit(Game game, List<Entity> entities) {
 		if (this.killOnWallHit)
 			game.removeEntity(this);
 	}
