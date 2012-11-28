@@ -119,6 +119,7 @@ public class MapInfo {
 			break;
 		case Turret:
 			entity = new Turret(x, y);
+			System.out.println("tööörreeet!");
 			break;
 		case BotStart:
 			entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
