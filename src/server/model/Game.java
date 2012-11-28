@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -143,7 +142,7 @@ public class Game {
 		e.setCollisionState(true);
 		for (CollisionListener listener : collisionListeners)
 			listener.collisionOccured(this, e);
-		this.soundEvents.add("wall-collision");
+//		this.soundEvents.add("wall-collision");
 	}
 
 	public void addEntity(Entity e) {
@@ -189,7 +188,7 @@ public class Game {
 		return result.toArray(new GameEvent[0]);
 	}
 
-	public void death(Player player) {
+	public void playerHit(Player player) {
 		this.soundEvents.add("kill");
 	}
 
@@ -198,7 +197,8 @@ public class Game {
 	}
 
 	public void playerFinished(Player p) {
-		// TODO
+		p.winner();
+		this.soundEvents.add("win");
 	}
 
 }

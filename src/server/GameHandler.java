@@ -21,6 +21,7 @@ import server.listeners.RealCollisionListener;
 import server.model.Game;
 import server.model.Player;
 import server.network.GameServer;
+import server.properties.ApeProperties;
 import server.util.IdFactory;
 import server.util.Util;
 import client.ClientDirUtil;
@@ -32,6 +33,8 @@ public class GameHandler implements Runnable {
 	final static int WEB_SERVER_PORT = 9876;
 	final static boolean USE_EXTERNAL_WEB_ROOT = true;
 	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
+	private static final int PLAYERS_PER_GAME = Integer.parseInt(ApeProperties
+			.getProperty("minPlayersPerRoom"));
 
 	private final String DEFAULT_ROOMNAME = "soup";
 
@@ -143,7 +146,7 @@ public class GameHandler implements Runnable {
 	}
 
 	private void updateGame(Game game) {
-		if (!game.isRunning() && game.getPlayers().size() > 1) {
+		if (!game.isRunning() && game.getPlayers().size() >= PLAYERS_PER_GAME) {
 			game.start();
 		}
 

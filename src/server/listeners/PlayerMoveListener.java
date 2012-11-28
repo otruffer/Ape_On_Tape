@@ -22,7 +22,7 @@ public class PlayerMoveListener implements MoveListener {
 			p = (Player) e;
 		else
 			return;
-		if (map.inFinish(p.getX(), p.getY())) {
+		if (!p.isWinner() && map.inFinish(p.getX(), p.getY())) {
 			game.playerFinished(p);
 		}
 	}

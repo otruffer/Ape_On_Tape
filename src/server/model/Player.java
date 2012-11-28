@@ -17,12 +17,14 @@ public class Player extends Entity {
 	protected final int SHOOT_DELAY = 10;
 	@noGson
 	protected int currentShootDelay = 0;
+	private boolean isWinner;
 
 	public Player(int id, float x, float y, String name) {
 		super(id, x, y);
 		this.name = name;
 		this.collisionResolving = true;
 		this.type = "player";
+		this.isWinner = false;
 	}
 
 	@Override
@@ -44,17 +46,16 @@ public class Player extends Entity {
 
 	@Override
 	public void hitByBullet(Game game, Bullet bullet) {
-		if (!game.isRunning())
+		if (!game.isRunning() || bullet.getOwner().equals(this)) {
 			return;
-
-		if (!bullet.getOwner().equals(this)) {
-			this.deathCount++;
-			bullet.getOwner().incrementKillCount();
-			float xy[] = game.getMap().getFirstTileXY(PositionType.PlayerStart);
-			this.setX(xy[0]);
-			this.setY(xy[1]);
-			game.death(this);
 		}
+
+		this.deathCount++;
+		bullet.getOwner().incrementKillCount();
+		float xy[] = game.getMap().getFirstTileXY(PositionType.PlayerStart);
+		this.setX(xy[0]);
+		this.setY(xy[1]);
+		game.playerHit(this);
 	}
 
 	private void move(Game game) {
@@ -77,5 +78,25 @@ public class Player extends Entity {
 
 	public void setKeysPressed(List<Integer> keys) {
 		this.keysPressed = keys;
+	}
+
+	// @Override
+	// public void setX(float x) {
+	// if (!isWinner)
+	// super.setX(x);
+	// }
+	//
+	// @Override
+	// public void setY(float y) {
+	// if (!isWinner)
+	// super.setX(y);
+	// }
+
+	public void winner() {
+		this.isWinner = true;
+	}
+
+	public boolean isWinner() {
+		return this.isWinner;
 	}
 }

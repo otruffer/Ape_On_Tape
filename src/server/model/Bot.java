@@ -17,7 +17,7 @@ public class Bot extends Entity {
 		this.lastX = x;
 		this.lastY = y;
 		this.type = "bot";
-		this.collisionResolving = false;
+		this.collisionResolving = true;
 		this.speed *= 0.75;
 	}
 
@@ -57,13 +57,15 @@ public class Bot extends Entity {
 
 	@Override
 	public void hitByBullet(Game game, Bullet bullet) {
-		if (!bullet.getOwner().equals(this)) {
-			this.deathCount++;
-			bullet.getOwner().incrementKillCount();
-			float xy[] = game.getMap().getFirstTileXY(PositionType.BotStart);
-			this.setX(xy[0]);
-			this.setY(xy[1]);
+		if (bullet.getOwner() instanceof Bot || bullet.getOwner().equals(this)) {
+			return;
 		}
+		this.deathCount++;
+		bullet.getOwner().incrementKillCount();
+		float xy[] = game.getMap().getFirstTileXY(PositionType.BotStart);
+		this.setX(xy[0]);
+		this.setY(xy[1]);
+
 	}
 
 	private void updateLookingDirection(float xNew, float yNew) {

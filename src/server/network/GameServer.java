@@ -158,7 +158,7 @@ public class GameServer extends BaseWebSocketHandler {
 		connection.send(jsonStr);
 	}
 
-	private void broadcast(Outgoing outgoing, Collection<Integer> playerIds) {
+	private synchronized void broadcast(Outgoing outgoing, Collection<Integer> playerIds) {
 		String jsonStr = this.json.toJson(outgoing);
 		for (WebSocketConnection connection : connections) {
 			if (playerIds.contains(connection.data(ID_KEY))) {

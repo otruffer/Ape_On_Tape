@@ -118,8 +118,8 @@ function onMessage(incoming) {
 			handleEvents(incoming.events);
 		}
 		updatePlayerList();
-//		if (incoming.gameRunning)
-//			hideWaitInfo();
+		// if (incoming.gameRunning)
+		// hideWaitInfo();
 		break;
 	case 'INIT_GAME':
 		gameState.map = incoming.map;
@@ -230,7 +230,7 @@ function initGame() {
 }
 
 function handleEvents(events) {
-	for (var i in events) {
+	for ( var i in events) {
 		var event = events[i];
 		switch (event.type) {
 		case 'SOUND':
@@ -240,10 +240,17 @@ function handleEvents(events) {
 }
 
 function handleSoundEvent(event) {
-	if (event == 'wall-collision')
+	switch (event) {
+	case 'wall-collision':
 		playCollisionSound();
-	if (event == 'kill')
+		break;
+	case 'kill':
 		playKillSound();
+		break;
+	case 'win':
+		playWinSound();
+		break;
+	}
 }
 
 var backgroundMusic;
@@ -285,6 +292,14 @@ function playKillSound() {
 		new Audio('sound/jab.ogg').play();
 	else
 		new Audio('sound/jab.wav').play();
+}
+
+function playWinSound() {
+	if (mp3Suppport)
+		new Audio('sound/win.mp3').play();
+	else
+		// (oggSupport)
+		new Audio('sound/win.ogg').play();
 }
 
 function loadGraphics() {

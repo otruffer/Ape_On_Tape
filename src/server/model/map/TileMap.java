@@ -87,7 +87,7 @@ public class TileMap {
 		List<Point> points = getAllTileXY(type);
 		if (!points.isEmpty()) {
 			Point firstPoint = points.get(0);
-			float[] xy = { firstPoint.x , firstPoint.y  };
+			float[] xy = { firstPoint.x, firstPoint.y };
 			return xy;
 		} else {
 			Tile randomWalk = this.getRandomWalkableTile();
@@ -117,10 +117,10 @@ public class TileMap {
 	}
 
 	public boolean inFinish(float x, float y) {
-		List<Point> finishPoints = mapInfo
-				.getPositions(PositionType.PlayerFinish);
+		List<Point> finishPoints = this.getAllTileXY(PositionType.PlayerFinish);
 		for (Point upLeft : finishPoints) {
-			if (x - upLeft.x < tileWidth && y - upLeft.y < tileHeight)
+			if (Math.abs(x - upLeft.x) < tileWidth
+					&& Math.abs(y - upLeft.y) < tileHeight)
 				return true;
 		}
 		return false;

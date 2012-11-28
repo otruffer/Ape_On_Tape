@@ -66,6 +66,9 @@ public abstract class Entity {
 		List<Entity> overlapping = new LinkedList<Entity>();
 		if (this.collisionResolving)
 			overlapping = this.resolveCollisions(game);
+		else
+			overlapping = Util.getEntitiesOverlapping(game.getAllEntites(),
+					this);
 		return overlapping;
 	}
 
@@ -73,7 +76,7 @@ public abstract class Entity {
 		List<Entity> overlapping = Util.getEntitiesOverlapping(
 				game.getAllEntites(), this);
 		for (Entity other : overlapping) {
-			if (other.isCollisionResolving()){
+			if (other.isCollisionResolving()) {
 				Util.resolveCollision(game, this, other);
 			}
 		}
@@ -117,7 +120,7 @@ public abstract class Entity {
 		this.y = y;
 		positionChanged();
 	}
-	
+
 	private void positionChanged() {
 		for (MoveListener listener : moveListeners)
 			listener.positionChanged(this);
