@@ -24,6 +24,8 @@ public class Bot extends Entity {
 	@Override
 	public void brain(Game game) {
 		// chase a player
+		this.lastX = this.getX();
+		this.lastY = this.getY();
 		Entity other = closestPlayer(game);
 		float dX = deltaX(other);
 		float dY = deltaY(other);
@@ -33,6 +35,8 @@ public class Bot extends Entity {
 		for (Entity entity : overlapping) {
 			entity.hitByBullet(game, new Bullet(this, 0, 0, 0, 0));
 		}
+
+		this.updateLookingDirection(this.getX(), this.getY());
 
 		lastDX = dX * factor;
 		lastDY = dY * factor;
@@ -62,20 +66,6 @@ public class Bot extends Entity {
 		}
 	}
 
-	@Override
-	public void setX(float x) {
-		this.lastX = this.getX();
-		this.updateLookingDirection(x, this.getY());
-		super.setX(x);
-	}
-
-	@Override
-	public void setY(float y) {
-		this.lastY = this.getY();
-		this.updateLookingDirection(y, this.getY());
-		super.setY(y);
-	}
-
 	private void updateLookingDirection(float xNew, float yNew) {
 		float dirXnew = xNew - this.lastX;
 		float dirYnew = yNew - this.lastY;
@@ -83,7 +73,7 @@ public class Bot extends Entity {
 		if (dirXnew == dirYnew) {
 			if (dirXnew == 0)
 				return;
-			else { // exact diagonal movement
+			else { // exact diagonal movement -> set both
 				dirXnew /= Math.abs(dirXnew);
 				dirYnew /= Math.abs(dirYnew);
 			}

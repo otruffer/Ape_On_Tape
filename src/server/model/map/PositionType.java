@@ -1,5 +1,5 @@
 package server.model.map;
 
-public enum PositionType { // TODO: change (add types) + rename
-	None, PlayerStart, BotStart, PlayerFinish, Barrier
+public enum PositionType {
+	None, PlayerStart, BotStart, PlayerFinish, Turret, Barrier
 }

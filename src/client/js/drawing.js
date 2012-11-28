@@ -43,8 +43,8 @@ function RenderingEngine(tileSize, playerSize) {
 	this.sc = 1 / 0.6; // scaling parameter
 	// effective drawing sizes of different entities
 	this.P = this.PLAYER_SIZE + 4;
-	this.E = this.ENTITY_SIZE;
-	this.B = this.BULLET_SIZE * 10;
+	this.E = this.ENTITY_SIZE + 4;
+	this.B = this.BULLET_SIZE * 20;
 
 	/* preloaded offline background canvas */
 	this.bgCanvas = document.createElement('canvas');
@@ -226,8 +226,7 @@ function RenderingEngine(tileSize, playerSize) {
 		case 'bot':
 			entitySize = self.ENTITY_SIZE;
 			effectiveSize = self.E;
-			tile = tilePreload['bot'][animIndex(entity.dirX, entity.dirY,
-					entity.id)];
+			tile = tilePreload['bot'][animIndex(entity)];
 			break;
 		case 'bullet':
 			entitySize = self.BULLET_SIZE;
@@ -304,24 +303,29 @@ animationIndices['right'] = new Array(7, 8, 9);
 animationIndices['up'] = new Array(10, 11, 12);
 
 var lastAnimation = {};
-var animIndex = function(dirX, dirY, id) {
-	if (lastAnimation[id] == undefined) {
-		lastAnimation[id] = {};
-		lastAnimation[id].direction = 'down';
-		lastAnimation[id].index = 1;
-		lastAnimation[id].time = new Date().getTime();
+var animIndex = function(entity) {
+	var anim;
+	if (lastAnimation[entity.id] == undefined) {
+		lastAnimation[entity.id] = {};
+		anim = lastAnimation[entity.id];
+		anim.direction = 'down';
+		anim.index = 1;
+		anim.x = entity.x;
+		anim.y = entity.y;
+		anim.time = new Date().getTime();
+	} else {
+		anim = lastAnimation[entity.id];
 	}
-	var anim = lastAnimation[id];
 
 	var direction;
-	if (dirY < 0) // moving upwards
+	if (entity.dirY < 0) // moving upwards
 		direction = 'up';
-	else if (dirY > 0) // moving downwards
+	else if (entity.dirY > 0) // moving downwards
 		direction = 'down';
 	else { // moving either right, left or nowhere
-		if (dirX < 0) // moving left
+		if (entity.dirX < 0) // moving left
 			direction = 'left';
-		else if (dirX > 0) // moving right
+		else if (entity.dirX > 0) // moving right
 			direction = 'right';
 	}
 	anim.direction = direction;
@@ -339,14 +343,26 @@ var animIndex = function(dirX, dirY, id) {
 	var delta = currTime - anim.time;
 	// swap index of same direction or change to other direction
 	if (direction == anim.direction) {
-		if (delta > 250) {
-			anim.index = swap(anim.index);
+		if (delta < 250) {
+			return animationIndices[anim.direction][anim.index];
+		} else {
+			// standing
+			if (Math.abs(anim.x - entity.x) <= 0.5
+					&& Math.abs(anim.y - entity.y) <= 0.5) {
+				anim.index = 1;
+			} else { // walking
+				anim.index = swap(anim.index);
+			}
 			anim.time = currTime;
 		}
 	} else {
 		anim.index = 0;
 		anim.time = currTime;
 	}
+
+	// update last x, y
+	anim.x = entity.x;
+	anim.y = entity.y;
 
 	return animationIndices[anim.direction][anim.index];
 }

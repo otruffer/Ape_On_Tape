@@ -29,7 +29,7 @@ public class MapInfo {
 			PositionType.BotStart, // symbol #05
 			PositionType.None, // symbol #06
 			PositionType.None, // symbol #07
-			PositionType.None, // symbol #08
+			PositionType.Turret, // symbol #08
 			PositionType.Barrier, // symbol #09
 			PositionType.None, // symbol #10
 			PositionType.None, // symbol #11
