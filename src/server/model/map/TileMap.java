@@ -1,6 +1,8 @@
 package server.model.map;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -80,18 +82,37 @@ public class TileMap {
 		return tileMap[0].length;
 	}
 
-	public float[] getTileXY(PositionType type) {
-		// TODO: second, third etc.
-		if (mapInfo.containsType(type)) {
-			List<Point> startPoints = mapInfo.getPositions(type);
-			Point firstPoint = startPoints.get(0);
-			float[] xy = { firstPoint.x * tileWidth, firstPoint.y * tileHeight };
+	// TODO: return Point instead of float[]
+	public float[] getFirstTileXY(PositionType type) {
+		List<Point> points = getAllTileXY(type);
+		if (!points.isEmpty()) {
+			Point firstPoint = points.get(0);
+			float[] xy = { firstPoint.x , firstPoint.y  };
 			return xy;
 		} else {
 			Tile randomWalk = this.getRandomWalkableTile();
 			float[] xy = { randomWalk.getX() * tileWidth,
 					randomWalk.getY() * tileHeight };
 			return xy;
+		}
+	}
+
+	/**
+	 * Returns all tile's up-left coordinates from a specified type or an empty
+	 * list, if no such one existing.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public List<Point> getAllTileXY(PositionType type) {
+		if (mapInfo.containsType(type)) {
+			List<Point> result = new LinkedList<Point>();
+			for (Point p : mapInfo.getPositions(type))
+				result.add(new Point((int) (p.x * tileWidth),
+						(int) (p.y * tileHeight)));
+			return result;
+		} else {
+			return new ArrayList<Point>(0);
 		}
 	}
 

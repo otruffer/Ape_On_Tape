@@ -1,8 +1,10 @@
 package server.model;
 
+import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -43,18 +45,32 @@ public class Game {
 				.replace("/", File.separator);
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
-		this.running = true;
+		initBarriers();
+
+		// XXX: hack to avoid waiting for all players
+//		this.start();
+	}
+
+	private void initBarriers() {
+		for (Point p : map.getAllTileXY(PositionType.Barrier)) {
+			this.addEntity(new Barrier(p.x, p.y));
+		}
 	}
 
 	/**
 	 * Launch this game
 	 */
-	public void start() {
+	public synchronized void start() {
 		this.running = true;
+		Map<Integer, Entity> oldEntities = new HashMap<Integer, Entity>(this.entities);
+		for (Entity e : oldEntities.values()) {
+			if (e instanceof Barrier)
+				this.removeEntity(e);
+		}
 	}
 
 	public void addPlayer(int playerId, String playerName) {
-		float[] start = map.getTileXY(PositionType.PlayerStart);
+		float[] start = map.getFirstTileXY(PositionType.PlayerStart);
 		Player player = new Player(playerId, start[0], start[1], playerName);
 		player.setId(playerId);
 		player.addMoveListener(new PlayerMoveListener(this, map));
@@ -62,15 +78,14 @@ public class Game {
 	}
 
 	public void addBot(int botId, String botName) {
-		System.out.println("bot added");
-		float[] start = map.getTileXY(PositionType.BotStart);
+		float[] start = map.getFirstTileXY(PositionType.BotStart);
 		Bot bot = new Bot(botId, start[0], start[1], botName);
 		bot.setId(botId);
 		this.entities.put(bot.getId(), bot);
 	}
 
 	public void addDrunkBot(int botId, String botName) {
-		float[] start = map.getTileXY(PositionType.BotStart);
+		float[] start = map.getFirstTileXY(PositionType.BotStart);
 		Bot bot = new DrunkBot(botId, start[0], start[1], botName);
 		bot.setId(botId);
 		this.entities.put(bot.getId(), bot);

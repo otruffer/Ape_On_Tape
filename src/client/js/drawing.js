@@ -234,6 +234,10 @@ function RenderingEngine(tileSize, playerSize) {
 			effectiveSize = self.B;
 			tile = tilePreload['bullet'][3];
 			break;
+		default:
+			tile = tilePreload['bullet'][1];
+			entitySize = self.E;
+			effectiveSize = self.E;
 		}
 
 		// calculate center-to-center distances

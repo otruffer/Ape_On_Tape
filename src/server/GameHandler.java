@@ -138,12 +138,7 @@ public class GameHandler implements Runnable {
 
 	private void gameLoop() {
 		for (Game game : games.values()) {
-			for (int id : new LinkedList<Integer>(keysPressed.keySet())) {
-				List<Integer> keys = keysPressed.get(id);
-				if (game.hasPlayerWithId(id))
-					game.setPlayerKeys(id, keys);
-			}
-			game.update();
+			updateGame(game);
 		}
 	}
 

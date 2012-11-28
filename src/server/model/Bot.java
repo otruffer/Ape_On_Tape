@@ -56,7 +56,7 @@ public class Bot extends Entity {
 		if (!bullet.getOwner().equals(this)) {
 			this.deathCount++;
 			bullet.getOwner().incrementKillCount();
-			float xy[] = game.getMap().getTileXY(PositionType.BotStart);
+			float xy[] = game.getMap().getFirstTileXY(PositionType.BotStart);
 			this.setX(xy[0]);
 			this.setY(xy[1]);
 		}

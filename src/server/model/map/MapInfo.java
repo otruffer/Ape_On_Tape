@@ -30,7 +30,7 @@ public class MapInfo {
 			PositionType.None, // symbol #06
 			PositionType.None, // symbol #07
 			PositionType.None, // symbol #08
-			PositionType.None, // symbol #09
+			PositionType.Barrier, // symbol #09
 			PositionType.None, // symbol #10
 			PositionType.None, // symbol #11
 			PositionType.PlayerFinish, // symbol #12

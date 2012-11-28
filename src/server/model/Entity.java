@@ -71,10 +71,11 @@ public abstract class Entity {
 
 	protected List<Entity> resolveCollisions(Game game) {
 		List<Entity> overlapping = Util.getEntitiesOverlapping(
-				game.getPlayersList(), this);
+				game.getAllEntites(), this);
 		for (Entity other : overlapping) {
-			if (other.isCollisionResolving())
+			if (other.isCollisionResolving()){
 				Util.resolveCollision(game, this, other);
+			}
 		}
 		return overlapping;
 	}
