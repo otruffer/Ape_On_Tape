@@ -17,7 +17,7 @@ public class Bot extends Entity {
 		this.lastX = x;
 		this.lastY = y;
 		this.type = "bot";
-		this.collisionResolving = true;
+		this.collisionResolving = false;
 		this.speed *= 0.75;
 	}
 
