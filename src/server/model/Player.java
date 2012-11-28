@@ -29,6 +29,9 @@ public class Player extends Entity {
 
 	@Override
 	public void brain(Game game) {
+		if (isWinner)
+			return;
+
 		this.move(game);
 		this.shoot(game);
 	}
@@ -46,7 +49,7 @@ public class Player extends Entity {
 
 	@Override
 	public void hitByBullet(Game game, Bullet bullet) {
-		if (!game.isRunning() || bullet.getOwner().equals(this)) {
+		if (isWinner || !game.isRunning() || bullet.getOwner().equals(this)) {
 			return;
 		}
 
@@ -80,19 +83,8 @@ public class Player extends Entity {
 		this.keysPressed = keys;
 	}
 
-	// @Override
-	// public void setX(float x) {
-	// if (!isWinner)
-	// super.setX(x);
-	// }
-	//
-	// @Override
-	// public void setY(float y) {
-	// if (!isWinner)
-	// super.setX(y);
-	// }
-
 	public void winner() {
+		this.collisionResolving = false;
 		this.isWinner = true;
 	}
 
