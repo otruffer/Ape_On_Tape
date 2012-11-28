@@ -292,22 +292,59 @@ var _ = function(argument) {
 	return argument * scale();
 }
 
-var lastIndex = new Array();
-var animIndex = function(dirX, dirY, id) {
-	var index = (lastIndex[id] == undefined) ? 3 : lastIndex[id];
+/* tileset properties */
+var animationIndices = {};
+animationIndices['down'] = new Array(1, 2, 3); // middle index -> standing
+animationIndices['left'] = new Array(4, 5, 6);
+animationIndices['right'] = new Array(7, 8, 9);
+animationIndices['up'] = new Array(10, 11, 12);
 
+var lastAnimation = {};
+var animIndex = function(dirX, dirY, id) {
+	if (lastAnimation[id] == undefined) {
+		lastAnimation[id] = {};
+		lastAnimation[id].direction = 'down';
+		lastAnimation[id].index = 1;
+		lastAnimation[id].time = new Date().getTime();
+	}
+	var anim = lastAnimation[id];
+
+	var direction;
 	if (dirY < 0) // moving upwards
-		index = 10;
+		direction = 'up';
 	else if (dirY > 0) // moving downwards
-		index = 3;
+		direction = 'down';
 	else { // moving either right, left or nowhere
 		if (dirX < 0) // moving left
-			index = 4;
+			direction = 'left';
 		else if (dirX > 0) // moving right
-			index = 9;
+			direction = 'right';
+	}
+	anim.direction = direction;
+
+	var swap = function(index) {
+		if (index == 2)
+			return 0;
+		else if (index == 0)
+			return 2;
+		else
+			return 0;
 	}
 
-	return index;
+	var currTime = new Date().getTime();
+	var delta = currTime - anim.time;
+	// swap index of same direction or change to other direction
+	if (direction == anim.direction) {
+		if (delta > 250) {
+			anim.index = swap(anim.index);
+			anim.time = currTime;
+		}
+	} else {
+		anim.index = 0;
+		anim.time = currTime;
+	}
+
+	return animationIndices[anim.direction][anim.index];
 }
 
 /* ================================ TRASHBOX ================================ */
