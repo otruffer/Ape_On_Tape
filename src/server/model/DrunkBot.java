@@ -28,10 +28,9 @@ public class DrunkBot extends Bot {
 	}
 
 	@Override
-	protected void respawn(Game game) {
+	protected void jumpHome(Game game) {
 		float xy[] = game.getMap().getFirstTileXY(PositionType.DrunkBot);
-		this.setX(xy[0]);
-		this.setY(xy[1]);
+		jumpTo(xy[0], xy[1]);
 	}
 
 }
