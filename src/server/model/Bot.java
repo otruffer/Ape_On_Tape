@@ -11,6 +11,12 @@ public class Bot extends Entity {
 	@noGson
 	protected float lastDX = 0, lastDY = 0;
 	private float lastX, lastY;
+	private int hitCount;
+	/**
+	 * Number of hits until death/respawn.
+	 */
+	protected final int lifePoints;
+	protected final float originalSpeed;
 
 	public Bot(int id, float x, float y, String name) {
 		super(id, x, y);
@@ -19,6 +25,9 @@ public class Bot extends Entity {
 		this.type = "bot";
 		this.collisionResolving = true;
 		this.speed *= 0.75;
+		this.originalSpeed = speed;
+		this.hitCount = 0;
+		this.lifePoints = 2;
 	}
 
 	@Override
@@ -64,10 +73,27 @@ public class Bot extends Entity {
 		}
 		this.deathCount++;
 		bullet.getOwner().incrementKillCount();
-		float xy[] = game.getMap().getFirstTileXY(PositionType.Bot);
-		this.setX(xy[0]);
-		this.setY(xy[1]);
 
+		this.hitCount++;
+		this.speed /= 2;
+		if (hitCount >= lifePoints)
+			respawn(game);
+	}
+
+	private void respawn(Game game) {
+		this.speed = originalSpeed;
+		this.hitCount = 0;
+		jumpHome(game);
+	}
+
+	protected void jumpHome(Game game) {
+		float xy[] = game.getMap().getFirstTileXY(PositionType.Bot);
+		jumpTo(xy[0], xy[1]);
+	}
+
+	protected void jumpTo(float x, float y) {
+		this.setX(x);
+		this.setY(y);
 	}
 
 	private void updateLookingDirection(float xNew, float yNew) {

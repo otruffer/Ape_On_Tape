@@ -1,5 +1,6 @@
 package server.model;
 
+import server.model.map.PositionType;
 import server.network.GsonExclusionStrategy.noGson;
 
 public class DrunkBot extends Bot {
@@ -19,10 +20,17 @@ public class DrunkBot extends Bot {
 		return (float) (super.deltaX(entity) + lastDX * MOVE_DIRECTION_MEMORY + (Math
 				.random() * RANDOMNESS - RANDOMNESS / 2));
 	}
+
 	@Override
 	protected float deltaY(Entity entity) {
 		return (float) (super.deltaY(entity) + lastDY * MOVE_DIRECTION_MEMORY + (Math
 				.random() * RANDOMNESS - RANDOMNESS / 2));
+	}
+
+	@Override
+	protected void jumpHome(Game game) {
+		float xy[] = game.getMap().getFirstTileXY(PositionType.DrunkBot);
+		jumpTo(xy[0], xy[1]);
 	}
 
 }

@@ -2,6 +2,8 @@ package server.model;
 
 import java.util.List;
 
+import server.model.map.PositionType;
+
 public class AggroBot extends Bot {
 
 	private static final float MOVE_DIRECTION_MEMORY = 15;
@@ -47,5 +49,11 @@ public class AggroBot extends Bot {
 
 	private float abs(float f) {
 		return f < 0 ? -f : f;
+	}
+
+	@Override
+	protected void jumpHome(Game game) {
+		float xy[] = game.getMap().getFirstTileXY(PositionType.AggroBot);
+		jumpTo(xy[0], xy[1]);
 	}
 }

@@ -9,6 +9,10 @@ import server.util.Util;
 
 public class Player extends Entity {
 
+	/**
+	 * Duration at which a player is slower when hit, in ms
+	 */
+	private static final int SLOW_DURATION = 2000;
 	@noGson
 	private List<Integer> keysPressed = new LinkedList<Integer>();
 	protected String name;
@@ -18,6 +22,8 @@ public class Player extends Entity {
 	@noGson
 	protected int currentShootDelay = 0;
 	private boolean isWinner;
+
+	private boolean isSlow;
 
 	public Player(int id, float x, float y, String name) {
 		super(id, x, y);
@@ -40,8 +46,8 @@ public class Player extends Entity {
 		currentShootDelay++;
 		if (Util.isShootKeyPressed(keysPressed)
 				&& currentShootDelay > SHOOT_DELAY) {
-			Bullet bullet = new Bullet(this, this.getX() + this.getWidth()/2, this.getY() + this.getHeight() / 2, dirX,
-					dirY);
+			Bullet bullet = new Bullet(this, this.getX() + this.getWidth() / 2,
+					this.getY() + this.getHeight() / 2, dirX, dirY);
 			game.addEntity(bullet);
 			currentShootDelay = 0;
 		}
@@ -55,10 +61,31 @@ public class Player extends Entity {
 
 		this.deathCount++;
 		bullet.getOwner().incrementKillCount();
+		if (bullet.getOwner() instanceof Bot) // TODO: cleverer test
+			respawn(game);
+		else
+			slowDown();
+		game.playerHit(this);
+	}
+
+	private void slowDown() {
+		if (this.isSlow)
+			return;
+		this.speed /= 2;
+		this.isSlow = true;
+		new PlayerPenalty(this, SLOW_DURATION).start();
+	}
+
+	public synchronized void penaltyOver() {
+		this.speed *= 2;
+		this.isSlow = false;
+	}
+
+	private void respawn(Game game) {
 		float xy[] = game.getMap().getFirstTileXY(PositionType.PlayerStart);
 		this.setX(xy[0]);
 		this.setY(xy[1]);
-		game.playerHit(this);
+		this.isSlow = false;
 	}
 
 	private void move(Game game) {
