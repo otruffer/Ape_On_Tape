@@ -29,28 +29,30 @@ public class Bot extends Entity {
 		Entity other = closestPlayer(game);
 		float dX = deltaX(other);
 		float dY = deltaY(other);
-		float distance = euclideanLength(dX, dY);
-		float factor = this.speed / distance;
-		List<Entity> overlapping = moveOnMap(game, factor * dX, factor * dY);
+		List<Entity> overlapping = move(game, dX, dY);
 		for (Entity entity : overlapping) {
 			entity.hitByBullet(game, new Bullet(this, 0, 0, 0, 0));
 		}
 
 		this.updateLookingDirection(this.getX(), this.getY());
+	}
 
-		lastDX = dX * factor;
-		lastDY = dY * factor;
+	protected List<Entity> move(Game game, float dX, float dY) {
+		float distance = euclideanLength(dX, dY);
+		float factor = this.speed / distance;
+		return moveOnMap(game, dX * factor, dY * factor);
 	}
 
 	private Entity closestPlayer(Game game) {
 		Collection<Player> players = game.getPlayers().values();
 		Entity closest = this; // just a fallback if none around
 		for (Player p : players) {
-			if (this.equals(closest))
-				closest = p;
-			else if (!Bot.class.isAssignableFrom(p.getClass())
-					&& this.distanceTo(p) < this.distanceTo(closest))
-				closest = p;
+			if (!p.isWinner())
+				if (this.equals(closest))
+					closest = p;
+				else if (!Bot.class.isAssignableFrom(p.getClass())
+						&& this.distanceTo(p) < this.distanceTo(closest))
+					closest = p;
 		}
 		return closest;
 	}
@@ -62,7 +64,7 @@ public class Bot extends Entity {
 		}
 		this.deathCount++;
 		bullet.getOwner().incrementKillCount();
-		float xy[] = game.getMap().getFirstTileXY(PositionType.BotStart);
+		float xy[] = game.getMap().getFirstTileXY(PositionType.Bot);
 		this.setX(xy[0]);
 		this.setY(xy[1]);
 

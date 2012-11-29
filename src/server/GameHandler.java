@@ -121,12 +121,6 @@ public class GameHandler implements Runnable {
 		this.games.put(roomName, newRoom);
 		newRoom.addCollisionListener(new RealCollisionListener(this));
 		roomListUpdated();
-		createBots(newRoom);
-	}
-
-	private void createBots(Game room) {
-		room.addBot(IdFactory.getNextId(), "uncleverbot");
-		room.addDrunkBot(IdFactory.getNextId(), "drunkbot");
 	}
 
 	public void leavePlayer(int playerId) {

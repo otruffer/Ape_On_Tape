@@ -1,6 +1,5 @@
 package server.model;
 
-import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,16 +43,12 @@ public class Game {
 				.replace("/", File.separator);
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
-		initBarriers();
-
-		// XXX: hack to avoid waiting for all players
-//		this.start();
+		this.initEntities(mapInfo);
 	}
-
-	private void initBarriers() {
-		for (Point p : map.getAllTileXY(PositionType.Barrier)) {
-			this.addEntity(new Barrier(p.x, p.y));
-		}
+	
+	private void initEntities(MapInfo mapInfo){
+		for(Entity e: mapInfo.createEntities(this.getMap()))
+			this.addEntity(e);
 	}
 
 	/**
@@ -74,20 +69,6 @@ public class Game {
 		player.setId(playerId);
 		player.addMoveListener(new PlayerMoveListener(this, map));
 		this.players.put(player.getId(), player);
-	}
-
-	public void addBot(int botId, String botName) {
-		float[] start = map.getFirstTileXY(PositionType.BotStart);
-		Bot bot = new Bot(botId, start[0], start[1], botName);
-		bot.setId(botId);
-		this.entities.put(bot.getId(), bot);
-	}
-
-	public void addDrunkBot(int botId, String botName) {
-		float[] start = map.getFirstTileXY(PositionType.BotStart);
-		Bot bot = new DrunkBot(botId, start[0], start[1], botName);
-		bot.setId(botId);
-		this.entities.put(bot.getId(), bot);
 	}
 
 	public void removePlayer(int playerId) {

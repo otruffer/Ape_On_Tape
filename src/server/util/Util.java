@@ -47,7 +47,7 @@ public class Util {
 		return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
 	}
 	public static double euclidian(Entity e1, Entity e2){
-		return euclidian(e1.getX(), e1.getY(), e2.getX(), e2.getY());
+		return euclidian(e1.getX() + e1.getWidth()/2, e1.getY() + e1.getHeight()/2, e2.getX() + e2.getWidth()/2, e2.getY() + e2.getHeight()/2);
 	}
 	
 	public static boolean moveOnMap(Game game, Entity e, float deltax, float deltay) {
@@ -125,8 +125,8 @@ public class Util {
 	public static void resolveCollision(Game game, Entity e1, Entity e2) {
 		// the amount we have to move e1 away from e2
 		float delta = (float) (e1.getRadius() + e2.getRadius() - euclidian(e1, e2));
-		float dirx = e2.getX() - e1.getX();
-		float diry = e2.getY() - e1.getY();
+		float dirx = e2.getX() + e2.getWidth()/2 - e1.getX() - e1.getWidth()/2;
+		float diry = e2.getY()  + e2.getHeight()/2- e1.getY() - e1.getHeight()/2;
 		float abs = (float) (euclidian(dirx, diry, 0, 0));
 		if(abs == 0)
 			return;

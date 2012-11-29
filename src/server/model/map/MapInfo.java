@@ -6,10 +6,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import server.exceptions.MapParseException;
+import server.model.AggroBot;
+import server.model.Barrier;
+import server.model.Bot;
+import server.model.DrunkBot;
+import server.model.Entity;
+import server.model.Turret;
+import server.util.IdFactory;
 
 import com.google.gson.Gson;
 
@@ -26,9 +34,9 @@ public class MapInfo {
 			PositionType.None, // symbol #02
 			PositionType.None, // symbol #03
 			PositionType.None, // symbol #04
-			PositionType.BotStart, // symbol #05
-			PositionType.None, // symbol #06
-			PositionType.None, // symbol #07
+			PositionType.Bot, // symbol #05
+			PositionType.DrunkBot, // symbol #06
+			PositionType.AggroBot, // symbol #07
 			PositionType.Turret, // symbol #08
 			PositionType.Barrier, // symbol #09
 			PositionType.None, // symbol #10
@@ -80,9 +88,61 @@ public class MapInfo {
 		}
 		this.entities.get(t).add(new Point(x, y));
 	}
+	
+	public List<Entity> createEntities(TileMap map){
+		List<Entity> entities = new LinkedList<Entity>();
+		for(PositionType type : PositionType.values()){
+			if(this.containsType(type))
+				entities.addAll(this.createEntitesOfType(type, map));
+		}
+		return entities;
+	}
 
-	public static PositionType getEntityType(int number, int entityFirstgrid) {
-		int index = number - entityFirstgrid;
+	private List<Entity> createEntitesOfType(PositionType type, TileMap map) {
+		List<Entity> entities = new LinkedList<Entity>();
+		for(Point position : this.getPositions(type)){
+			Entity e = this.createEntity(type, position, map);
+			if(e != null)
+				entities.add(e);
+		}
+		return entities;
+	}
+
+	
+	private Entity createEntity(PositionType type, Point position, TileMap map) {
+		Entity entity = null;
+		float x = position.x * map.getTileWidth();
+		float y = position.y * map.getTileHeight();
+
+		switch (type) {
+		case Barrier:
+			entity = new Barrier(x, y);
+			break;
+		case Turret:
+			entity = new Turret(x, y);
+			break;
+		case Bot:
+			entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
+			break;
+		case DrunkBot:
+			entity = new DrunkBot(IdFactory.getNextId(), x, y, "Oskar");
+			break;
+		case AggroBot:
+			entity = new AggroBot(IdFactory.getNextId(), x, y, "Remo");
+			break;
+		case PlayerStart:
+			break;
+		case PlayerFinish:
+			break;
+		default:
+			System.err.println("WARNING the specified type '"+ type +"' doesn't get created yet. See MapInfo.createEntity");
+			break;
+		}
+		return entity;
+	}
+
+	public static PositionType getEntityType(int number, int entityFirstgid) {
+		int index = number - entityFirstgid;
 		if (index < 0 || index >= entitySymbols.length)
 			return PositionType.None;
 		else
@@ -133,12 +193,12 @@ public class MapInfo {
 		mapInfo.setCollisionMap(collisionMap);
 
 		// == GENERATE ENTITY STARTING POSITIONS =========================
-		int entityFirstgrid = 0;
+		int entityFirstgid = 0;
 		// search for displacement index for entity symbol numbers (depending on
-		// tileset and it's "firstgrid")
+		// tileset and it's "firstgid")
 		for (JsonTileSet tileSet : map.tilesets) {
 			if (ENTITIES.equals(tileSet.name)) {
-				entityFirstgrid = tileSet.firstgid;
+				entityFirstgid = tileSet.firstgid;
 			}
 		}
 
@@ -153,7 +213,7 @@ public class MapInfo {
 					for (int j = 0; j < subdivisions; j++) {
 						dIndex = (y * subdivisions + j) * map.width
 								+ (x * 2 + i);
-						type = getEntityType(data[dIndex], entityFirstgrid);
+						type = getEntityType(data[dIndex], entityFirstgid);
 						mapInfo.addEntityInfo(type, x, y);
 					}
 				}
