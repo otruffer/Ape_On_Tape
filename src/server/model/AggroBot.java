@@ -20,7 +20,8 @@ public class AggroBot extends Bot {
 		float beforeY = this.getY();
 
 		List<Entity> result;
-		if (euclideanLength(lastMoveX, lastMoveY) < this.speed / 2)
+		if (euclideanLength(lastMoveX, lastMoveY) < this.speed / 2
+				&& abs(lastMoveX) + abs(lastMoveY) > 0)
 			if (abs(lastMoveX) > abs(lastMoveY))
 				result = super.move(game, dX + memoryX(), 0 + memoryY());
 			else
