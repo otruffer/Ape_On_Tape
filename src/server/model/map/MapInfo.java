@@ -81,6 +81,14 @@ public class MapInfo {
 		this.entities.get(t).add(new Point(x, y));
 	}
 
+	public static PositionType getEntityType(int number, int entityFirstgrid) {
+		int index = number - entityFirstgrid;
+		if (index < 0 || index >= entitySymbols.length)
+			return PositionType.None;
+		else
+			return entitySymbols[index];
+	}
+
 	public static MapInfo fromJSON(String filename) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -101,20 +109,24 @@ public class MapInfo {
 		MapInfo mapInfo = new MapInfo();
 
 		// == GENERATE COLLISION MAP =====================================
-		JsonMapLayer layer = searchLayer(FOREGROUND, map);
+		JsonMapLayer layer = getLayer(FOREGROUND, map);
 
 		// set collision map properties
-		int width = layer.width / 2;
-		int height = layer.height / 2;
+		int subdivisions = getSubdivisions(map);
+		int width = map.width / subdivisions;
+		int height = map.height / subdivisions;
 		int[] data = layer.data;
 
-		// shrink json map (1/2 tiles) to binary collision map
+		// parse collision map 'foreground' layer (that consists of sub-tiles)
+		// to binary collision map of full-tiles
 		int[][] collisionMap = new int[height][width];
-		int i;
+		int dIndex;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				i = (y * 2) * layer.width + (x * 2);
-				collisionMap[y][x] = (data[i] == 0) ? 0 : 1;
+				// top left sub-tile defines the collision property of the
+				// full-tile (even if other sub-tiles would be empty)
+				dIndex = (y * subdivisions) * map.width + (x * subdivisions);
+				collisionMap[y][x] = (data[dIndex] == 0) ? 0 : 1;
 			}
 		}
 
@@ -130,42 +142,27 @@ public class MapInfo {
 			}
 		}
 
-		layer = searchLayer(ENTITIES, map);
+		layer = getLayer(ENTITIES, map);
 		data = layer.data;
 		PositionType type;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				// 4 entities possible (because the representation is 1/2 tile)
-				i = (y * 2) * layer.width + (x * 2);
-				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, x, y);
-
-				i = (y * 2) * layer.width + (x * 2 + 1);
-				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, x, y);
-
-				i = (y * 2 + 1) * layer.width + (x * 2);
-				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, x, y);
-
-				i = (y * 2 + 1) * layer.width + (x * 2 + 1);
-				type = getEntityType(data[i], entityFirstgrid);
-				mapInfo.addEntityInfo(type, x, y);
+				// search for all defined entities in each subtile of a full
+				// tile
+				for (int i = 0; i < subdivisions; i++) {
+					for (int j = 0; j < subdivisions; j++) {
+						dIndex = (y * subdivisions + j) * map.width
+								+ (x * 2 + i);
+						type = getEntityType(data[dIndex], entityFirstgrid);
+						mapInfo.addEntityInfo(type, x, y);
+					}
+				}
 			}
 		}
 
 		return mapInfo;
 	}
-
-	public static PositionType getEntityType(int number, int entityFirstgrid) {
-		int index = number - entityFirstgrid;
-		if (index < 0 || index >= entitySymbols.length)
-			return PositionType.None;
-		else
-			return entitySymbols[index];
-	}
-
-	private static JsonMapLayer searchLayer(String layerName, JsonMap map)
+	private static JsonMapLayer getLayer(String layerName, JsonMap map)
 			throws MapParseException {
 		JsonMapLayer layer = null;
 		for (JsonMapLayer l : map.layers) {
@@ -178,12 +175,18 @@ public class MapInfo {
 		return layer;
 	}
 
+	private static int getSubdivisions(JsonMap map) throws MapParseException {
+		int subdivisions = map.properties.subdivision;
+		if (subdivisions == 0)
+			throw MapParseException.noProperty("subdivision");
+		return subdivisions;
+	}
+
 	// == JSON FILE REPRESENTATION OF A MAP GENERATED USING TILED MAP EDITOR ==
 	private static class JsonMap {
 		int width;
 		int height;
-		int tilewidth;
-		int tileheight;
+		JsonMapProperties properties;
 		List<JsonMapLayer> layers;
 		List<JsonTileSet> tilesets;
 	}
@@ -191,13 +194,15 @@ public class MapInfo {
 	private static class JsonMapLayer {
 		int[] data;
 		String name;
-		int height;
-		int width;
 	}
 
 	private static class JsonTileSet {
 		int firstgid;
 		String name;
+	}
+
+	private static class JsonMapProperties {
+		int subdivision;
 	}
 	// == END FILE REPRESENTATION =============================================
 

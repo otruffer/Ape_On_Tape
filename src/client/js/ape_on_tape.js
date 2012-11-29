@@ -7,6 +7,7 @@ var renderEngine;
 var lastSocketMessage = new Date();
 var socketDelta = 0;
 var syncs = 0;
+var resourceFolder = 0;
 
 var loginReady;
 var roomChosen;
@@ -304,7 +305,7 @@ function playWinSound() {
 
 function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
-	preloadImage('bot', 'img/bot.png');
+//	preloadImage('bot', 'img/bot.png');
 	var materialPath = 'img/tiles/material_25px.png';
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';

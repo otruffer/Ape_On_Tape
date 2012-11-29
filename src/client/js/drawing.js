@@ -31,7 +31,9 @@
 
 function RenderingEngine(tileSize, playerSize) {
 	var self = this; // assure callback to right element
-
+	
+	this.map = new JsonMap('maps/map16.json');
+	
 	/* Game server properties */
 	this.BULLET_SIZE = 1;
 	this.PLAYER_SIZE = 20;
@@ -366,26 +368,3 @@ var animIndex = function(entity) {
 
 	return animationIndices[anim.direction][anim.index];
 }
-
-/* ================================ TRASHBOX ================================ */
-/*
- * // draw background scene // @depricated: read and draw map from json reader
- * ('loadMap()') this.loadBackground = function() { self.bgCanvas =
- * document.createElement('canvas'); self.bgCanvas.width = c.width;
- * self.bgCanvas.height = c.height; var bctx = self.bgCanvas.getContext('2d');
- * bctx.scale(self.sc, self.sc); for (ix in gameState.map) { for (iy in
- * gameState.map[ix]) { // inefficient background drawing
- * bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2, iy self.T * 2, self.T,
- * self.T); bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2 + self.T, iy *
- * self.T * 2, self.T, self.T); bctx.drawImage(tilePreload['mat'][8], ix *
- * self.T * 2, iy self.T * 2 + self.T, self.T, self.T);
- * bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2 + self.T, iy * self.T *
- * 2 + self.T, self.T, self.T); // grass tile overlay if (gameState.map[ix][iy] ==
- * 1) { bctx.drawImage(tilePreload['mat'][6], ix * self.T * 2, iy self.T * 2,
- * self.T, self.T) bctx.drawImage(tilePreload['mat'][10], ix * self.T * 2 +
- * self.T, iy * self.T * 2, self.T, self.T)
- * bctx.drawImage(tilePreload['mat'][6], ix * self.T * 2, iy self.T * 2 +
- * self.T, self.T, self.T) bctx.drawImage(tilePreload['mat'][10], ix * self.T *
- * 2 + self.T, iy * self.T * 2 + self.T, self.T, self.T) } } } self.bgLoaded =
- * true; }
- */

@@ -36,13 +36,13 @@
  "orientation":"orthogonal",
  "properties":
     {
-
+     "subdivision":"2"
     },
  "tileheight":25,
  "tilesets":[
         {
          "firstgid":1,
-         "image":"..\/img\/tiles\/material_25px.png",
+         "image":"img\/map\/material_25px.png",
          "imageheight":75,
          "imagewidth":125,
          "margin":0,
@@ -57,7 +57,7 @@
         }, 
         {
          "firstgid":16,
-         "image":"..\/..\/resources\/entities_24px.png",
+         "image":"..\/resources\/entities_24px.png",
          "imageheight":24,
          "imagewidth":408,
          "margin":0,
