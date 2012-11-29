@@ -64,10 +64,14 @@ public class Bot extends Entity {
 		}
 		this.deathCount++;
 		bullet.getOwner().incrementKillCount();
+		
+		respawn(game);
+	}
+
+	protected void respawn(Game game) {
 		float xy[] = game.getMap().getFirstTileXY(PositionType.Bot);
 		this.setX(xy[0]);
 		this.setY(xy[1]);
-
 	}
 
 	private void updateLookingDirection(float xNew, float yNew) {
