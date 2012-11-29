@@ -5,15 +5,16 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import server.exceptions.MapParseException;
+import server.model.AggroBot;
 import server.model.Barrier;
 import server.model.Bot;
+import server.model.DrunkBot;
 import server.model.Entity;
 import server.model.Turret;
 import server.util.IdFactory;
@@ -33,9 +34,9 @@ public class MapInfo {
 			PositionType.None, // symbol #02
 			PositionType.None, // symbol #03
 			PositionType.None, // symbol #04
-			PositionType.BotStart, // symbol #05
-			PositionType.None, // symbol #06
-			PositionType.None, // symbol #07
+			PositionType.Bot, // symbol #05
+			PositionType.DrunkBot, // symbol #06
+			PositionType.AggroBot, // symbol #07
 			PositionType.Turret, // symbol #08
 			PositionType.Barrier, // symbol #09
 			PositionType.None, // symbol #10
@@ -119,10 +120,15 @@ public class MapInfo {
 			break;
 		case Turret:
 			entity = new Turret(x, y);
-			System.out.println("tööörreeet!");
 			break;
-		case BotStart:
+		case Bot:
 			entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
+			break;
+		case DrunkBot:
+			entity = new DrunkBot(IdFactory.getNextId(), x, y, "Oskar");
+			break;
+		case AggroBot:
+			entity = new AggroBot(IdFactory.getNextId(), x, y, "Remo");
 			break;
 		case PlayerStart:
 			break;
