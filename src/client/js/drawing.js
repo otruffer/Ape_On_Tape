@@ -32,7 +32,7 @@
 function RenderingEngine(tileSize, playerSize) {
 	var self = this; // assure callback to right element
 	
-	this.map = new JsonMap('maps/map16.json');
+//	this.map = new JsonMap('maps/map16.json');
 	
 	/* Game server properties */
 	this.BULLET_SIZE = 1;
