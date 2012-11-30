@@ -56,11 +56,9 @@ public class Game {
 	 */
 	public synchronized void start() {
 		this.running = true;
-		Map<Integer, Entity> oldEntities = new HashMap<Integer, Entity>(
-				this.entities);
-		for (Entity e : oldEntities.values()) {
+		for (Entity e : entities.values()) {
 			if (e instanceof Barrier)
-				this.removeEntity(e);
+				((Barrier) e).open();
 		}
 	}
 

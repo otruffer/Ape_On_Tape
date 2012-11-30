@@ -86,7 +86,7 @@ public abstract class Entity {
 		List<Entity> overlapping = Util.getEntitiesOverlapping(
 				game.getAllEntites(), this);
 		for (Entity other : overlapping) {
-			if (other.isCollisionResolving()) {
+			if (other.isCollisionResolvingWith(this)) {
 				Util.resolveCollision(game, this, other);
 			}
 		}
@@ -170,7 +170,7 @@ public abstract class Entity {
 		return Math.min(this.getWidth() / 2, this.getHeight() / 2);
 	}
 
-	public boolean isCollisionResolving() {
+	protected boolean isCollisionResolvingWith(Entity other) {
 		return this.collisionResolving;
 	}
 
@@ -220,6 +220,10 @@ public abstract class Entity {
 
 	public void setTileCollision(boolean tileCollision) {
 		this.tileCollision = tileCollision;
+	}
+	
+	public void bleed(Game game){
+		game.addEntity(new Doodle(this.x, this.y, "blood"));
 	}
 	
 	
