@@ -226,7 +226,6 @@ function initGame() {
 	c.height = height;
 	gameState = new GameState();
 	renderEngine = new RenderingEngine(30, 20);
-	renderEngine.draw(); // start drawing loop
 	initBackgroundMusic();
 }
 
@@ -316,10 +315,14 @@ function loadGraphics() {
 
 // preload images -> images can be accessed using imagePreload['name'].
 imagePreload = {};
-preloadImage = function(name, imgPath) {
+preloadImage = function(name, imgPath, callback) {
 	var img = new Image();
 	img.src = imgPath;
-	imagePreload[name] = img;
+	img.onload = function() {
+		imagePreload[name] = img;
+		if (callback != undefined)
+			callback();
+	}
 }
 
 tilePreload = {};
@@ -329,7 +332,7 @@ tilePreload = {};
  * tileWidth and tileHeight is the size of a subdivided tile in the tile set.
  * NOTE: index [0] is an empty (fully transparent) tile
  */
-loadTileSet = function(name, imgPath, tileWidth, tileHeight) {
+loadTileSet = function(name, imgPath, tileWidth, tileHeight, callback) {
 	tilePreload[name] = new Array();
 	// push an empty tile to array position 0
 	var emptyTile = document.createElement('canvas');
@@ -354,6 +357,8 @@ loadTileSet = function(name, imgPath, tileWidth, tileHeight) {
 				tilePreload[name].push(t_canvas);
 			}
 		}
+		if (callback != undefined)
+			callback();
 	}
 }
 

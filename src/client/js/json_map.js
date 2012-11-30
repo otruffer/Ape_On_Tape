@@ -1,4 +1,4 @@
-function JsonMap(path) {
+function JsonMap(path, onloadCallback) {
 	var self = this;
 
 	/* static properties */
@@ -11,21 +11,20 @@ function JsonMap(path) {
 	this.height;
 	this.bgData;
 	this.fgData;
-	this.subdivision = 2;
+	this.subdivision = 1; // dummy value
 	this.tiledata = {};
 	this.indextable = {};
 
 	/* private properties */
+	var onloadCallback = onloadCallback;
 	var setNamesToLoad = {};
 	var firstSetName;
-	var initDone = false;
 	var tilesLoaded = false;
 
 	// load json file from path
 	$.getJSON(path, function(json) {
 		extractData(json);
 		preloadTiles();
-		initDone = true;
 	});
 
 	var extractData = function(json) {
@@ -92,65 +91,16 @@ function JsonMap(path) {
 	}
 
 	var preloadTiles = function() {
+		var imagesToLoad = 0;
 		for ( var id in setNamesToLoad) {
+			imagesToLoad++;
 			loadTileSet(id, self.tiledata[id].path,
-					self.tiledata[id].tilewidth, self.tiledata[id].tileheight);
+					self.tiledata[id].tilewidth, self.tiledata[id].tileheight,
+					function() {
+						imagesToLoad--;
+						if (imagesToLoad <= 0)
+							onloadCallback();
+					});
 		}
 	}
-
-	this.generateCanvas = function(scale, bgCanvas, bbox, tileSize,
-			contextWidth, contextHeight) {
-		if (!self.checkTilesLoaded())
-			return false;
-
-		bgCanvas = document.createElement('canvas');
-		// scale canvas to effective size
-		bgCanvas.width = self.width * tileSize * scale;
-		bgCanvas.height = self.height * tileSize * scale;
-		bbox.canScrollX = bgCanvas.width > contextWidth;
-		bbox.canScrollY = bgCanvas.height > contextHeight;
-		var bg_ctx = bgCanvas.getContext('2d');
-		// scale context to draw with standard (non-effective) sizes;
-		bg_ctx.scale(scale, scale);
-		var i = 0;
-		var setname, index;
-		for ( var iy = 0; iy < self.height; iy++) {
-			for ( var ix = 0; ix < self.width; ix++) {
-				// background-layer
-				setname = self.indextable[self.bgData[i]].setname;
-				index = self.indextable[self.bgData[i]].index
-				bg_ctx.drawImage(tilePreload[setname][index], ix * tileSize, iy
-						* tileSize, tileSize, tileSize);
-				// foreground-layer
-				setname = self.indextable[self.fgData[i]].setname;
-				index = self.indextable[self.fgData[i]].index
-				bg_ctx.drawImage(tilePreload[setname][index], ix * tileSize, iy
-						* tileSize, tileSize, tileSize);
-				i += 1;
-			}
-		}
-	}
-
 }
-
-/*
- * Array.prototype.unique = function() { var o = {}, i, l = this.length, r = [];
- * for (i = 0; i < l; i += 1) o[this[i]] = this[i]; for (i in o) r.push(o[i]);
- * return r; }
- */
-
-/*
- * this.loadMap = function(path) { self.bgLoading = true; $.getJSON(path,
- * function(json) { self.bgCanvas = document.createElement('canvas'); // scale
- * canvas to effective size self.bgCanvas.width = json.width * self.T * self.sc;
- * self.bgCanvas.height = json.height * self.T * self.sc; self.bbox.canScrollX =
- * self.bgCanvas.width > c.width; self.bbox.canScrollY = self.bgCanvas.height >
- * c.height; var bg_ctx = self.bgCanvas.getContext('2d'); // scale context to
- * draw with standard (non-effective) sizes; bg_ctx.scale(self.sc, self.sc); var
- * i = 0; for ( var iy = 0; iy < json.height; iy++) { for ( var ix = 0; ix <
- * json.width; ix++) { // background-layer bg_ctx.drawImage(
- * tilePreload['mat'][json.layers[0].data[i]], ix self.T, iy * self.T, self.T,
- * self.T); // foreground-layer bg_ctx.drawImage(
- * tilePreload['mat'][json.layers[1].data[i]], ix self.T, iy * self.T, self.T,
- * self.T); i += 1; } } self.bgLoaded = true; self.bgLoading = false; }); }
- */

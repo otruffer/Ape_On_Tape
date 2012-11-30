@@ -88,11 +88,11 @@ public class MapInfo {
 		}
 		this.entities.get(t).add(new Point(x, y));
 	}
-	
-	public List<Entity> createEntities(TileMap map){
+
+	public List<Entity> createEntities(TileMap map) {
 		List<Entity> entities = new LinkedList<Entity>();
-		for(PositionType type : PositionType.values()){
-			if(this.containsType(type))
+		for (PositionType type : PositionType.values()) {
+			if (this.containsType(type))
 				entities.addAll(this.createEntitesOfType(type, map));
 		}
 		return entities;
@@ -100,43 +100,44 @@ public class MapInfo {
 
 	private List<Entity> createEntitesOfType(PositionType type, TileMap map) {
 		List<Entity> entities = new LinkedList<Entity>();
-		for(Point position : this.getPositions(type)){
+		for (Point position : this.getPositions(type)) {
 			Entity e = this.createEntity(type, position, map);
-			if(e != null)
+			if (e != null)
 				entities.add(e);
 		}
 		return entities;
 	}
 
-	
 	private Entity createEntity(PositionType type, Point position, TileMap map) {
 		Entity entity = null;
 		float x = position.x * map.getTileWidth();
 		float y = position.y * map.getTileHeight();
-
 		switch (type) {
-		case Barrier:
-			entity = new Barrier(x, y);
-			break;
-		case Turret:
-			entity = new Turret(x, y);
-			break;
-		case Bot:
-			entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
-			break;
-		case DrunkBot:
-			entity = new DrunkBot(IdFactory.getNextId(), x, y, "Oskar");
-			break;
-		case AggroBot:
-			entity = new AggroBot(IdFactory.getNextId(), x, y, "Remo");
-			break;
-		case PlayerStart:
-			break;
-		case PlayerFinish:
-			break;
-		default:
-			System.err.println("WARNING the specified type '"+ type +"' doesn't get created yet. See MapInfo.createEntity");
-			break;
+			case Barrier :
+				entity = new Barrier(x, y);
+				break;
+			case Turret :
+				entity = new Turret(x, y);
+				break;
+			case Bot :
+				entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
+				break;
+			case DrunkBot :
+				entity = new DrunkBot(IdFactory.getNextId(), x, y, "Oskar");
+				break;
+			case AggroBot :
+				entity = new AggroBot(IdFactory.getNextId(), x, y, "Remo");
+				break;
+			case PlayerStart :
+				break;
+			case PlayerFinish :
+				break;
+			default :
+				System.err
+						.println("WARNING the specified type '"
+								+ type
+								+ "' doesn't get created yet. See MapInfo.createEntity");
+				break;
 		}
 		return entity;
 	}
@@ -212,7 +213,7 @@ public class MapInfo {
 				for (int i = 0; i < subdivisions; i++) {
 					for (int j = 0; j < subdivisions; j++) {
 						dIndex = (y * subdivisions + j) * map.width
-								+ (x * 2 + i);
+								+ (x * subdivisions + i);
 						type = getEntityType(data[dIndex], entityFirstgid);
 						mapInfo.addEntityInfo(type, x, y);
 					}

@@ -4,7 +4,7 @@
   <image source="../client/img/tiles/material_25px.png" width="125" height="75"/>
  </tileset>
  <tileset firstgid="16" name="entities" tilewidth="24" tileheight="24">
-  <image source="entities_24px.png" width="408" height="24"/>
+  <image source="entities.png" width="408" height="24"/>
  </tileset>
  <layer name="background" width="60" height="40">
   <data encoding="base64" compression="zlib">

@@ -32,8 +32,6 @@
 function RenderingEngine(tileSize, playerSize) {
 	var self = this; // assure callback to right element
 
-	this.map = new JsonMap('maps/map.json');
-
 	/* Game server properties */
 	this.BULLET_SIZE = 1;
 	this.PLAYER_SIZE = 20;
@@ -41,7 +39,7 @@ function RenderingEngine(tileSize, playerSize) {
 	this.TILE_SIZE = 30;
 
 	/* display properties */
-	this.T = this.TILE_SIZE / this.map.subdivision; // half tile size
+	this.T = this.TILE_SIZE;
 	this.sc = 1 / 0.6; // scaling parameter
 	// effective drawing sizes of different entities
 	this.P = this.PLAYER_SIZE + 4;
@@ -67,6 +65,12 @@ function RenderingEngine(tileSize, playerSize) {
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
 	this.fpsCounter = 0;
+
+	// load the map
+	this.map = new JsonMap('maps/map.json', function() {
+		self.loadMap();
+		self.draw();
+	});
 
 	// main draw loop
 	this.draw = function() {
@@ -254,36 +258,35 @@ function RenderingEngine(tileSize, playerSize) {
 				- dy + offset, effectiveSize, effectiveSize);
 	}
 
-	this.loadMap = function(path) {
+	this.loadMap = function() {
 		self.bgLoading = true;
-		setTimeout(function() {
-			self.bgCanvas = document.createElement('canvas');
-			// scale canvas to effective size
-			self.bgCanvas.width = self.map.width * self.T * self.sc;
-			self.bgCanvas.height = self.map.height * self.T * self.sc;
-			self.bbox.canScrollX = self.bgCanvas.width > c.width;
-			self.bbox.canScrollY = self.bgCanvas.height > c.height;
-			var bg_ctx = self.bgCanvas.getContext('2d');
-			// scale context to draw with standard (non-effective) sizes;
-			bg_ctx.scale(self.sc, self.sc);
-			var i = 0;
-			var set, index;
-			for ( var iy = 0; iy < self.map.height; iy++) {
-				for ( var ix = 0; ix < self.map.width; ix++) {
-					// background-layer
-					set = self.map.indextable[self.map.bgData[i]].setname;
-					index = self.map.indextable[self.map.bgData[i]].index;
-					bg_ctx.drawImage(tilePreload[set][index], ix * self.T, iy
-							* self.T, self.T, self.T);
-					// foreground-layer
-					tileneme = self.map.indextable[self.map.fgData[i]].setname;
-					index = self.map.indextable[self.map.fgData[i]].index;
-					bg_ctx.drawImage(tilePreload[set][index], ix * self.T, iy
-							* self.T, self.T, self.T);
-					i += 1;
-				}
+		var tilesize = self.T / self.map.subdivision;
+		self.bgCanvas = document.createElement('canvas');
+		// scale canvas to effective size
+		self.bgCanvas.width = self.map.width * tilesize * self.sc;
+		self.bgCanvas.height = self.map.height * tilesize * self.sc;
+		self.bbox.canScrollX = self.bgCanvas.width > c.width;
+		self.bbox.canScrollY = self.bgCanvas.height > c.height;
+		var bg_ctx = self.bgCanvas.getContext('2d');
+		// scale context to draw with standard (non-effective) sizes;
+		bg_ctx.scale(self.sc, self.sc);
+		var i = 0;
+		var set, index;
+		for ( var iy = 0; iy < self.map.height; iy++) {
+			for ( var ix = 0; ix < self.map.width; ix++) {
+				// background-layer
+				set = self.map.indextable[self.map.bgData[i]].setname;
+				index = self.map.indextable[self.map.bgData[i]].index;
+				bg_ctx.drawImage(tilePreload[set][index], ix * tilesize, iy
+						* tilesize, tilesize, tilesize);
+				// foreground-layer
+				set = self.map.indextable[self.map.fgData[i]].setname;
+				index = self.map.indextable[self.map.fgData[i]].index;
+				bg_ctx.drawImage(tilePreload[set][index], ix * tilesize, iy
+						* tilesize, tilesize, tilesize);
+				i += 1;
 			}
-		}, 500);
+		}
 
 		self.bgLoaded = true;
 		self.bgLoading = false;
