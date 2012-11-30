@@ -44,8 +44,10 @@ public class Bullet extends Entity {
 
 		this.moveInDirection(game);
 
-		if (this.wallHit)
+		if (this.killOnWallHit && this.wallHit){
 			this.doWallHit(game);
+			return;
+		}
 
 		List<Entity> overlapping = Util.getEntitiesOverlapping(
 				game.getAllEntites(), this);

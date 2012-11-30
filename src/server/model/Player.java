@@ -23,6 +23,7 @@ public class Player extends Entity {
 	protected int currentShootDelay = 0;
 	private boolean isWinner;
 
+	@noGson
 	private boolean isSlow;
 
 	public Player(int id, float x, float y, String name) {
@@ -31,6 +32,7 @@ public class Player extends Entity {
 		this.collisionResolving = true;
 		this.type = "player";
 		this.isWinner = false;
+		this.setDeadlyForPlayer(false);
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class Player extends Entity {
 
 		this.deathCount++;
 		bullet.getOwner().incrementKillCount();
-		if (bullet.getOwner() instanceof Bot) // TODO: cleverer test
+		if (bullet.getOwner().isDeadlyForPlayer()) // TODO: cleverer test
 			respawn(game);
 		else
 			slowDown();

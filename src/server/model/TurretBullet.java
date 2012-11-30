@@ -7,9 +7,10 @@ public class TurretBullet extends Bullet {
 	
 	public TurretBullet(Entity owner, float x, float y, float dirX, float dirY, float range) {
 		super(owner, x, y, dirX, dirY);
-		this.wallHit = false;
+		this.killOnWallHit = false;
 		this.range = range;
 		this.travelDistance = 0;
+		this.tileCollision = false;
 	}
 	
 	@Override

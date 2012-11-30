@@ -54,6 +54,11 @@ public class Util {
 		// TODO: Just temporary. Later: Check at every possible direction and
 		// notify game that no collision occurred on that side (to release
 		// collision state)
+		if(!e.isTileCollision()){
+			e.setX(e.getX() + deltax);
+			e.setY(e.getY() + deltay);
+			return false;
+		}
 		boolean collision = false;
 		TileMap map = game.getMap();
 		boolean topleft = map.getTileXY(e.getX(), e.getY() + deltay)
