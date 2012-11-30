@@ -20,6 +20,9 @@ public abstract class Entity {
 	protected int dirX = 1;
 	protected int dirY;
 	protected String type = "entity";
+	
+	@noGson
+	protected boolean deadlyForPlayer;
 
 	@noGson
 	protected boolean wallHit = false;
@@ -31,6 +34,11 @@ public abstract class Entity {
 	private boolean collisionState;
 	protected int killCount = 0;
 	protected int deathCount = 0;
+	
+	@noGson
+	protected boolean tileCollision;
+	
+	@noGson
 	private Collection<MoveListener> moveListeners;
 
 	public Entity(int id, float x, float y) {
@@ -40,7 +48,9 @@ public abstract class Entity {
 		this.y = y;
 		this.height = 20f;
 		this.width = 20f;
-
+		this.deadlyForPlayer = true;
+		this.tileCollision = true;
+		
 		this.moveListeners = new LinkedList<MoveListener>();
 
 		this.setType();
@@ -195,4 +205,22 @@ public abstract class Entity {
 	public void addMoveListener(MoveListener listener) {
 		this.moveListeners.add(listener);
 	}
+
+	public boolean isDeadlyForPlayer() {
+		return deadlyForPlayer;
+	}
+
+	public void setDeadlyForPlayer(boolean deadlyForPlayer) {
+		this.deadlyForPlayer = deadlyForPlayer;
+	}
+
+	public boolean isTileCollision() {
+		return tileCollision;
+	}
+
+	public void setTileCollision(boolean tileCollision) {
+		this.tileCollision = tileCollision;
+	}
+	
+	
 }

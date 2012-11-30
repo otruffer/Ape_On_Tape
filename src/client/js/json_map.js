@@ -11,7 +11,7 @@ function JsonMap(path) {
 	this.height;
 	this.bgData;
 	this.fgData;
-	this.subdivision;
+	this.subdivision = 2;
 	this.tiledata = {};
 	this.indextable = {};
 

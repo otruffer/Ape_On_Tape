@@ -178,7 +178,7 @@ public class Game {
 	}
 
 	public void playerFinished(Player p) {
-		p.winner();
+		p.win();
 		this.soundEvents.add("win");
 	}
 

@@ -1,5 +1,6 @@
 package server.model;
 
+import java.awt.Point;
 import java.util.Collection;
 import java.util.List;
 

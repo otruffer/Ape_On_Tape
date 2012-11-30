@@ -41,7 +41,7 @@ function RenderingEngine(tileSize, playerSize) {
 	this.TILE_SIZE = 30;
 
 	/* display properties */
-	this.T = this.TILE_SIZE / 2; // half tile size
+	this.T = this.TILE_SIZE / this.map.subdivision; // half tile size
 	this.sc = 1 / 0.6; // scaling parameter
 	// effective drawing sizes of different entities
 	this.P = this.PLAYER_SIZE + 4;
