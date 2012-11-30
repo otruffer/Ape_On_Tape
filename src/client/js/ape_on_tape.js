@@ -305,7 +305,7 @@ function playWinSound() {
 
 function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
-//	preloadImage('bot', 'img/bot.png');
+	// preloadImage('bot', 'img/bot.png');
 	var materialPath = 'img/tiles/material_25px.png';
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';
@@ -315,21 +315,21 @@ function loadGraphics() {
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
-var imagePreload = {};
-function preloadImage(name, imgPath) {
+imagePreload = {};
+preloadImage = function(name, imgPath) {
 	var img = new Image();
 	img.src = imgPath;
 	imagePreload[name] = img;
 }
 
-var tilePreload = {};
+tilePreload = {};
 /*
  * Loads an image tile set as an array of pre-rendered canvas elements into the
  * tilePreload variable which can be accessed using tilePreload['name'].
  * tileWidth and tileHeight is the size of a subdivided tile in the tile set.
  * NOTE: index [0] is an empty (fully transparent) tile
  */
-function loadTileSet(name, imgPath, tileWidth, tileHeight) {
+loadTileSet = function(name, imgPath, tileWidth, tileHeight) {
 	tilePreload[name] = new Array();
 	// push an empty tile to array position 0
 	var emptyTile = document.createElement('canvas');
