@@ -12,14 +12,13 @@ public class Turret extends Entity {
 	/**
 	 * Distance the turret can shoot.
 	 */
-	protected float reach = 100;
 	
 	public Turret(float x, float y) {
 		super(x, y);
 		this.type = "turret";
 		this.speed = 0;
 		this.shootTimer = 0;
-		this.range = 500;
+		this.range = 200;
 	}
 
 	@Override
@@ -40,7 +39,7 @@ public class Turret extends Entity {
 		float abs = (float) Util.euclidian(deltaX, deltaY, 0, 0);
 		deltaX/=abs; deltaY/=abs;
 		
-		Bullet bullet = new TurretBullet(this, this.getX()+this.width/2, this.getY()+this.getHeight()/2, deltaX, deltaY, this.range);
+		Bullet bullet = new TurretBullet(this, this.getX()+this.width/2, this.getY()+this.getHeight()/2, deltaX, deltaY, this.range*1.5f);
 		game.addEntity(bullet);
 	}
 	/**
@@ -61,7 +60,7 @@ public class Turret extends Entity {
 				delta = newDelta;
 			}
 		}
-		if(delta <= reach)
+		if(delta <= range)
 			return e;
 		else
 			return null;
