@@ -28,8 +28,10 @@ public class Turret extends Entity {
 		Entity target = getClosestPlayer(game.getPlayersList());
 		if(target == null)
 			return;
-		if(shootTimer > shootSpeed)
+		if(shootTimer > shootSpeed){
+			shootTimer = 0;
 			this.shootAt(game, target);
+		}
 	}
 
 	private void shootAt(Game game, Entity target) {
