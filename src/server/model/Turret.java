@@ -9,9 +9,6 @@ public class Turret extends Entity {
 	protected float range;
 	protected int shootTimer;
 	protected int shootSpeed = 45;
-	/**
-	 * Distance the turret can shoot.
-	 */
 	
 	public Turret(float x, float y) {
 		super(x, y);
