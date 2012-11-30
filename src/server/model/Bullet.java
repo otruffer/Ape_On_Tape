@@ -52,10 +52,13 @@ public class Bullet extends Entity {
 		List<Entity> overlapping = Util.getEntitiesOverlapping(
 				game.getAllEntites(), this);
 		overlapping.remove(this.owner);
+		boolean killMe = false;
 		for (Entity entity : overlapping) {
 			entity.hitByBullet(game, this);
+			if(entity.collisionResolving)
+				killMe = true;
 		}
-		if (!overlapping.isEmpty())
+		if (killMe)
 			this.doEntityWallHit(game, overlapping);
 	}
 

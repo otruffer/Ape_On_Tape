@@ -39,6 +39,7 @@ function RenderingEngine(tileSize, playerSize) {
 	this.PLAYER_SIZE = 20;
 	this.ENTITY_SIZE = 20;
 	this.TILE_SIZE = 30;
+	this.BACKGROUND_TYPES = ["blood"];
 
 	/* display properties */
 	this.T = this.TILE_SIZE / this.map.subdivision; // half tile size
@@ -86,8 +87,10 @@ function RenderingEngine(tileSize, playerSize) {
 			ctx.drawImage(self.bgCanvas, self.bbox.sx, self.bbox.sy, w, h, 0,
 					0, w, h);
 		}
-		self.drawPlayers();
+		self.scaleAndShiftWindow();
 		self.drawEntities();
+		self.drawPlayers();
+		
 
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -186,6 +189,12 @@ function RenderingEngine(tileSize, playerSize) {
 	}
 
 	this.drawPlayers = function() {
+
+		for (id in gameState.players)
+			self.drawPlayer(gameState.players[id], id == gameState.playerId);
+	}
+	
+	this.scaleAndShiftWindow = function(){
 		// store information about the main player
 		for (id in gameState.players) {
 			if (id == gameState.playerId) {
@@ -195,9 +204,7 @@ function RenderingEngine(tileSize, playerSize) {
 		}
 
 		// draw all players relative to main player
-		ctx.scale(self.sc, self.sc);
-		for (id in gameState.players)
-			self.drawPlayer(gameState.players[id], id == gameState.playerId);
+		ctx.scale(self.sc, self.sc);		
 	}
 
 	this.drawPlayer = function(player, isself) {
@@ -214,8 +221,16 @@ function RenderingEngine(tileSize, playerSize) {
 	}
 
 	this.drawEntities = function() {
-		for (id in gameState.entities)
-			self.drawEntity(gameState.entities[id]);
+		for (var id in gameState.entities){
+			if(this.BACKGROUND_TYPES.indexOf(gameState.entities[id].type) != -1){
+				self.drawEntity(gameState.entities[id]);
+			}
+		}
+		for (var id in gameState.entities){
+			if(this.BACKGROUND_TYPES.indexOf(gameState.entities[id].type) == -1){
+				self.drawEntity(gameState.entities[id]);
+			}
+		}
 	}
 
 	this.drawEntity = function(entity) {
