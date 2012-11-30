@@ -37,10 +37,11 @@ public class Player extends Entity {
 
 	@Override
 	public void brain(Game game) {
+		this.move(game);
+
 		if (isWinner)
 			return;
-
-		this.move(game);
+		
 		this.shoot(game);
 	}
 
@@ -112,9 +113,10 @@ public class Player extends Entity {
 		this.keysPressed = keys;
 	}
 
-	public void winner() {
+	public void win() {
 		this.collisionResolving = false;
 		this.isWinner = true;
+		this.tileCollision = false;
 	}
 
 	public boolean isWinner() {
