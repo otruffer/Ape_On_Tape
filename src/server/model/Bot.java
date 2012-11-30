@@ -82,6 +82,7 @@ public class Bot extends Entity {
 	}
 
 	private void respawn(Game game) {
+		this.bleed(game);
 		this.speed = originalSpeed;
 		this.hitCount = 0;
 		jumpHome(game);

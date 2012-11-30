@@ -85,6 +85,7 @@ public class Player extends Entity {
 	}
 
 	private void respawn(Game game) {
+		this.bleed(game);
 		float xy[] = game.getMap().getFirstTileXY(PositionType.PlayerStart);
 		this.setX(xy[0]);
 		this.setY(xy[1]);

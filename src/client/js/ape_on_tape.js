@@ -305,7 +305,8 @@ function playWinSound() {
 
 function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
-	// preloadImage('bot', 'img/bot.png');
+	preloadImage('blood', 'img/blood.png');
+	preloadImage('finish_flag', 'img/finish_flag.png');
 	var materialPath = 'img/tiles/material_25px.png';
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';

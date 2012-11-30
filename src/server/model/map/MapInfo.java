@@ -14,6 +14,7 @@ import server.exceptions.MapParseException;
 import server.model.AggroBot;
 import server.model.Barrier;
 import server.model.Bot;
+import server.model.Doodle;
 import server.model.DrunkBot;
 import server.model.Entity;
 import server.model.Turret;
@@ -133,6 +134,7 @@ public class MapInfo {
 		case PlayerStart:
 			break;
 		case PlayerFinish:
+			entity = new Doodle(x, y, "finish_flag");
 			break;
 		default:
 			System.err.println("WARNING the specified type '"+ type +"' doesn't get created yet. See MapInfo.createEntity");

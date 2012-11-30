@@ -222,5 +222,9 @@ public abstract class Entity {
 		this.tileCollision = tileCollision;
 	}
 	
+	public void bleed(Game game){
+		game.addEntity(new Doodle(this.x, this.y, "blood"));
+	}
+	
 	
 }
