@@ -45,9 +45,9 @@ public class Game {
 		this.map = new TileMap(mapInfo);
 		this.initEntities(mapInfo);
 	}
-	
-	private void initEntities(MapInfo mapInfo){
-		for(Entity e: mapInfo.createEntities(this.getMap()))
+
+	private void initEntities(MapInfo mapInfo) {
+		for (Entity e : mapInfo.createEntities(this.getMap()))
 			this.addEntity(e);
 	}
 
@@ -56,7 +56,8 @@ public class Game {
 	 */
 	public synchronized void start() {
 		this.running = true;
-		Map<Integer, Entity> oldEntities = new HashMap<Integer, Entity>(this.entities);
+		Map<Integer, Entity> oldEntities = new HashMap<Integer, Entity>(
+				this.entities);
 		for (Entity e : oldEntities.values()) {
 			if (e instanceof Barrier)
 				this.removeEntity(e);
@@ -65,6 +66,7 @@ public class Game {
 
 	public void addPlayer(int playerId, String playerName) {
 		float[] start = map.getFirstTileXY(PositionType.PlayerStart);
+		start[0] += this.players.size();
 		Player player = new Player(playerId, start[0], start[1], playerName);
 		player.setId(playerId);
 		player.addMoveListener(new PlayerMoveListener(this, map));
@@ -123,7 +125,7 @@ public class Game {
 		e.setCollisionState(true);
 		for (CollisionListener listener : collisionListeners)
 			listener.collisionOccured(this, e);
-//		this.soundEvents.add("wall-collision");
+		// this.soundEvents.add("wall-collision");
 	}
 
 	public void addEntity(Entity e) {
