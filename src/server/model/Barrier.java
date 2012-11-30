@@ -2,11 +2,14 @@ package server.model;
 
 public class Barrier extends Entity {
 
+	private boolean open;
+
 	public Barrier(float x, float y) {
 		super(x, y);
 		this.height = 30;
 		this.width = 30;
 		this.collisionResolving = true;
+		this.open = false;
 	}
 
 	@Override
@@ -17,6 +20,18 @@ public class Barrier extends Entity {
 	@Override
 	public void hitByBullet(Game game, Bullet bullet) {
 		// resistant
+	}
+
+	public void open() {
+		this.open = true;
+		this.collisionResolving = false;
+	}
+
+	@Override
+	protected boolean isCollisionResolvingWith(Entity other) {
+		if (other instanceof Bot)
+			return true;
+		return this.collisionResolving;
 	}
 
 }
