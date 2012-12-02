@@ -114,29 +114,32 @@ public class MapInfo {
 		float x = position.x * map.getTileWidth();
 		float y = position.y * map.getTileHeight();
 		switch (type) {
-		case Barrier:
-			entity = new Barrier(x, y);
-			break;
-		case Turret:
-			entity = new Turret(x, y);
-			break;
-		case Bot:
-			entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
-			break;
-		case DrunkBot:
-			entity = new DrunkBot(IdFactory.getNextId(), x, y, "Oskar");
-			break;
-		case AggroBot:
-			entity = new AggroBot(IdFactory.getNextId(), x, y, "Remo");
-			break;
-		case PlayerStart:
-			break;
-		case PlayerFinish:
-			entity = new Doodle(x, y, "finish_flag");
-			break;
-		default:
-			System.err.println("WARNING the specified type '"+ type +"' doesn't get created yet. See MapInfo.createEntity");
-			break;
+			case Barrier :
+				entity = new Barrier(x, y);
+				break;
+			case Turret :
+				entity = new Turret(x, y);
+				break;
+			case Bot :
+				entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
+				break;
+			case DrunkBot :
+				entity = new DrunkBot(IdFactory.getNextId(), x, y, "Oskar");
+				break;
+			case AggroBot :
+				entity = new AggroBot(IdFactory.getNextId(), x, y, "Remo");
+				break;
+			case PlayerStart :
+				break;
+			case PlayerFinish :
+				entity = new Doodle(x, y, "finish_flag");
+				break;
+			default :
+				System.err
+						.println("WARNING the specified type '"
+								+ type
+								+ "' doesn't get created yet. See MapInfo.createEntity");
+				break;
 		}
 		return entity;
 	}
@@ -213,8 +216,10 @@ public class MapInfo {
 					for (int j = 0; j < subdivisions; j++) {
 						dIndex = (y * subdivisions + j) * map.width
 								+ (x * subdivisions + i);
-						type = getEntityType(data[dIndex], entityFirstgid);
-						mapInfo.addEntityInfo(type, x, y);
+						if (data[dIndex] != 0) {
+							type = getEntityType(data[dIndex], entityFirstgid);
+							mapInfo.addEntityInfo(type, x, y);
+						}
 					}
 				}
 			}

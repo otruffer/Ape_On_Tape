@@ -20,7 +20,7 @@ public abstract class Entity {
 	protected int dirX = 1;
 	protected int dirY;
 	protected String type = "entity";
-	
+
 	@noGson
 	protected boolean deadlyForPlayer;
 
@@ -34,10 +34,10 @@ public abstract class Entity {
 	private boolean collisionState;
 	protected int killCount = 0;
 	protected int deathCount = 0;
-	
+
 	@noGson
 	protected boolean tileCollision;
-	
+
 	@noGson
 	private Collection<MoveListener> moveListeners;
 
@@ -50,7 +50,7 @@ public abstract class Entity {
 		this.width = 20f;
 		this.deadlyForPlayer = true;
 		this.tileCollision = true;
-		
+
 		this.moveListeners = new LinkedList<MoveListener>();
 
 		this.setType();
@@ -121,12 +121,16 @@ public abstract class Entity {
 		return height;
 	}
 
-	public void setX(float x) {
+	public final void setX(float x) {
+		if (Float.isNaN(x))
+			throw new RuntimeException("x is not a number");
 		this.x = x;
 		positionChanged();
 	}
 
-	public void setY(float y) {
+	public final void setY(float y) {
+		if (Float.isNaN(y))
+			throw new RuntimeException("y is not a number");
 		this.y = y;
 		positionChanged();
 	}
@@ -221,10 +225,9 @@ public abstract class Entity {
 	public void setTileCollision(boolean tileCollision) {
 		this.tileCollision = tileCollision;
 	}
-	
-	public void bleed(Game game){
+
+	public void bleed(Game game) {
 		game.addEntity(new Doodle(this.x, this.y, "blood"));
 	}
-	
-	
+
 }
