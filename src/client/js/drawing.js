@@ -68,7 +68,7 @@ function RenderingEngine(tileSize, playerSize) {
 	this.fpsCounter = 0;
 
 	// load the map
-	this.map = new JsonMap('maps/map2.json', function() {
+	this.map = new JsonMap('maps/map.json', function() {
 		self.loadMap();
 		self.draw();
 	});

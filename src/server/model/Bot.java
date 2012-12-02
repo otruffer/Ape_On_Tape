@@ -49,6 +49,8 @@ public class Bot extends Entity {
 
 	protected List<Entity> move(Game game, float dX, float dY) {
 		float distance = euclideanLength(dX, dY);
+		if (distance == 0)
+			throw new RuntimeException("Devide by zero");
 		float factor = this.speed / distance;
 		return moveOnMap(game, dX * factor, dY * factor);
 	}

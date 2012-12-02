@@ -122,15 +122,14 @@ public abstract class Entity {
 	}
 
 	public final void setX(float x) {
-		if (Float.isNaN(x))
-			throw new RuntimeException("x is not a number");
+		if (Float.isNaN(x) || Float.isInfinite(x))
+			throw new RuntimeException("Cannot accept " + x);
 		this.x = x;
 		positionChanged();
 	}
-
 	public final void setY(float y) {
-		if (Float.isNaN(y))
-			throw new RuntimeException("y is not a number");
+		if (Float.isNaN(y) || Float.isInfinite(y))
+			throw new RuntimeException("Cannot accept " + y);
 		this.y = y;
 		positionChanged();
 	}
