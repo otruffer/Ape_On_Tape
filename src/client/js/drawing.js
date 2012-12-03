@@ -37,7 +37,7 @@ function RenderingEngine(tileSize, playerSize) {
 	this.PLAYER_SIZE = 20;
 	this.ENTITY_SIZE = 20;
 	this.TILE_SIZE = 30;
-	this.BACKGROUND_TYPES = ["blood"];
+	this.BACKGROUND_TYPES = [ "blood" ];
 
 	/* display properties */
 	this.T = this.TILE_SIZE;
@@ -94,7 +94,6 @@ function RenderingEngine(tileSize, playerSize) {
 		self.scaleAndShiftWindow();
 		self.drawEntities();
 		self.drawPlayers();
-		
 
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -117,7 +116,7 @@ function RenderingEngine(tileSize, playerSize) {
 		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, width, height);
 		if (!self.bgLoaded && !self.bgLoading) {
-			self.loadMap('maps/map.json'); // use when loading map from json
+			self.loadMap();
 		}
 	}
 
@@ -197,8 +196,8 @@ function RenderingEngine(tileSize, playerSize) {
 		for (id in gameState.players)
 			self.drawPlayer(gameState.players[id], id == gameState.playerId);
 	}
-	
-	this.scaleAndShiftWindow = function(){
+
+	this.scaleAndShiftWindow = function() {
 		// store information about the main player
 		for (id in gameState.players) {
 			if (id == gameState.playerId) {
@@ -208,7 +207,7 @@ function RenderingEngine(tileSize, playerSize) {
 		}
 
 		// draw all players relative to main player
-		ctx.scale(self.sc, self.sc);		
+		ctx.scale(self.sc, self.sc);
 	}
 
 	this.drawPlayer = function(player, isself) {
@@ -225,13 +224,13 @@ function RenderingEngine(tileSize, playerSize) {
 	}
 
 	this.drawEntities = function() {
-		for (var id in gameState.entities){
-			if(this.BACKGROUND_TYPES.indexOf(gameState.entities[id].type) != -1){
+		for ( var id in gameState.entities) {
+			if (this.BACKGROUND_TYPES.indexOf(gameState.entities[id].type) != -1) {
 				self.drawEntity(gameState.entities[id]);
 			}
 		}
-		for (var id in gameState.entities){
-			if(this.BACKGROUND_TYPES.indexOf(gameState.entities[id].type) == -1){
+		for ( var id in gameState.entities) {
+			if (this.BACKGROUND_TYPES.indexOf(gameState.entities[id].type) == -1) {
 				self.drawEntity(gameState.entities[id]);
 			}
 		}
@@ -285,34 +284,11 @@ function RenderingEngine(tileSize, playerSize) {
 
 	this.loadMap = function() {
 		self.bgLoading = true;
-		var tilesize = self.T / self.map.subdivision;
-		self.bgCanvas = document.createElement('canvas');
-		// scale canvas to effective size
-		self.bgCanvas.width = self.map.width * tilesize * self.sc;
-		self.bgCanvas.height = self.map.height * tilesize * self.sc;
+		self.bgCanvas = self.map.generateCanvas(self.T, self.sc);
+		// update bounding box parameters
 		self.bbox.canScrollX = self.bgCanvas.width > c.width;
 		self.bbox.canScrollY = self.bgCanvas.height > c.height;
-		var bg_ctx = self.bgCanvas.getContext('2d');
-		// scale context to draw with standard (non-effective) sizes;
-		bg_ctx.scale(self.sc, self.sc);
-		var i = 0;
-		var set, index;
-		for ( var iy = 0; iy < self.map.height; iy++) {
-			for ( var ix = 0; ix < self.map.width; ix++) {
-				// background-layer
-				set = self.map.indextable[self.map.bgData[i]].setname;
-				index = self.map.indextable[self.map.bgData[i]].index;
-				bg_ctx.drawImage(tilePreload[set][index], ix * tilesize, iy
-						* tilesize, tilesize, tilesize);
-				// foreground-layer
-				set = self.map.indextable[self.map.fgData[i]].setname;
-				index = self.map.indextable[self.map.fgData[i]].index;
-				bg_ctx.drawImage(tilePreload[set][index], ix * tilesize, iy
-						* tilesize, tilesize, tilesize);
-				i += 1;
-			}
-		}
-
+		// set loaded
 		self.bgLoaded = true;
 		self.bgLoading = false;
 	}

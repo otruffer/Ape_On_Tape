@@ -18,14 +18,18 @@ function JsonMap(path, onloadCallback) {
 	/* private properties */
 	var onloadCallback = onloadCallback;
 	var setNamesToLoad = {};
-	var firstSetName;
-	var tilesLoaded = false;
+	var numberOfSetsToLoad = 0;
 
 	// load json file from path
 	$.getJSON(path, function(json) {
+		console.log("entry point");
 		extractData(json);
-		preloadTiles();
-	});
+		preloadTilesetImages();
+	}).error(function(jqXHR, textStatus, errorThrown) {
+		console.log("error: " + textStatus);
+		console.log("could not parse '" + path + "'");
+		console.log("incoming Text: " + jqXHR.responseText);
+	})
 
 	var extractData = function(json) {
 		self.width = json.width;
@@ -37,70 +41,113 @@ function JsonMap(path, onloadCallback) {
 			else if (json.layers[id].name == self.FG_LAYER_NAME)
 				self.fgData = json.layers[id].data;
 		}
-		// create index-table of indices from foreground an background layer
-		for ( var i = 0; i < self.bgData.length; ++i) {
-			self.indextable[self.bgData[i]] = {};
-			self.indextable[self.fgData[i]] = {};
-		}
 		// extract subdivisions
 		self.subdivision = json.properties.subdivision;
-		// extract tileset information (firstgid and number of tiles)
+		// extract tileset information (firstgid, number of tiles, path, etc.)
 		var set;
+		var isFirstSet = true;
 		for ( var id in json.tilesets) {
 			set = json.tilesets[id];
-			self.tiledata[set.name] = {};
-			self.tiledata[set.name].firstgid = set.firstgid;
-			self.tiledata[set.name].numtiles = (set.imageheight / set.tileheight)
-					* (set.imagewidth / set.tilewidth);
-			self.tiledata[set.name].path = set.image;
-			self.tiledata[set.name].tilewidth = set.tilewidth;
-			self.tiledata[set.name].tileheight = set.tileheight;
+			if (set.name == self.ENTITY_TILESET_NAME)
+				continue; // skip entity set
+
+			// add additional info about number of tiles in this set
+			set.numtilesX = set.imagewidth / set.tilewidth;
+			set.numtilesY = set.imageheight / set.tileheight;
+			set.numtiles = (set.imagewidth / set.tilewidth)
+					* (set.imageheight / set.tileheight);
+			self.tiledata[set.name] = set;
+			numberOfSetsToLoad++;
 		}
-		// go through every index in indextable and assign respective tileset
-		// and relative index
-		for ( var id in self.indextable) {
-			self.indextable[id] = self.calculateTileAndIndex(id);
-		}
-		self.indextable[0].setname = firstSetName;
 	}
 
 	/*
-	 * Calculates the tile index and the corresponding tileset of a data layer
-	 * index. Returns the setname and index as an object.
+	 * loads the image of every tileset that needs to be loaded. avoids loading
+	 * a tileset twice if the name of the set is already present in the
+	 * imagePreload
 	 */
-	this.calculateTileAndIndex = function(dataIndex) {
-		var infoObj = {};
-		var first = true;
-		for ( var id in self.tiledata) {
-			// evaluate corresponding tileset and effective index in this set
-			if (dataIndex >= self.tiledata[id].firstgid
-					&& dataIndex < (self.tiledata[id].firstgid + self.tiledata[id].numtiles)) {
-				setNamesToLoad[id] = true;
-				if (first) {
-					firstSetName = id;
-					first = false;
-				}
-				infoObj.setname = id;
-				infoObj.index = dataIndex - self.tiledata[id].firstgid + 1;
-				return infoObj;
+	var preloadTilesetImages = function() {
+		for ( var setName in self.tiledata) {
+			if (imagePreload[setName] != undefined) {
+				numberOfSetsToLoad--; // set is already loaded
+			} else {
+				preloadImage(setName, self.tiledata[setName].image, function() {
+					numberOfSetsToLoad--;
+					if (numberOfSetsToLoad <= 0) {
+						onloadCallback();
+					}
+				});
 			}
 		}
-		// if this happens let setname undefined and pass index 0 (transparent)
-		infoObj.index = 0;
-		return infoObj;
+		if (numberOfSetsToLoad <= 0) {
+			onloadCallback(); // execute callback if already all tiles loaded
+		}
 	}
 
-	var preloadTiles = function() {
-		var imagesToLoad = 0;
-		for ( var id in setNamesToLoad) {
-			imagesToLoad++;
-			loadTileSet(id, self.tiledata[id].path,
-					self.tiledata[id].tilewidth, self.tiledata[id].tileheight,
-					function() {
-						imagesToLoad--;
-						if (imagesToLoad <= 0)
-							onloadCallback();
-					});
+	/*
+	 * Looks for the corresponding tileset that is represented by the dataIndex
+	 * and returns the necessary tiledata object
+	 */
+	this.getTileDataAt = function(dataIndex) {
+		for ( var id in self.tiledata) {
+			if (dataIndex >= self.tiledata[id].firstgid
+					&& dataIndex < (self.tiledata[id].firstgid + self.tiledata[id].numtiles)) {
+				return self.tiledata[id];
+			}
 		}
+	}
+
+	/*
+	 * returns a canvas representing a full tile with the size of fullTileSize
+	 * times the scale parameter
+	 */
+	this.generateCanvas = function(fullTileSize, scale) {
+		var tilesize = fullTileSize / self.subdivision;
+		var bgCanvas = document.createElement('canvas');
+		// scale canvas to effective size
+		bgCanvas.width = self.width * tilesize * scale;
+		bgCanvas.height = self.height * tilesize * scale;
+		var bg_ctx = bgCanvas.getContext('2d');
+		// scale context to draw with standard (non-effective) sizes;
+		bg_ctx.scale(scale, scale);
+		var i = 0;
+		var tx, ty;
+		var tileindex;
+		var tiledata;
+		var fgcount = 0;
+		for ( var iy = 0; iy < self.height; iy++) {
+			for ( var ix = 0; ix < self.width; ix++) {
+				// background-layer
+				tiledata = self.getTileDataAt(self.bgData[i]);
+				if (tiledata != undefined) {
+					tileindex = (self.bgData[i] - tiledata.firstgid);
+					tx = tileindex % tiledata.numtilesX;
+					ty = (tileindex - tx) / tiledata.numtilesX;
+					bg_ctx.drawImage(imagePreload[tiledata.name], tx
+							* tiledata.tilewidth, ty * tiledata.tilewidth,
+							tiledata.tilewidth, tiledata.tileheight, ix
+									* tilesize, iy * tilesize, tilesize,
+							tilesize);
+				}
+				// foreground-layer
+				tiledata = self.getTileDataAt(self.fgData[i]);
+				if (tiledata != undefined) {
+					tileindex = (self.fgData[i] - tiledata.firstgid);
+					tx = tileindex % tiledata.numtilesX;
+					ty = (tileindex - tx) / tiledata.numtilesX;
+					bg_ctx.drawImage(imagePreload[tiledata.name], tx
+							* tiledata.tilewidth, ty * tiledata.tileheight,
+							tiledata.tilewidth, tiledata.tileheight, ix
+									* tilesize, iy * tilesize, tilesize,
+							tilesize);
+					fgcount++;
+					console.log(fgcount + " tx:" + tx + " ty:" + ty + " ix:"
+							+ ix + " iy:" + iy);
+				}
+				i += 1;
+
+			}
+		}
+		return bgCanvas;
 	}
 }

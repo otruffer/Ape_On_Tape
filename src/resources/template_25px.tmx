@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="40" height="40" tilewidth="25" tileheight="25">
  <tileset firstgid="1" name="entities" tilewidth="24" tileheight="24">
-  <image source="entities_24px.png" width="408" height="24"/>
+  <image source="entities.png" width="408" height="24"/>
+ </tileset>
+ <tileset firstgid="18" name="material_25px" tilewidth="25" tileheight="25">
+  <image source="../client/img/map/material_25px.png" width="125" height="75"/>
  </tileset>
  <layer name="background" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJztwQENAAAAwqD3T20PBxQAAAAAAMCXARkAAAE=
+   eJztwwEJAAAMBKGr8f2LrsdQcNVUVVVVVVUfPeP+nEE=
+  </data>
+ </layer>
+ <layer name="helper (do not export!)" width="40" height="40" opacity="0.16">
+  <data encoding="base64" compression="zlib">
+   eJztzqENADAMwLDe0f8PHRwei6WFmWVnZue230+ufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKiufKg+lwhRQQ==
   </data>
  </layer>
  <layer name="foreground" width="40" height="40">
