@@ -3,10 +3,12 @@ var CloudRendering = function(id, renderingEngine) {
 	var map = renderingEngine.map;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
-	var CLOUDS_PER_TILE = 1;
+	var CLOUDS_PER_TILE = 2;
 
-	var MAX_X = map.width;
-	var MAX_Y = map.height;
+	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
+
+	var MAX_X = 10;// map.width;
+	var MAX_Y = 10;// map.height;
 
 	var me = gameState.players[gameState.playerId];
 
@@ -28,10 +30,12 @@ var CloudRendering = function(id, renderingEngine) {
 			for ( var j = 0; j < MAX_Y; j++) {
 				var upLeftY = j * TILE_SIZE;
 				// now working in tile (i, j)
-				for ( var n = 1; n <= CLOUDS_PER_TILE; n++) {
-					var subX = n * TILE_SIZE / (CLOUDS_PER_TILE + 1);
-					for ( var m = 1; m <= CLOUDS_PER_TILE; m++) {
-						var subY = m * TILE_SIZE / (CLOUDS_PER_TILE + 1);
+				for ( var n = 0; n <= CLOUDS_PER_TILE; n++) {
+					var subX = n * TILE_SIZE / CLOUDS_PER_TILE + TILE_SIZE
+							/ CLOUDS_PER_TILE / 2;
+					for ( var m = 0; m <= CLOUDS_PER_TILE; m++) {
+						var subY = m * TILE_SIZE / CLOUDS_PER_TILE + TILE_SIZE
+								/ CLOUDS_PER_TILE / 2;
 						// now working in one special cloud
 						drawIfVisible(upLeftX + subX, upLeftY + subY);
 					}
@@ -43,7 +47,7 @@ var CloudRendering = function(id, renderingEngine) {
 	function drawIfVisible(x, y) {
 		var cloudPos = new Point(x, y);
 		var myPos = new Point(me.x + PLAYER_SIZE / 2, me.y + PLAYER_SIZE / 2);
-		if (!viewBlocked(cloudPos, myPos)) {
+		if (viewBlocked(cloudPos, myPos)) {
 			drawCloudAt(x, y);
 		}
 	}
@@ -94,7 +98,8 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawCloudAt(x, y) {
-		ctx.drawImage(imagePreload['cloud'], x, y);
+		ctx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2, y - CLOUD_SIZE
+				/ 2, CLOUD_SIZE, CLOUD_SIZE);
 	}
 
 	function drawTestDotAt(x, y) {
