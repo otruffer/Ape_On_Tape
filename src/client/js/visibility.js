@@ -3,11 +3,11 @@ var CloudRendering = function(id, renderingEngine) {
 	var map = renderingEngine.map;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
-	var CLOUDS_PER_TILE = 2;
+	var CLOUDS_PER_TILE = 4;
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
 
-	var MAX_X = 10;// map.width;
+	var MAX_X = 5;// map.width;
 	var MAX_Y = 10;// map.height;
 
 	var me = gameState.players[gameState.playerId];
@@ -30,10 +30,10 @@ var CloudRendering = function(id, renderingEngine) {
 			for ( var j = 0; j < MAX_Y; j++) {
 				var upLeftY = j * TILE_SIZE;
 				// now working in tile (i, j)
-				for ( var n = 0; n <= CLOUDS_PER_TILE; n++) {
+				for ( var n = 0; n < CLOUDS_PER_TILE; n++) {
 					var subX = n * TILE_SIZE / CLOUDS_PER_TILE + TILE_SIZE
 							/ CLOUDS_PER_TILE / 2;
-					for ( var m = 0; m <= CLOUDS_PER_TILE; m++) {
+					for ( var m = 0; m < CLOUDS_PER_TILE; m++) {
 						var subY = m * TILE_SIZE / CLOUDS_PER_TILE + TILE_SIZE
 								/ CLOUDS_PER_TILE / 2;
 						// now working in one special cloud
