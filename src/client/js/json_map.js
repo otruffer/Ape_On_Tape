@@ -21,7 +21,7 @@ function JsonMap(path, onloadCallback) {
 	var numberOfSetsToLoad = 0;
 
 	// load json file from path
-	 $.getJSON(path, function(json) {
+	$.getJSON(path, function(json) {
 		extractData(json);
 		preloadTilesetImages();
 	}).error(function(jqXHR, textStatus, errorThrown) {
@@ -145,9 +145,9 @@ function JsonMap(path, onloadCallback) {
 		}
 		return bgCanvas;
 	}
-	
+
 	this.fgDataAtTile = function(x, y) {
-		var i = self.height * y + x;
+		var i = self.width * y * self.subdivision + x * self.subdivision;
 		return self.fgData[i];
 	}
 }

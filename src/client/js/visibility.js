@@ -1,4 +1,9 @@
-var CloudRendering = function(id, map, TILE_SIZE, CLOUDS_PER_TILE) {
+var CloudRendering = function(id, renderingEngine) {
+
+	var map = renderingEngine.map;
+	var TILE_SIZE = renderingEngine.TILE_SIZE;
+	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
+	var CLOUDS_PER_TILE = 1;
 
 	var MAX_X = map.width;
 	var MAX_Y = map.height;
@@ -37,7 +42,7 @@ var CloudRendering = function(id, map, TILE_SIZE, CLOUDS_PER_TILE) {
 
 	function drawIfVisible(x, y) {
 		var cloudPos = new Point(x, y);
-		var myPos = new Point(me.x, me.y);
+		var myPos = new Point(me.x + PLAYER_SIZE / 2, me.y + PLAYER_SIZE / 2);
 		if (!viewBlocked(cloudPos, myPos)) {
 			drawCloudAt(x, y);
 		}
@@ -80,12 +85,10 @@ var CloudRendering = function(id, map, TILE_SIZE, CLOUDS_PER_TILE) {
 	}
 
 	function blockingTileAt(x, y) {
-		// XXX: for testing
-		drawTestDotAt(x, y);
-		
 		var tileX = Math.floor(x / TILE_SIZE);
 		var tileY = Math.floor(y / TILE_SIZE);
 		var data = map.fgDataAtTile(tileX, tileY);
+
 		// TODO: Which numbers are blocking?
 		return data != 0;
 	}
@@ -93,9 +96,9 @@ var CloudRendering = function(id, map, TILE_SIZE, CLOUDS_PER_TILE) {
 	function drawCloudAt(x, y) {
 		ctx.drawImage(imagePreload['cloud'], x, y);
 	}
-	
+
 	function drawTestDotAt(x, y) {
-		ctx.drawImage(imagePreload['cloud'], x, y);
+		ctx.drawImage(imagePreload['test-dot'], x, y);
 	}
 
 }

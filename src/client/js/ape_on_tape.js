@@ -307,7 +307,7 @@ function loadGraphics() {
 	preloadImage('blood', 'img/blood.png');
 	preloadImage('finish_flag', 'img/finish_flag.png');
 	preloadImage('cloud', 'img/cloud.png');
-	preloadImage('cloud', 'img/test-dot.png');
+	preloadImage('test-dot', 'img/test-dot.png');
 	var materialPath = 'img/tiles/material_25px.png';
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';

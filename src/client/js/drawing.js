@@ -74,9 +74,7 @@ function RenderingEngine(tileSize, playerSize) {
 	});
 
 	/* Rendering for clouds */
-	this.CLOUDS_PER_TILE = 1;
-	this.cloudRendering = new CloudRendering(gameState.playerId, this.map,
-			this.TILE_SIZE, this.CLOUDS_PER_TILE);
+	this.cloudRendering = new CloudRendering(gameState.playerId, this);
 
 	// main draw loop
 	this.draw = function() {
