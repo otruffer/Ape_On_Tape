@@ -1,0 +1,97 @@
+var CloudRendering = function(id, TILE_SIZE, CLOUDS_PER_TILE) {
+
+	// TODO: Find these out correctly
+	var MAX_X = 20;
+	var MAX_Y = 20;
+
+	var me = gameState.players[gameState.playerId];
+
+	function initMe() {
+		me = gameState.players[gameState.playerId];
+	}
+
+	this.drawClouds = function() {
+		if (!me) {
+			initMe();
+			return;
+		}
+
+		for ( var i = 0; i < MAX_X; i++) {
+			var upLeftX = i * TILE_SIZE;
+			for ( var j = 0; j < MAX_Y; j++) {
+				var upLeftY = j * TILE_SIZE;
+				// now working in tile (i, j)
+				for ( var n = 1; n <= CLOUDS_PER_TILE; n++) {
+					var subX = n * TILE_SIZE / (CLOUDS_PER_TILE + 1);
+					for ( var m = 1; m <= CLOUDS_PER_TILE; m++) {
+						var subY = m * TILE_SIZE / (CLOUDS_PER_TILE + 1);
+						// now working in one special cloud
+						drawIfVisible(upLeftX + subX, upLeftY + subY);
+					}
+				}
+			}
+		}
+	}
+
+	function drawIfVisible(x, y) {
+		var cloudPos = new Point(x, y);
+		var myPos = new Point(me.x, me.y);
+		if (!viewBlocked(cloudPos, myPos)) {
+			drawCloudAt(x, y);
+		}
+	}
+
+	function viewBlocked(pA, pB) {
+		return blockedVert(pA, pB) || blockedHoriz(pA, pB);
+	}
+
+	function blockedVert(pA, pB) {
+		var vAB = pB.minus(pA);
+		var upperY = Math.min(pA.y, pB.y);
+		var firstRow = Math.floor(upperY / TILE_SIZE);
+		var lowerY = Math.max(pA.y, pB.y);
+		var lastRow = Math.ceil(lowerY / TILE_SIZE);
+		for ( var j = firstRow; j <= lastRow; j++) {
+			var yy = j * TILE_SIZE;
+			var k = (yy - pA.y) / vAB.y;
+			var xx = pA.x + vAB.x * k;
+			if (blockingTileAt(xx, yy - 1) || blockingTileAt(xx, yy))
+				return true;
+		}
+		return false;
+	}
+
+	function blockedHoriz(pA, pB) {
+		var vAB = pB.minus(pA);
+		var upperX = Math.min(pA.x, pB.x);
+		var firstRow = Math.floor(upperX / TILE_SIZE);
+		var lowerX = Math.max(pA.x, pB.x);
+		var lastRow = Math.ceil(lowerX / TILE_SIZE);
+		for ( var i = firstRow; i <= lastRow; i++) {
+			var xx = i * TILE_SIZE;
+			var k = (xx - pA.x) / vAB.x;
+			var yy = pA.y + vAB.y * k;
+			if (blockingTileAt(xx - 1, yy) || blockingTileAt(xx, yy))
+				return true;
+		}
+		return false;
+	}
+
+	function blockingTileAt(x, y) {
+		return false;
+	}
+
+	function drawCloudAt(x, y) {
+		ctx.drawImage(imagePreload['cloud'], x, y);
+	}
+
+}
+
+var Point = function(x, y) {
+	this.x = x;
+	this.y = y;
+
+	this.minus = function(point) {
+		return new Point(this.x - point.x, this.y - point.y);
+	}
+}

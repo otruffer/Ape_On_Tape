@@ -61,6 +61,10 @@ function RenderingEngine(tileSize, playerSize) {
 
 	/* main player information */
 	this.mainPlayer = {};
+	
+	/* Rendering for clouds */
+	this.CLOUDS_PER_TILE = 1;
+	this.cloudRendering = new CloudRendering(gameState.playerId, this.TILE_SIZE, this.CLOUDS_PER_TILE);
 
 	/* engine status properties */
 	this.lastRender = new Date();
@@ -234,6 +238,7 @@ function RenderingEngine(tileSize, playerSize) {
 				self.drawEntity(gameState.entities[id]);
 			}
 		}
+		this.cloudRendering.drawClouds();
 	}
 
 	this.drawEntity = function(entity) {

@@ -306,6 +306,7 @@ function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
 	preloadImage('blood', 'img/blood.png');
 	preloadImage('finish_flag', 'img/finish_flag.png');
+	preloadImage('cloud', 'img/cloud.png');
 	var materialPath = 'img/tiles/material_25px.png';
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';
@@ -316,7 +317,7 @@ function loadGraphics() {
 
 // preload images -> images can be accessed using imagePreload['name'].
 imagePreload = {};
-preloadImage = function(name, imgPath, callback) {
+function preloadImage(name, imgPath, callback) {
 	var img = new Image();
 	img.src = imgPath;
 	img.onload = function() {
