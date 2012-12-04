@@ -21,8 +21,7 @@ function JsonMap(path, onloadCallback) {
 	var numberOfSetsToLoad = 0;
 
 	// load json file from path
-	$.getJSON(path, function(json) {
-		console.log("entry point");
+	 $.getJSON(path, function(json) {
 		extractData(json);
 		preloadTilesetImages();
 	}).error(function(jqXHR, textStatus, errorThrown) {
@@ -114,7 +113,6 @@ function JsonMap(path, onloadCallback) {
 		var tx, ty;
 		var tileindex;
 		var tiledata;
-		var fgcount = 0;
 		for ( var iy = 0; iy < self.height; iy++) {
 			for ( var ix = 0; ix < self.width; ix++) {
 				// background-layer
@@ -140,9 +138,6 @@ function JsonMap(path, onloadCallback) {
 							tiledata.tilewidth, tiledata.tileheight, ix
 									* tilesize, iy * tilesize, tilesize,
 							tilesize);
-					fgcount++;
-					console.log(fgcount + " tx:" + tx + " ty:" + ty + " ix:"
-							+ ix + " iy:" + iy);
 				}
 				i += 1;
 

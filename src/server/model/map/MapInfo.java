@@ -263,7 +263,12 @@ public class MapInfo {
 
 	private static class JsonTileSet {
 		int firstgid;
+		int tilewidth;
+		int tileheight;
+		int imagewidth;
+		int imageheight;
 		String name;
+		String image;
 	}
 
 	private static class JsonMapProperties {
