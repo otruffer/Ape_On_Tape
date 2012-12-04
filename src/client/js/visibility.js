@@ -1,20 +1,22 @@
-var CloudRendering = function(id, TILE_SIZE, CLOUDS_PER_TILE) {
+var CloudRendering = function(id, map, TILE_SIZE, CLOUDS_PER_TILE) {
 
-	// TODO: Find these out correctly
-	var MAX_X = 20;
-	var MAX_Y = 20;
+	var MAX_X = map.width;
+	var MAX_Y = map.height;
 
 	var me = gameState.players[gameState.playerId];
 
-	function initMe() {
-		me = gameState.players[gameState.playerId];
+	function init() {
+		MAX_X = map.width;
+		MAX_Y = map.height;
 	}
 
 	this.drawClouds = function() {
-		if (!me) {
-			initMe();
+		if (!MAX_X || !MAX_Y) { // XXX: because of strange bugs
+			init();
 			return;
 		}
+
+		me = gameState.players[gameState.playerId];
 
 		for ( var i = 0; i < MAX_X; i++) {
 			var upLeftX = i * TILE_SIZE;
@@ -48,9 +50,9 @@ var CloudRendering = function(id, TILE_SIZE, CLOUDS_PER_TILE) {
 	function blockedVert(pA, pB) {
 		var vAB = pB.minus(pA);
 		var upperY = Math.min(pA.y, pB.y);
-		var firstRow = Math.floor(upperY / TILE_SIZE);
+		var firstRow = Math.ceil(upperY / TILE_SIZE);
 		var lowerY = Math.max(pA.y, pB.y);
-		var lastRow = Math.ceil(lowerY / TILE_SIZE);
+		var lastRow = Math.floor(lowerY / TILE_SIZE);
 		for ( var j = firstRow; j <= lastRow; j++) {
 			var yy = j * TILE_SIZE;
 			var k = (yy - pA.y) / vAB.y;
@@ -64,10 +66,10 @@ var CloudRendering = function(id, TILE_SIZE, CLOUDS_PER_TILE) {
 	function blockedHoriz(pA, pB) {
 		var vAB = pB.minus(pA);
 		var upperX = Math.min(pA.x, pB.x);
-		var firstRow = Math.floor(upperX / TILE_SIZE);
+		var firstCol = Math.ceil(upperX / TILE_SIZE);
 		var lowerX = Math.max(pA.x, pB.x);
-		var lastRow = Math.ceil(lowerX / TILE_SIZE);
-		for ( var i = firstRow; i <= lastRow; i++) {
+		var lastCol = Math.floor(lowerX / TILE_SIZE);
+		for ( var i = firstCol; i <= lastCol; i++) {
 			var xx = i * TILE_SIZE;
 			var k = (xx - pA.x) / vAB.x;
 			var yy = pA.y + vAB.y * k;
@@ -78,10 +80,21 @@ var CloudRendering = function(id, TILE_SIZE, CLOUDS_PER_TILE) {
 	}
 
 	function blockingTileAt(x, y) {
-		return false;
+		// XXX: for testing
+		drawTestDotAt(x, y);
+		
+		var tileX = Math.floor(x / TILE_SIZE);
+		var tileY = Math.floor(y / TILE_SIZE);
+		var data = map.fgDataAtTile(tileX, tileY);
+		// TODO: Which numbers are blocking?
+		return data != 0;
 	}
 
 	function drawCloudAt(x, y) {
+		ctx.drawImage(imagePreload['cloud'], x, y);
+	}
+	
+	function drawTestDotAt(x, y) {
 		ctx.drawImage(imagePreload['cloud'], x, y);
 	}
 
