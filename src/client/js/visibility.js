@@ -5,7 +5,7 @@ var CloudRendering = function(id, renderingEngine) {
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
 	var CLOUDS_PER_TILE = 2;
-	var VIEW_RANGE = 8;
+	var VIEW_RANGE = 5;
 	var MIN_VISIBILITY = 0.8;
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
@@ -145,11 +145,8 @@ var CloudRendering = function(id, renderingEngine) {
 	function visibilityAt(x, y) {
 		var distance = new Point(x, y).distanceTo(new Point(me.x + PLAYER_SIZE
 				/ 2, me.y + PLAYER_SIZE / 2));
-		var range = VIEW_RANGE * TILE_SIZE;
-		if (distance > range)
-			return 0;
-		else
-			return 1 - (distance / range);
+		distance /= TILE_SIZE;
+		return Math.min(1, VIEW_RANGE / (distance * distance));
 	}
 
 	function drawCloudAt(x, y, opacity) {
