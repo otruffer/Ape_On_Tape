@@ -146,4 +146,9 @@ function JsonMap(path, onloadCallback) {
 		}
 		return bgCanvas;
 	}
+
+	this.fgDataAtTile = function(x, y) {
+		var i = self.width * y * self.subdivision + x * self.subdivision;
+		return self.fgData[i];
+	}
 }
