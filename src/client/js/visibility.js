@@ -3,12 +3,15 @@ var CloudRendering = function(id, renderingEngine) {
 	var map = renderingEngine.map;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
+
 	var CLOUDS_PER_TILE = 2;
+	var VIEW_RANGE = 8;
+	var MIN_VISIBILITY = 0.8;
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
 
-	var MAX_X = map.width;
-	var MAX_Y = map.height;
+	var MAX_X = 10;// map.width;
+	var MAX_Y = 10;// map.height;
 
 	var me = gameState.players[gameState.playerId];
 
@@ -48,8 +51,9 @@ var CloudRendering = function(id, renderingEngine) {
 		var cloudPos = new Point(x, y);
 		var myPos = new Point(me.x + PLAYER_SIZE / 2, me.y + PLAYER_SIZE / 2);
 		if (viewBlocked(cloudPos, myPos)) {
-			drawCloudAt(x, y);
-		}
+			drawCloudAt(x, y, MIN_VISIBILITY);
+		} else
+			drawCloudAt(x, y, Math.min(1 - visibilityAt(x, y), MIN_VISIBILITY));
 	}
 
 	function viewBlocked(pA, pB) {
@@ -97,8 +101,17 @@ var CloudRendering = function(id, renderingEngine) {
 		return data != 0;
 	}
 
-	function drawCloudAt(x, y) {
-		ctx.fillStyle = "rgba(0,0,0,0.5)";
+	function visibilityAt(x, y) {
+		var distance = new Point(x, y).distanceTo(new Point(me.x, me.y));
+		var range = VIEW_RANGE * TILE_SIZE;
+		if (distance > range)
+			return 0;
+		else
+			return 1 - (distance / range);
+	}
+
+	function drawCloudAt(x, y, opacity) {
+		ctx.fillStyle = "rgba(0,0,0," + opacity + ")";
 		ctx.fillRect(x - CLOUD_SIZE / 2, y - CLOUD_SIZE / 2, CLOUD_SIZE,
 				CLOUD_SIZE);
 
@@ -124,5 +137,12 @@ var Point = function(x, y) {
 
 	this.minus = function(point) {
 		return new Point(this.x - point.x, this.y - point.y);
+	}
+
+	this.distanceTo = function(point) {
+		var p = this.minus(point);
+		xx = Math.abs(p.x);
+		yy = Math.abs(p.y);
+		return Math.sqrt(Math.pow(xx, 2) + Math.pow(yy, 2));
 	}
 }
