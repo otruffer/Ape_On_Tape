@@ -1,0 +1,1 @@
+MAP_FILE = 'maps/map2.json';
