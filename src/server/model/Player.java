@@ -64,7 +64,7 @@ public class Player extends Entity {
 
 		this.deathCount++;
 		bullet.getOwner().incrementKillCount();
-		if (bullet.getOwner().isDeadlyForPlayer()) // TODO: cleverer test
+		if (bullet.getOwner().isDeadlyForPlayer())
 			respawn(game);
 		else
 			slowDown();

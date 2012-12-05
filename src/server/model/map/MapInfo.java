@@ -17,6 +17,7 @@ import server.model.Bot;
 import server.model.Doodle;
 import server.model.DrunkBot;
 import server.model.Entity;
+import server.model.SpikeTrap;
 import server.model.Turret;
 import server.util.IdFactory;
 
@@ -43,7 +44,7 @@ public class MapInfo {
 			PositionType.None, // symbol #10
 			PositionType.None, // symbol #11
 			PositionType.PlayerFinish, // symbol #12
-			PositionType.None, // symbol #13
+			PositionType.SpikeTrap, // symbol #13
 			PositionType.None, // symbol #14
 			PositionType.None, // symbol #15
 			PositionType.None, // symbol #16
@@ -133,6 +134,9 @@ public class MapInfo {
 				break;
 			case PlayerFinish :
 				entity = new Doodle(x, y, "finish_flag");
+				break;
+			case SpikeTrap :
+				entity = new SpikeTrap(x, y);
 				break;
 			default :
 				System.err

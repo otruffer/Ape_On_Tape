@@ -263,6 +263,21 @@ function RenderingEngine(tileSize, playerSize) {
 			effectiveSize = self.PLAYER_SIZE;
 			tile = imagePreload['finish_flag'];
 			break;
+		case 'barrier':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['barrier'];
+			break;
+		case 'turret':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['turret'];
+			break;
+		case 'barrier_open':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['barrier_open'];
+			break;
 		default:
 			tile = tilePreload['bullet'][1];
 			entitySize = self.E;

@@ -306,6 +306,9 @@ function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
 	preloadImage('blood', 'img/blood.png');
 	preloadImage('finish_flag', 'img/finish_flag.png');
+	preloadImage('barrier', 'img/barrier.png');
+	preloadImage('barrier_open', 'img/barrier_open.png');
+	preloadImage('turret', 'img/turret.png');
 	var materialPath = 'img/tiles/material_25px.png';
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';

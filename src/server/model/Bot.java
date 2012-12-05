@@ -73,7 +73,7 @@ public class Bot extends Entity {
 		if (bullet.getOwner() instanceof Bot || bullet.getOwner().equals(this)) {
 			return;
 		}
-		this.deathCount++;
+		game.playSound("kill");
 		bullet.getOwner().incrementKillCount();
 
 		this.hitCount++;

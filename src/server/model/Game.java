@@ -57,8 +57,10 @@ public class Game {
 	public synchronized void start() {
 		this.running = true;
 		for (Entity e : entities.values()) {
-			if (e instanceof Barrier)
+			if (e instanceof Barrier){
 				((Barrier) e).open();
+				e.type = "barrier_open";
+			}
 		}
 	}
 
@@ -170,7 +172,11 @@ public class Game {
 	}
 
 	public void playerHit(Player player) {
-		this.soundEvents.add("kill");
+		this.playSound("kill");
+	}
+	
+	public void playSound(String sound){
+		this.soundEvents.add(sound);
 	}
 
 	public boolean isRunning() {
