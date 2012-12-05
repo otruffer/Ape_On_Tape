@@ -5,7 +5,7 @@ var CloudRendering = function(id, renderingEngine) {
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
-	var CLOUDS_PER_TILE = 2;
+	var CLOUDS_PER_TILE = 1;
 	var VIEW_RANGE = 5;
 	var MIN_VISIBILITY = 1;
 
@@ -100,21 +100,21 @@ var CloudRendering = function(id, renderingEngine) {
 
 	function isCorner(x, y) {
 		return (((Math.abs(x - Math.round(x / TILE_SIZE) * TILE_SIZE) + Math
-				.abs(y - Math.round(y / TILE_SIZE) * TILE_SIZE))) <= 2)
+				.abs(y - Math.round(y / TILE_SIZE) * TILE_SIZE))) == 0)
 				&& isSemanticCorner(x, y);
 	}
 
 	function isSemanticCorner(x, y) {
-		var x1 = Math.round(x / TILE_SIZE - 0.25);
-		var y1 = Math.round(y / TILE_SIZE - 0.25);
+		var x1 = Math.floor(x / TILE_SIZE - 0.25);
+		var y1 = Math.floor(y / TILE_SIZE - 0.25);
 		var x2 = x1 + 1;
 		var y2 = y1 + 1;
 
 		// exactly one or three should be blocking to have a corner
 		count = 0;
 		for ( var i = x1; i <= x2; i++)
-			for ( var j = y2; j <= y2; j++)
-				if (blockingTileAt(x1 * TILE_SIZE, y1 * TILE_SIZE))
+			for ( var j = y1; j <= y2; j++)
+				if (blockingTileAt(i * TILE_SIZE, j * TILE_SIZE))
 					count++;
 
 		return count % 2 != 0;
@@ -142,6 +142,8 @@ var CloudRendering = function(id, renderingEngine) {
 			var yy = pA.y + vAB.y * k;
 			if (blockingTileAt(xx - 1, yy) ? !blockingTileAt(xx, yy)
 					: blockingTileAt(xx, yy)) {
+				count++;
+			} else if (isCorner(xx, yy)) {
 				count++;
 			}
 
@@ -187,7 +189,11 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawTestDotAt(x, y) {
-		ctx.drawImage(imagePreload['test-dot'], x, y);
+		ctx.scale(renderingEngine.sc, renderingEngine.sc);
+		ctx.drawImage(imagePreload['test-dot'], x - renderingEngine.bbox.sx
+				/ renderingEngine.sc, y - renderingEngine.bbox.sy
+				/ renderingEngine.sc);
+		ctx.scale(1 / renderingEngine.sc, 1 / renderingEngine.sc);
 	}
 
 }

@@ -70,7 +70,7 @@ function RenderingEngine(tileSize, playerSize) {
 	this.cloudRendering;
 
 	// load the map
-	this.map = new JsonMap('maps/map.json', function() {
+	this.map = new JsonMap(MAP_FILE, function() {
 		self.loadMap();
 		self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		self.draw();

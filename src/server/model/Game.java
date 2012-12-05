@@ -15,6 +15,7 @@ import server.listeners.PlayerMoveListener;
 import server.model.map.MapInfo;
 import server.model.map.PositionType;
 import server.model.map.TileMap;
+import server.properties.ApeProperties;
 
 public class Game {
 
@@ -39,8 +40,7 @@ public class Game {
 		this.height = height;
 		this.soundEvents = new HashSet<String>();
 		// TODO: replace map path (make dynamic choice)
-		String mapPath = "src/client/maps/map.json"
-				.replace("/", File.separator);
+		String mapPath = ApeProperties.getProperty("mapPath");
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
 		this.initEntities(mapInfo);
