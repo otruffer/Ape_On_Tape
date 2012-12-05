@@ -5,9 +5,10 @@ var CloudRendering = function(id, renderingEngine) {
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
-	var CLOUDS_PER_TILE = 1;
+	var CLOUDS_PER_TILE = 2;
 	var VIEW_RANGE = 5;
-	var MIN_VISIBILITY = 1;
+	var MIN_VISIBILITY = 0.95;
+	var CLOUD_RGB = '0,0,10';
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
 
@@ -170,7 +171,7 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawCloudAt(x, y, opacity) {
-		ctx.fillStyle = "rgba(0,0,0," + opacity + ")";
+		ctx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
 		ctx.scale(renderingEngine.sc, renderingEngine.sc);
 		ctx.fillRect(x - CLOUD_SIZE / 2 - renderingEngine.bbox.sx
 				/ renderingEngine.sc, y - CLOUD_SIZE / 2
