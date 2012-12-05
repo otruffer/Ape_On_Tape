@@ -50,46 +50,87 @@ var CloudRendering = function(id, renderingEngine) {
 	function drawIfVisible(x, y) {
 		var cloudPos = new Point(x, y);
 		var myPos = new Point(me.x + PLAYER_SIZE / 2, me.y + PLAYER_SIZE / 2);
-		if (viewBlocked(cloudPos, myPos)) {
+		if (viewBlocked(cloudPos, myPos) >= 2) {
 			drawCloudAt(x, y, MIN_VISIBILITY);
 		} else
 			drawCloudAt(x, y, Math.min(1 - visibilityAt(x, y), MIN_VISIBILITY));
 	}
 
 	function viewBlocked(pA, pB) {
-		return blockedVert(pA, pB) || blockedHoriz(pA, pB);
+		return blockedVert(pA, pB) + blockedHoriz(pA, pB);
 	}
 
+	/**
+	 * Returns a number of blocking to non-blocking transitions (into and out of
+	 * walls). For performance: will return a max of 2!
+	 * 
+	 * @param pA
+	 * @param pB
+	 * @returns {Number}
+	 */
 	function blockedVert(pA, pB) {
 		var vAB = pB.minus(pA);
 		var upperY = Math.min(pA.y, pB.y);
 		var firstRow = Math.ceil(upperY / TILE_SIZE);
 		var lowerY = Math.max(pA.y, pB.y);
 		var lastRow = Math.floor(lowerY / TILE_SIZE);
+
+		var count = 0;
 		for ( var j = firstRow; j <= lastRow; j++) {
 			var yy = j * TILE_SIZE;
 			var k = (yy - pA.y) / vAB.y;
 			var xx = pA.x + vAB.x * k;
-			if (blockingTileAt(xx, yy - 1) || blockingTileAt(xx, yy))
-				return true;
+			if (blockingTileAt(xx, yy - 1) ? !blockingTileAt(xx, yy)
+					: blockingTileAt(xx, yy)) {
+				count++;
+
+				// XXX: hack, to avoid unwanted darkness behind corners
+				if (isCorner(xx, yy)) {
+					count--;
+				}
+			}
+
+			// for performance
+			if (count >= 2)
+				return count;
 		}
-		return false;
+		return count;
 	}
 
+	function isCorner(x, y) {
+		return (x % TILE_SIZE + y % TILE_SIZE) <= 2;
+	}
+
+	/**
+	 * Returns a number of blocking to non-blocking transitions (into and out of
+	 * walls). For performance: will return a max of 2!
+	 * 
+	 * @param pA
+	 * @param pB
+	 * @returns {Number}
+	 */
 	function blockedHoriz(pA, pB) {
 		var vAB = pB.minus(pA);
 		var upperX = Math.min(pA.x, pB.x);
 		var firstCol = Math.ceil(upperX / TILE_SIZE);
 		var lowerX = Math.max(pA.x, pB.x);
 		var lastCol = Math.floor(lowerX / TILE_SIZE);
+
+		var count = 0;
 		for ( var i = firstCol; i <= lastCol; i++) {
 			var xx = i * TILE_SIZE;
 			var k = (xx - pA.x) / vAB.x;
 			var yy = pA.y + vAB.y * k;
-			if (blockingTileAt(xx - 1, yy) || blockingTileAt(xx, yy))
-				return true;
+			if (blockingTileAt(xx - 1, yy) ? !blockingTileAt(xx, yy)
+					: blockingTileAt(xx, yy)) {
+				count++;
+			}
+
+			// for performance
+			if (count >= 2)
+				return count;
 		}
-		return false;
+		return count;
 	}
 
 	function blockingTileAt(x, y) {
