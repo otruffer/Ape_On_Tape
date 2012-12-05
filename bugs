@@ -2,3 +2,4 @@
 - Mp3 sounds are not supported in Firefox
 - Probably something wrong with jab.wav (not working in FF, workaround with .ogg running)
 - Bot collision not working (hitByBullet) -> Bot extends Entity instead of Player
+- AggroBot does a moveOnMap using Float.Infinity -> needs fix (Symbol #06 in entities)

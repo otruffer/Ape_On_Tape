@@ -187,13 +187,28 @@ public class MapInfo {
 		// parse collision map 'foreground' layer (that consists of sub-tiles)
 		// to binary collision map of full-tiles
 		int[][] collisionMap = new int[height][width];
-		int dIndex;
+		int iRow1, iRow2;
+		int subCollisionCount;
+		int iOff = Math.abs((2 - subdivisions) / 2);
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				// top left sub-tile defines the collision property of the
-				// full-tile (even if other sub-tiles would be empty)
-				dIndex = (y * subdivisions) * map.width + (x * subdivisions);
-				collisionMap[y][x] = (data[dIndex] == 0) ? 0 : 1;
+				subCollisionCount = 0;
+				// logic: a collision is defined if a square of 4 subtiles that
+				// is placed in the middle of a tile has more than 1
+				// occupied subtiles
+				iRow1 = (y * subdivisions + iOff) * map.width
+						+ (x * subdivisions + iOff);
+				iRow2 = (y * subdivisions + iOff + 1) * map.width
+						+ (x * subdivisions + iOff);
+				if (data[iRow1] != 0)
+					subCollisionCount++;
+				if (data[iRow1 + 1] != 0)
+					subCollisionCount++;
+				if (data[iRow2] != 0)
+					subCollisionCount++;
+				if (data[iRow2 + 1] != 0)
+					subCollisionCount++;
+				collisionMap[y][x] = (subCollisionCount > 1) ? 1 : 0;
 			}
 		}
 
@@ -212,6 +227,7 @@ public class MapInfo {
 		layer = getLayer(ENTITIES, map);
 		data = layer.data;
 		PositionType type;
+		int dIndex;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				// search for all defined entities in each subtile of a full

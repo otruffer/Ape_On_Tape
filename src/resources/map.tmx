@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="60" height="40" tilewidth="25" tileheight="25">
+ <properties>
+  <property name="subdivision" value="2"/>
+ </properties>
  <tileset firstgid="1" name="tileset" tilewidth="25" tileheight="25">
   <image source="../client/img/tiles/material_25px.png" width="125" height="75"/>
  </tileset>
@@ -13,12 +16,12 @@
  </layer>
  <layer name="foreground" width="60" height="40">
   <data encoding="base64" compression="zlib">
-   eJztWO1uwzAI9LqPSm23vf/bLpEayaPG3AFuGiVI/IghhksMtu9cSjnvTL8n/VH0ZthZv7X0VuG9FF2+DDvrt5bM+R14S3mb9FP4SfvHXXt+2nzaOOrH2uv8Wnhl3q1n5D12nH0ftdd+B95SrpP+duab7UvP6/mx42vhjcx34H19vK3+/F4e+3Hdp2c9kflaeJf5T/cctfiavRUP6Ttavdbjy/klE+/8LM9rsl/07K14TJ+1JHs9Z63j2v/A+79epfbOQyPwyjy0vtKyt+Jp+692x5D1O3L/fVb9emWr69kr2Xjl+pFi2VvxFrxavVr1O3L/9Yp2X6rxovwFU18WjlF4tf/Ormdvfs/G28uDwYv2Y+s9bZytR1ai/ap13kV4hqh4+Y4oXu//jop3n2LxWt+1x18hvd86H1lxLHu0XzFxPP1/RB4s3tY9GImTgQP1y8Kr3YOROFvEq4nFM2i8Bcpfo3GQPDLwIvcYea7w3Luj9yULL8PbM+srgjdq7+EdVU8sf51pz8Jr8RBZ3y3Cd1h40fMsW7+9edasX1SY/+K5PzNxIusZFYSHQPhri3+K8h3ZfM6ry57xovzVlnU5d+1N/wA34h8A
+   eJztWNFuwzAI9Lp1ldZu+/+/XSM1quuBuQPcNEqQeIghgUsMwXcqpZw2pt9X/VH0YthZv6X0UuH9Krp8GnbWbymZ8tvxyn61/e2qHzc9dvxq/yOwjvqx9jo/D17tPg0vus7ej9prvx2v/bxzufe830C+a8HL+u145fWl8Lb9bvJ7L//7cd2nJz2Q+Vp45+cfbjlq8TW7FA/pO1q91uvz/JKJd7pu57W2X/TsUjymz1qSvZ+z9nHtv+N9rNdWe/PQCLxtHlpfkexSPAlvW5dafZzL2P/vs+rXK2vdz17Jxtvun1YsuxRvxqvVq1W/I/+/XtHOSzVelL9g6svCMQqv9t3Z/ezN79l4e3kweNF+bN2nrbP1yEq0X0nzLsIzRMXLd0Txer93VLz/KRav9V57/BXS+635yIpj2aP9ionj6f8j8mDxSudgJE4GDtQvC692DkbirBGvJhbPoPEWKH+NxkHyyMCLnGPaucJz7o6elyy8DG/P7K8I3qi9h3dUPbH8daY9C6/FQ2S9twjfYeFF51m2fnvPWbJ+UWG+i+f8zMSJ7GdUEB4C4a8t/inKd2TzOa8uW8aL8ldr1nnu2pr+AUIqHsA=
   </data>
  </layer>
  <layer name="entities" width="60" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt16ENACAQA0BGQODYf08MAyAgn9C7pL7/rq2RoO+kSLsXIMGoLgAAAACX2bpn/AkA4A+zugA8tACPMwCY
+   eJzt0TsKgEAMRdFZgoU/GPe/Tht7QRgeY86BFOluSGtUsDxTRbV7ASpY0wEfnC87AJB3pAMAKG1LB0xiTwcAwASudABD/eW/PR0AA93QkwEa
   </data>
  </layer>
 </map>

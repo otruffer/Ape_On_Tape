@@ -39,7 +39,7 @@ public class Game {
 		this.height = height;
 		this.soundEvents = new HashSet<String>();
 		// TODO: replace map path (make dynamic choice)
-		String mapPath = "src/client/maps/map.json"
+		String mapPath = "src/client/maps/forrest.json"
 				.replace("/", File.separator);
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);

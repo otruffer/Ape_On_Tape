@@ -21,7 +21,7 @@ function JsonMap(path, onloadCallback) {
 	var numberOfSetsToLoad = 0;
 
 	// load json file from path
-	 $.getJSON(path, function(json) {
+	$.getJSON(path, function(json) {
 		extractData(json);
 		preloadTilesetImages();
 	}).error(function(jqXHR, textStatus, errorThrown) {
@@ -63,7 +63,8 @@ function JsonMap(path, onloadCallback) {
 	/*
 	 * loads the image of every tileset that needs to be loaded. avoids loading
 	 * a tileset twice if the name of the set is already present in the
-	 * imagePreload
+	 * imagePreload. Fires the onloadCallback that indicates that the object and
+	 * references have been completely loaded
 	 */
 	var preloadTilesetImages = function() {
 		for ( var setName in self.tiledata) {
@@ -85,7 +86,7 @@ function JsonMap(path, onloadCallback) {
 
 	/*
 	 * Looks for the corresponding tileset that is represented by the dataIndex
-	 * and returns the necessary tiledata object
+	 * and returns the necessary tiledata object if the index is defined.
 	 */
 	this.getTileDataAt = function(dataIndex) {
 		for ( var id in self.tiledata) {
