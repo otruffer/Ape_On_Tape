@@ -102,7 +102,8 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function visibilityAt(x, y) {
-		var distance = new Point(x, y).distanceTo(new Point(me.x, me.y));
+		var distance = new Point(x, y).distanceTo(new Point(me.x + PLAYER_SIZE
+				/ 2, me.y + PLAYER_SIZE / 2));
 		var range = VIEW_RANGE * TILE_SIZE;
 		if (distance > range)
 			return 0;
