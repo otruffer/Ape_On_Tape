@@ -3,12 +3,12 @@ var CloudRendering = function(id, renderingEngine) {
 	var map = renderingEngine.map;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
-	var CLOUDS_PER_TILE = 4;
+	var CLOUDS_PER_TILE = 2;
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
 
-	var MAX_X = 5;// map.width;
-	var MAX_Y = 10;// map.height;
+	var MAX_X = map.width;
+	var MAX_Y = map.height;
 
 	var me = gameState.players[gameState.playerId];
 
@@ -98,8 +98,18 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawCloudAt(x, y) {
-		ctx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2, y - CLOUD_SIZE
-				/ 2, CLOUD_SIZE, CLOUD_SIZE);
+		ctx.fillStyle = "rgba(0,0,0,0.5)";
+		ctx.fillRect(x - CLOUD_SIZE / 2, y - CLOUD_SIZE / 2, CLOUD_SIZE,
+				CLOUD_SIZE);
+
+		// ctx.beginPath();
+		// ctx.arc(x, y, CLOUD_SIZE / Math.sqrt(2), 0, Math.PI * 2, true);
+		// ctx.closePath();
+		// ctx.fill();
+
+		// ctx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2, y -
+		// CLOUD_SIZE
+		// / 2, CLOUD_SIZE, CLOUD_SIZE);
 	}
 
 	function drawTestDotAt(x, y) {
