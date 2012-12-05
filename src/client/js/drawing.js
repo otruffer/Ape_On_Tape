@@ -67,14 +67,17 @@ function RenderingEngine(tileSize, playerSize) {
 	this.fpsUpdateDelta = 0;
 	this.fpsCounter = 0;
 
+	this.cloudRendering;
+
 	// load the map
 	this.map = new JsonMap('maps/map.json', function() {
 		self.loadMap();
+		self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		self.draw();
 	});
+	
 
 	/* Rendering for clouds */
-	this.cloudRendering = new CloudRendering(gameState.playerId, this);
 
 	// main draw loop
 	this.draw = function() {
@@ -94,9 +97,14 @@ function RenderingEngine(tileSize, playerSize) {
 			ctx.drawImage(self.bgCanvas, self.bbox.sx, self.bbox.sy, w, h, 0,
 					0, w, h);
 		}
-		self.scaleAndShiftWindow();
+		self.computePlayerRelatives();
+		
+		// draw all entities relative to main player (need scaling to effective coordinates)
+		ctx.scale(self.sc, self.sc);
 		self.drawEntities();
 		self.drawPlayers();
+		ctx.scale(1/self.sc, 1/self.sc);
+		self.cloudRendering.drawClouds();
 
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -122,9 +130,22 @@ function RenderingEngine(tileSize, playerSize) {
 			self.loadMap();
 		}
 	}
+	
+	this.computePlayerRelatives = function() {
+		// store information about the main player
+		for (id in gameState.players) {
+			if (id == gameState.playerId) {
+				self.computePlayerBoundingBox(gameState.players[id]);
+				self.computePlayerEffectivePosition(gameState.players[id]);
+			}
+		}
+	}
 
-	// Computes the bounding box parameters (offset positions sx and sy) if the
-	// map is too big to be drawn completely into the game's canvas.
+
+	/**
+	 * Computes the bounding box parameters (offset positions sx and sy) if the
+	 * map is too big to be drawn completely into the game's canvas.
+	 */
 	this.computePlayerBoundingBox = function(player) {
 		if (!player)
 			return;
@@ -200,18 +221,6 @@ function RenderingEngine(tileSize, playerSize) {
 			self.drawPlayer(gameState.players[id], id == gameState.playerId);
 	}
 
-	this.scaleAndShiftWindow = function() {
-		// store information about the main player
-		for (id in gameState.players) {
-			if (id == gameState.playerId) {
-				self.computePlayerBoundingBox(gameState.players[id]);
-				self.computePlayerEffectivePosition(gameState.players[id]);
-			}
-		}
-
-		// draw all players relative to main player
-		ctx.scale(self.sc, self.sc);
-	}
 
 	this.drawPlayer = function(player, isself) {
 		var offset = (self.PLAYER_SIZE - self.P) / 2;
@@ -237,7 +246,7 @@ function RenderingEngine(tileSize, playerSize) {
 				self.drawEntity(gameState.entities[id]);
 			}
 		}
-		this.cloudRendering.drawClouds();
+		
 	}
 
 	this.drawEntity = function(entity) {

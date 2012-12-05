@@ -1,36 +1,37 @@
 var CloudRendering = function(id, renderingEngine) {
 
 	var map = renderingEngine.map;
+	var sc = renderingEngine.sc;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
 	var CLOUDS_PER_TILE = 2;
 	var VIEW_RANGE = 5;
-	var MIN_VISIBILITY = 0.8;
+	var MIN_VISIBILITY = 1;
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
 
-	var MAX_X = 10;// map.width;
-	var MAX_Y = 10;// map.height;
+	var MIN_X = 0;
+	var MIN_Y = 0;
+	var MAX_X = map.width;
+	var MAX_Y = map.height;
 
 	var me = gameState.players[gameState.playerId];
 
 	function init() {
-		MAX_X = map.width;
-		MAX_Y = map.height;
+		MIN_X = Math.floor(renderingEngine.bbox.sx / (TILE_SIZE * sc));
+		MIN_Y = Math.floor(renderingEngine.bbox.sy / (TILE_SIZE * sc));
+		MAX_X = Math.ceil(MIN_X + (c.width / (TILE_SIZE * sc))) + 1;
+		MAX_Y = Math.ceil(MIN_Y + (c.height / (TILE_SIZE * sc))) + 1;
+		me = gameState.players[gameState.playerId];
 	}
 
 	this.drawClouds = function() {
-		if (!MAX_X || !MAX_Y) { // XXX: because of strange bugs
-			init();
-			return;
-		}
+		init();
 
-		me = gameState.players[gameState.playerId];
-
-		for ( var i = 0; i < MAX_X; i++) {
+		for ( var i = MIN_X; i < MAX_X; i++) {
 			var upLeftX = i * TILE_SIZE;
-			for ( var j = 0; j < MAX_Y; j++) {
+			for ( var j = MIN_Y; j < MAX_Y; j++) {
 				var upLeftY = j * TILE_SIZE;
 				// now working in tile (i, j)
 				for ( var n = 0; n < CLOUDS_PER_TILE; n++) {
@@ -98,7 +99,25 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function isCorner(x, y) {
-		return (x % TILE_SIZE + y % TILE_SIZE) <= 2;
+		return (((Math.abs(x - Math.round(x / TILE_SIZE) * TILE_SIZE) + Math
+				.abs(y - Math.round(y / TILE_SIZE) * TILE_SIZE))) <= 2)
+				&& isSemanticCorner(x, y);
+	}
+
+	function isSemanticCorner(x, y) {
+		var x1 = Math.round(x / TILE_SIZE - 0.25);
+		var y1 = Math.round(y / TILE_SIZE - 0.25);
+		var x2 = x1 + 1;
+		var y2 = y1 + 1;
+
+		// exactly one or three should be blocking to have a corner
+		count = 0;
+		for ( var i = x1; i <= x2; i++)
+			for ( var j = y2; j <= y2; j++)
+				if (blockingTileAt(x1 * TILE_SIZE, y1 * TILE_SIZE))
+					count++;
+
+		return count % 2 != 0;
 	}
 
 	/**
@@ -138,7 +157,6 @@ var CloudRendering = function(id, renderingEngine) {
 		var tileY = Math.floor(y / TILE_SIZE);
 		var data = map.fgDataAtTile(tileX, tileY);
 
-		// TODO: Which numbers are blocking?
 		return data != 0;
 	}
 
@@ -151,8 +169,12 @@ var CloudRendering = function(id, renderingEngine) {
 
 	function drawCloudAt(x, y, opacity) {
 		ctx.fillStyle = "rgba(0,0,0," + opacity + ")";
-		ctx.fillRect(x - CLOUD_SIZE / 2, y - CLOUD_SIZE / 2, CLOUD_SIZE,
+		ctx.scale(renderingEngine.sc, renderingEngine.sc);
+		ctx.fillRect(x - CLOUD_SIZE / 2 - renderingEngine.bbox.sx
+				/ renderingEngine.sc, y - CLOUD_SIZE / 2
+				- renderingEngine.bbox.sy / renderingEngine.sc, CLOUD_SIZE,
 				CLOUD_SIZE);
+		ctx.scale(1 / renderingEngine.sc, 1 / renderingEngine.sc);
 
 		// ctx.beginPath();
 		// ctx.arc(x, y, CLOUD_SIZE / Math.sqrt(2), 0, Math.PI * 2, true);
