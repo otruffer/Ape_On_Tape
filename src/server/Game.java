@@ -17,15 +17,22 @@ import com.google.gson.Gson;
 public class Game {
 
 	// store players separatly.
-	volatile Map<Integer, Player> players;
-	Map<Integer, Entity> entities;
+	private volatile Map<Integer, Player> players;
+	private volatile Map<Integer, Bot> bots;
+	private volatile Map<Integer, Entity> entities;
 	TileMap map;
 	int width, height;
 	private Collection<CollisionListener> collisionListeners;
 	private Set<String> soundEvents;
+	/**
+	 * True if game has already started, false if waiting for
+	 * <code>start()</code> signal
+	 */
+	private boolean running;
 
 	public Game(int width, int height) {
 		this.players = new HashMap<Integer, Player>();
+		this.bots = new HashMap<Integer, Bot>();
 		this.entities = new HashMap<Integer, Entity>();
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
@@ -39,36 +46,43 @@ public class Game {
 		this.map = new TileMap(map);
 		this.height = map.length;
 		this.width = map[0].length;
+		this.running = false;
+	}
+
+	/**
+	 * Launch this game
+	 */
+	public void start() {
+		this.running = true;
 	}
 
 	public void addPlayer(int playerId, String playerName) {
 		float[] start = map.getStartXY();
 		Player player = new Player(playerId, start[0], start[1], playerName);
 		player.setId(playerId);
-		synchronized (this.players) {
-			this.players.put(player.id, player);
-		}
+		this.players.put(player.id, player);
 	}
 
 	public void addBot(int botId, String botName) {
 		float[] start = map.getStartXY();
 		Bot bot = new Bot(botId, start[0], start[1], botName);
 		bot.setId(botId);
-		synchronized (this.players) {
-			this.players.put(bot.id, bot);
-		}
+		this.bots.put(bot.id, bot);
+	}
+
+	public void addDrunkBot(int botId, String botName) {
+		float[] start = map.getStartXY();
+		Bot bot = new DrunkBot(botId, start[0], start[1], botName);
+		bot.setId(botId);
+		this.bots.put(bot.id, bot);
 	}
 
 	public void removePlayer(int playerId) {
-		synchronized (this.players) {
-			this.players.remove(playerId);
-		}
+		this.players.remove(playerId);
 	}
 
 	public Map<Integer, Player> getPlayers() {
-		synchronized (this.players) {
-			return this.players;
-		}
+		return this.players;
 	}
 
 	public List<Player> getPlayersList() {
@@ -83,12 +97,20 @@ public class Game {
 		return this.players;
 	}
 
+	public Map<Integer, Bot> getBots() {
+		return this.bots;
+	}
+
+	public List<Bot> getBotList() {
+		return new LinkedList<Bot>(this.getBots().values());
+	}
+
 	public TileMap getMap() {
 		return map;
 	}
 
 	public void update() {
-		for (Entity entity : this.getEntitiesAndPlayers())
+		for (Entity entity : this.getAllEntites())
 			entity.brain(this);
 	}
 
@@ -177,11 +199,12 @@ public class Game {
 
 	/**
 	 * 
-	 * @return all entities of this game INCLUDING the players
+	 * @return all entities of this game INCLUDING the players and bots
 	 */
-	public List<Entity> getEntitiesAndPlayers() {
+	public List<Entity> getAllEntites() {
 		List<Entity> list = new LinkedList<Entity>(this.entities.values());
-		list.addAll(this.players.values());
+		list.addAll(this.getPlayersList());
+		list.addAll(this.getBotList());
 		return list;
 	}
 
@@ -193,9 +216,10 @@ public class Game {
 		e.setCollisionState(false);
 	}
 
-	public Map<Integer, Entity> getEntitiesAndPlayersMap() {
+	public Map<Integer, Entity> getAllEntitiesMap() {
 		Map<Integer, Entity> e = new HashMap<Integer, Entity>(this.players);
 		e.putAll(this.entities);
+		e.putAll(this.bots);
 		return e;
 	}
 
@@ -207,6 +231,10 @@ public class Game {
 
 	public void death(Player player) {
 		this.soundEvents.add("kill");
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 
 }

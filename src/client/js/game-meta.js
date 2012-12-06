@@ -22,12 +22,12 @@ function initRooms() {
 	if (rooms) {
 		var roomList = $('#roomList ul');
 		roomList.empty();
-		
+
 		var newRoomItem = $('<li class=\'newRoom\'>');
 		newRoomItem.append('new Room');
 		roomList.append(newRoomItem);
 		newRoomItem.click(createRoom);
-		
+
 		for (index in rooms) {
 			var item = $('<li>');
 			item.append(rooms[index]);
@@ -47,7 +47,9 @@ function updatePlayerList() {
 	var list = $('#playerList ul');
 	list.empty();
 	for (i in gameState.players) {
-		var name = gameState.players[i].name + ": " + gameState.players[i].killCount + "/" +gameState.players[i].deathCount;
+		var name = gameState.players[i].name + ": "
+				+ gameState.players[i].killCount + "/"
+				+ gameState.players[i].deathCount;
 		var li = $('<li>');
 		li.text(name);
 		list.append(li);
@@ -60,4 +62,8 @@ function createRoom() {
 
 function changeRoom() {
 	changeToRoom($(this).text());
+}
+
+function hideWaitInfo() {
+	$('#canvas-overlay').hide();
 }
