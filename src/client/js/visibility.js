@@ -5,8 +5,8 @@ var CloudRendering = function(id, renderingEngine) {
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
-	var CLOUDS_PER_TILE = 2;
-	var VIEW_RANGE = 5;
+	var CLOUDS_PER_TILE = 4;
+	var VIEW_RANGE = 8;
 	var MIN_VISIBILITY = 0.95;
 	var CLOUD_RGB = '0,0,10';
 
@@ -18,13 +18,20 @@ var CloudRendering = function(id, renderingEngine) {
 	var MAX_Y = map.height;
 
 	var me = gameState.players[gameState.playerId];
+	var me_x = me.x;
+	var me_y = me.y;
+
+	var bbox_sx = renderingEngine.bbox.sx;
+	var bbox_sy = renderingEngine.bbox.sy;
 
 	function init() {
-		MIN_X = Math.floor(renderingEngine.bbox.sx / (TILE_SIZE * sc));
-		MIN_Y = Math.floor(renderingEngine.bbox.sy / (TILE_SIZE * sc));
+		MIN_X = Math.floor(bbox_sx / (TILE_SIZE * sc));
+		MIN_Y = Math.floor(bbox_sy / (TILE_SIZE * sc));
 		MAX_X = Math.ceil(MIN_X + (c.width / (TILE_SIZE * sc))) + 1;
 		MAX_Y = Math.ceil(MIN_Y + (c.height / (TILE_SIZE * sc))) + 1;
 		me = gameState.players[gameState.playerId];
+		me_x = me.x;
+		me_y = me.y;
 	}
 
 	this.drawClouds = function() {
@@ -51,7 +58,7 @@ var CloudRendering = function(id, renderingEngine) {
 
 	function drawIfVisible(x, y) {
 		var cloudPos = new Point(x, y);
-		var myPos = new Point(me.x + PLAYER_SIZE / 2, me.y + PLAYER_SIZE / 2);
+		var myPos = new Point(me_x + PLAYER_SIZE / 2, me_y + PLAYER_SIZE / 2);
 		if (viewBlocked(cloudPos, myPos) >= 2) {
 			drawCloudAt(x, y, MIN_VISIBILITY);
 		} else
@@ -164,20 +171,18 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function visibilityAt(x, y) {
-		var distance = new Point(x, y).distanceTo(new Point(me.x + PLAYER_SIZE
-				/ 2, me.y + PLAYER_SIZE / 2));
+		var distance = new Point(x, y).distanceTo(new Point(me_x + PLAYER_SIZE
+				/ 2, me_y + PLAYER_SIZE / 2));
 		distance /= TILE_SIZE;
 		return Math.min(1, VIEW_RANGE / (distance * distance));
 	}
 
 	function drawCloudAt(x, y, opacity) {
 		ctx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		ctx.scale(renderingEngine.sc, renderingEngine.sc);
-		ctx.fillRect(x - CLOUD_SIZE / 2 - renderingEngine.bbox.sx
-				/ renderingEngine.sc, y - CLOUD_SIZE / 2
-				- renderingEngine.bbox.sy / renderingEngine.sc, CLOUD_SIZE,
-				CLOUD_SIZE);
-		ctx.scale(1 / renderingEngine.sc, 1 / renderingEngine.sc);
+		ctx.scale(sc, sc);
+		ctx.fillRect(x - CLOUD_SIZE / 2 - bbox_sx / sc, y - CLOUD_SIZE / 2
+				- bbox_sy / sc, CLOUD_SIZE, CLOUD_SIZE);
+		ctx.scale(1 / sc, 1 / sc);
 
 		// ctx.beginPath();
 		// ctx.arc(x, y, CLOUD_SIZE / Math.sqrt(2), 0, Math.PI * 2, true);
@@ -190,11 +195,10 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawTestDotAt(x, y) {
-		ctx.scale(renderingEngine.sc, renderingEngine.sc);
-		ctx.drawImage(imagePreload['test-dot'], x - renderingEngine.bbox.sx
-				/ renderingEngine.sc, y - renderingEngine.bbox.sy
-				/ renderingEngine.sc);
-		ctx.scale(1 / renderingEngine.sc, 1 / renderingEngine.sc);
+		ctx.scale(sc, sc);
+		ctx.drawImage(imagePreload['test-dot'], x - bbox_sx / sc, y - bbox_sy
+				/ sc);
+		ctx.scale(1 / sc, 1 / sc);
 	}
 
 }
