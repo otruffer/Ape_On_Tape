@@ -75,7 +75,6 @@ function RenderingEngine(tileSize, playerSize) {
 		self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		self.draw();
 	});
-	
 
 	/* Rendering for clouds */
 
@@ -98,12 +97,13 @@ function RenderingEngine(tileSize, playerSize) {
 					0, w, h);
 		}
 		self.computePlayerRelatives();
-		
-		// draw all entities relative to main player (need scaling to effective coordinates)
+
+		// draw all entities relative to main player (need scaling to effective
+		// coordinates)
 		ctx.scale(self.sc, self.sc);
 		self.drawEntities();
 		self.drawPlayers();
-		ctx.scale(1/self.sc, 1/self.sc);
+		ctx.scale(1 / self.sc, 1 / self.sc);
 		self.cloudRendering.drawClouds();
 
 		// print fps and socket update rate
@@ -130,7 +130,7 @@ function RenderingEngine(tileSize, playerSize) {
 			self.loadMap();
 		}
 	}
-	
+
 	this.computePlayerRelatives = function() {
 		// store information about the main player
 		for (id in gameState.players) {
@@ -140,7 +140,6 @@ function RenderingEngine(tileSize, playerSize) {
 			}
 		}
 	}
-
 
 	/**
 	 * Computes the bounding box parameters (offset positions sx and sy) if the
@@ -221,7 +220,6 @@ function RenderingEngine(tileSize, playerSize) {
 			self.drawPlayer(gameState.players[id], id == gameState.playerId);
 	}
 
-
 	this.drawPlayer = function(player, isself) {
 		var offset = (self.PLAYER_SIZE - self.P) / 2;
 		if (isself) {
@@ -246,7 +244,7 @@ function RenderingEngine(tileSize, playerSize) {
 				self.drawEntity(gameState.entities[id]);
 			}
 		}
-		
+
 	}
 
 	this.drawEntity = function(entity) {
@@ -319,6 +317,17 @@ function RenderingEngine(tileSize, playerSize) {
 		// set loaded
 		self.bgLoaded = true;
 		self.bgLoading = false;
+	}
+
+	this.fitImageToSurrounding = function(x, y) {
+		var tileX = Math.floor(x / self.TILE_SIZE);
+		var tileY = Math.floor(y / self.TILE_SIZE);
+		var collLeft = self.map.getTileDataAt(tileX - 1, tileY);
+		var collRight = self.map.getTileDataAt(tileX + 1, tileY);
+		var collUp = self.map.getTileDataAt(tileX, tileY - 1);
+		var collDown = self.map.getTileDataAt(tileX, tileY + 1);
+		console.log(x + " " + y + " " + collLeft + " " + collRight + " "
+				+ collUp + " " + collDown);
 	}
 }
 

@@ -1,1 +1,1 @@
-MAP_FILE = 'maps/debug.json';
+MAP_FILE = 'maps/forrest.json';

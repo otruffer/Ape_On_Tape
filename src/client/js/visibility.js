@@ -158,9 +158,9 @@ var CloudRendering = function(id, renderingEngine) {
 	function blockingTileAt(x, y) {
 		var tileX = Math.floor(x / TILE_SIZE);
 		var tileY = Math.floor(y / TILE_SIZE);
-		var data = map.fgDataAtTile(tileX, tileY);
-
-		return data != 0;
+//		var data = map.fgDataAtTile(tileX, tileY);
+//		return data != 0;
+		return map.isCollisionAtTile(tileX, tileY);
 	}
 
 	function visibilityAt(x, y) {
