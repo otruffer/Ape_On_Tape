@@ -5,7 +5,7 @@ var CloudRendering = function(id, renderingEngine) {
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
-	var CLOUDS_PER_TILE = 4;
+	var CLOUDS_PER_TILE = 2;
 	var VIEW_RANGE = 8;
 	var MIN_VISIBILITY = 0.95;
 	var CLOUD_RGB = '0,0,10';
@@ -165,8 +165,6 @@ var CloudRendering = function(id, renderingEngine) {
 	function blockingTileAt(x, y) {
 		var tileX = Math.floor(x / TILE_SIZE);
 		var tileY = Math.floor(y / TILE_SIZE);
-//		var data = map.fgDataAtTile(tileX, tileY);
-//		return data != 0;
 		return map.isCollisionAtTile(tileX, tileY);
 	}
 

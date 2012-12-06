@@ -179,14 +179,8 @@ function JsonMap(path, onloadCallback) {
 	}
 
 	this.isCollisionAtTile = function(x, y) {
-		if (self.collisionMap[y][x] == 0)
-			return false;
-		else
-			return true;
-	}
-
-	this.fgDataAtTile = function(x, y) {
-		var i = self.width * y * self.subdivision + x * self.subdivision;
-		return self.fgData[i];
+		if (self.collisionMap[y] == undefined)
+			return true; // consider boarders as collision or..
+		return self.collisionMap[y][x] != 0; // simply and anything except 0
 	}
 }

@@ -72,7 +72,7 @@ function RenderingEngine(tileSize, playerSize) {
 	// load the map
 	this.map = new JsonMap(MAP_FILE, function() {
 		self.loadMap();
-		self.cloudRendering = new CloudRendering(gameState.playerId, self);
+		// self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		self.draw();
 	});
 
@@ -104,7 +104,7 @@ function RenderingEngine(tileSize, playerSize) {
 		self.drawEntities();
 		self.drawPlayers();
 		ctx.scale(1 / self.sc, 1 / self.sc);
-		self.cloudRendering.drawClouds();
+		// self.cloudRendering.drawClouds();
 
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -287,7 +287,8 @@ function RenderingEngine(tileSize, playerSize) {
 		case 'barrier_open':
 			entitySize = self.TILE_SIZE;
 			effectiveSize = self.TILE_SIZE;
-			tile = imagePreload['barrier_open'];
+			tile = self.rotateImageToCorridor(imagePreload['barrier_open'],
+					entity.x, entity.y);
 			break;
 		default:
 			tile = tilePreload['bullet'][1];
@@ -319,97 +320,19 @@ function RenderingEngine(tileSize, playerSize) {
 		self.bgLoading = false;
 	}
 
-	this.fitImageToSurrounding = function(x, y) {
+	/*
+	 * Rotates an image into the direction of an open corridor. The image is
+	 * assumed to direct downwards initially. TODO: cannot recognize direction
+	 */
+	this.rotateImageToCorridor = function(image, x, y) {
 		var tileX = Math.floor(x / self.TILE_SIZE);
 		var tileY = Math.floor(y / self.TILE_SIZE);
-		var collLeft = self.map.getTileDataAt(tileX - 1, tileY);
-		var collRight = self.map.getTileDataAt(tileX + 1, tileY);
-		var collUp = self.map.getTileDataAt(tileX, tileY - 1);
-		var collDown = self.map.getTileDataAt(tileX, tileY + 1);
-		console.log(x + " " + y + " " + collLeft + " " + collRight + " "
-				+ collUp + " " + collDown);
-	}
-}
 
-// returns the parameter that scales the game window to fullscreen
-var scale = function() {
-	var windowHeight = window.innerHeight - 2 - $('#header').height();
-	return (windowHeight / height > 1) ? windowHeight / height : 1;
-}
-
-// returns a scaled value to a corresponding input argument
-var _ = function(argument) {
-	return argument * scale();
-}
-
-/* tileset properties */
-var animationIndices = {};
-animationIndices['down'] = new Array(1, 2, 3); // middle index -> standing
-animationIndices['left'] = new Array(4, 5, 6);
-animationIndices['right'] = new Array(7, 8, 9);
-animationIndices['up'] = new Array(10, 11, 12);
-
-var lastAnimation = {};
-var animIndex = function(entity) {
-	var anim;
-	if (lastAnimation[entity.id] == undefined) {
-		lastAnimation[entity.id] = {};
-		anim = lastAnimation[entity.id];
-		anim.direction = 'down';
-		anim.index = 1;
-		anim.x = entity.x;
-		anim.y = entity.y;
-		anim.time = new Date().getTime();
-	} else {
-		anim = lastAnimation[entity.id];
-	}
-
-	var direction;
-	if (entity.dirY < 0) // moving upwards
-		direction = 'up';
-	else if (entity.dirY > 0) // moving downwards
-		direction = 'down';
-	else { // moving either right, left or nowhere
-		if (entity.dirX < 0) // moving left
-			direction = 'left';
-		else if (entity.dirX > 0) // moving right
-			direction = 'right';
-	}
-	anim.direction = direction;
-
-	var swap = function(index) {
-		if (index == 2)
-			return 0;
-		else if (index == 0)
-			return 2;
-		else
-			return 0;
-	}
-
-	var currTime = new Date().getTime();
-	var delta = currTime - anim.time;
-	// swap index of same direction or change to other direction
-	if (direction == anim.direction) {
-		if (delta < 250) {
-			return animationIndices[anim.direction][anim.index];
+		if (!self.map.isCollisionAtTile(tileX - 1, tileY)
+				&& !self.map.isCollisionAtTile(tileX + 1, tileY)) {
+			return rotateImage(image, -90);
 		} else {
-			// standing
-			if (Math.abs(anim.x - entity.x) <= 0.5
-					&& Math.abs(anim.y - entity.y) <= 0.5) {
-				anim.index = 1;
-			} else { // walking
-				anim.index = swap(anim.index);
-			}
-			anim.time = currTime;
+			return image;
 		}
-	} else {
-		anim.index = 0;
-		anim.time = currTime;
 	}
-
-	// update last x, y
-	anim.x = entity.x;
-	anim.y = entity.y;
-
-	return animationIndices[anim.direction][anim.index];
 }
