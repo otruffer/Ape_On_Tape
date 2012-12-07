@@ -33,7 +33,7 @@ public class MapInfo {
 	// defines the entity type of a symbol TODO: set up
 	public static final PositionType[] entitySymbols = {//
 	PositionType.PlayerStart, // symbol #01
-			PositionType.None, // symbol #02
+			PositionType.PlayerFinish, // symbol #02
 			PositionType.None, // symbol #03
 			PositionType.None, // symbol #04
 			PositionType.Bot, // symbol #05
@@ -43,7 +43,7 @@ public class MapInfo {
 			PositionType.Barrier, // symbol #09
 			PositionType.None, // symbol #10
 			PositionType.None, // symbol #11
-			PositionType.PlayerFinish, // symbol #12
+			PositionType.None, // symbol #12
 			PositionType.SpikeTrap, // symbol #13
 			PositionType.None, // symbol #14
 			PositionType.None, // symbol #15

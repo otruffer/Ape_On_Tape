@@ -37,15 +37,15 @@ function RenderingEngine(tileSize, playerSize) {
 	this.PLAYER_SIZE = 20;
 	this.ENTITY_SIZE = 20;
 	this.TILE_SIZE = 30;
-	this.BACKGROUND_TYPES = [ "blood" ];
+	this.BACKGROUND_TYPES = [ "blood", "barrier_open" ];
 
 	/* display properties */
 	this.T = this.TILE_SIZE;
 	this.sc = 1 / 0.6; // scaling parameter
 	// effective drawing sizes of different entities
-	this.P = this.PLAYER_SIZE + 4;
-	this.E = this.ENTITY_SIZE + 4;
-	this.B = this.BULLET_SIZE * 20;
+	this.P = this.PLAYER_SIZE + 2;
+	this.E = this.ENTITY_SIZE + 2;
+	this.B = this.BULLET_SIZE * 18;
 
 	/* preloaded offline background canvas */
 	this.bgCanvas = document.createElement('canvas');
@@ -69,10 +69,13 @@ function RenderingEngine(tileSize, playerSize) {
 
 	this.cloudRendering;
 
+	/* individual player renderings */
+	this.compositeTiles = {};
+
 	// load the map
 	this.map = new JsonMap(MAP_FILE, function() {
 		self.loadMap();
-		self.cloudRendering = new CloudRendering(gameState.playerId, self);
+		// self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		self.draw();
 	});
 
@@ -102,7 +105,7 @@ function RenderingEngine(tileSize, playerSize) {
 		self.drawEntities();
 		self.drawPlayers();
 		ctx.scale(1 / self.sc, 1 / self.sc);
-		self.cloudRendering.drawClouds();
+		// self.cloudRendering.drawClouds();
 
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -122,8 +125,8 @@ function RenderingEngine(tileSize, playerSize) {
 	this.clear = function() {
 		c.width = width;
 		c.height = height;
-		ctx.fillStyle = '#FFCC66';
-		ctx.fillRect(0, 0, width, height);
+		// ctx.fillStyle = '#FFCC66';
+		// ctx.fillRect(0, 0, width, height);
 		if (!self.bgLoaded && !self.bgLoading) {
 			self.loadMap();
 		}
@@ -221,13 +224,15 @@ function RenderingEngine(tileSize, playerSize) {
 	this.drawPlayer = function(player, isself) {
 		var offset = (self.PLAYER_SIZE - self.P) / 2;
 		if (isself) {
-			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x + offset,
-					self.mainPlayer.y + offset, self.P, self.P);
+			ctx.drawImage(tilePreload['ape'][Anim.getWalkingIndex(player)],
+					self.mainPlayer.x + offset, self.mainPlayer.y + offset,
+					self.P, self.P);
 		} else { // draw other players relative to main player
 			var dx = self.mainPlayer.absX - player.x;
 			var dy = self.mainPlayer.absY - player.y;
-			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx + offset,
-					self.mainPlayer.y - dy + offset, self.P, self.P);
+			ctx.drawImage(tilePreload['ape'][Anim.getWalkingIndex(player)],
+					self.mainPlayer.x - dx + offset, self.mainPlayer.y - dy
+							+ offset, self.P, self.P);
 		}
 	}
 

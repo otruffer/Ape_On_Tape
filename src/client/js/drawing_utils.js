@@ -11,7 +11,7 @@ var _ = function(argument) {
 	return argument * scale();
 }
 
-// IMAGE MANIPULATION
+// IMAGE MANIPULATION =========================================================
 
 var rotateImage = function(image, degrees) {
 	var canvas = document.createElement('canvas');
@@ -25,11 +25,39 @@ var rotateImage = function(image, degrees) {
 	return canvas;
 }
 
+var compositeTypes = [ 'source-over', 'source-in', 'source-out', 'source-atop',
+		'destination-over', 'destination-in', 'destination-out',
+		'destination-atop', 'lighter', 'darker', 'copy', 'xor' ];
+
+// TODO: continue composing tilesets with colored masks. Think about
+// reimplementing tileset creation because its easier to compose first and then
+// split into tiles => needs caching of graphics for every player
+var composePlayerTileset = function() {
+	for (i = 0; i < compositeTypes.length; i++) {
+		var label = document.createTextNode(compositeTypes[i]);
+		document.getElementById('lab' + i).appendChild(label);
+		var ctx = document.getElementById('tut' + i).getContext('2d');
+
+		// draw rectangle
+		ctx.fillStyle = "#09f";
+		ctx.fillRect(15, 15, 70, 70);
+
+		// set composite property
+		ctx.globalCompositeOperation = compositeTypes[i];
+
+		// draw circle
+		ctx.fillStyle = "#f30";
+		ctx.beginPath();
+		ctx.arc(75, 75, 35, 0, Math.PI * 2, true);
+		ctx.fill();
+	}
+}
+
 // ANIMATIONS =================================================================
 
-Anim = {};
+Anim = {}; // define animation logic as static function prototype
 
-/* keeps last animation time of entity indices */
+/* keeps track of last animation time of an entity (indexed) */
 var lastAnimation = {};
 
 /* tileset properties */
