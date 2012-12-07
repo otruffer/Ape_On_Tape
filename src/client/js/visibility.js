@@ -204,9 +204,10 @@ var CloudRendering = function(id, renderingEngine) {
 				/ 2 - bbox_sy / sc, CLOUD_SIZE, CLOUD_SIZE);
 		bufferCtx.scale(1 / sc, 1 / sc);
 
-		// bufferCtx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2, y -
-		// CLOUD_SIZE
-		// / 2, CLOUD_SIZE, CLOUD_SIZE);
+		// bufferCtx
+		// .drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2 - bbox_sx
+		// / sc, y - CLOUD_SIZE / 2 - bbox_sy / sc, CLOUD_SIZE,
+		// CLOUD_SIZE);
 	}
 
 	function drawTestDotAt(x, y) {
@@ -215,9 +216,16 @@ var CloudRendering = function(id, renderingEngine) {
 				- bbox_sy / sc);
 		bufferCtx.scale(1 / sc, 1 / sc);
 	}
-	
+
 	function flushBuffer() {
-//		var filtered = Pixastic.process(buffer, "blurfast", {amount:0.2});
+		// var filtered = Pixastic.process(buffer, "blurfast", {amount:0.2});
+
+		// pngUrl = buffer.toDataURL();
+
+		// var imgData = bufferCtx.getImageData(0, 0, buffer.width,
+		// buffer.height);
+		// ctx.putImageData(imgData, 0, 0);
+
 		ctx.drawImage(buffer, 0, 0);
 	}
 
