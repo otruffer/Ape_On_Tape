@@ -72,11 +72,9 @@ function RenderingEngine(tileSize, playerSize) {
 	// load the map
 	this.map = new JsonMap(MAP_FILE, function() {
 		self.loadMap();
-		// self.cloudRendering = new CloudRendering(gameState.playerId, self);
+		self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		self.draw();
 	});
-
-	/* Rendering for clouds */
 
 	// main draw loop
 	this.draw = function() {
@@ -104,7 +102,7 @@ function RenderingEngine(tileSize, playerSize) {
 		self.drawEntities();
 		self.drawPlayers();
 		ctx.scale(1 / self.sc, 1 / self.sc);
-		// self.cloudRendering.drawClouds();
+		self.cloudRendering.drawClouds();
 
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms

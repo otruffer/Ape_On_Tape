@@ -1,11 +1,13 @@
 var CloudRendering = function(id, renderingEngine) {
+	
+	var context;
 
 	var map = renderingEngine.map;
 	var sc = renderingEngine.sc;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
-	var CLOUDS_PER_TILE = 2;
+	var CLOUDS_PER_TILE = 4;
 	var VIEW_RANGE = 8;
 	var MIN_VISIBILITY = 0.95;
 	var CLOUD_RGB = '0,0,10';
@@ -32,6 +34,7 @@ var CloudRendering = function(id, renderingEngine) {
 		me = gameState.players[gameState.playerId];
 		me_x = me.x;
 		me_y = me.y;
+		context = ctx;
 	}
 
 	this.drawClouds = function() {
@@ -176,27 +179,27 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawCloudAt(x, y, opacity) {
-		ctx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		ctx.scale(sc, sc);
-		ctx.fillRect(x - CLOUD_SIZE / 2 - bbox_sx / sc, y - CLOUD_SIZE / 2
+		context.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+		context.scale(sc, sc);
+		context.fillRect(x - CLOUD_SIZE / 2 - bbox_sx / sc, y - CLOUD_SIZE / 2
 				- bbox_sy / sc, CLOUD_SIZE, CLOUD_SIZE);
-		ctx.scale(1 / sc, 1 / sc);
+		context.scale(1 / sc, 1 / sc);
 
-		// ctx.beginPath();
-		// ctx.arc(x, y, CLOUD_SIZE / Math.sqrt(2), 0, Math.PI * 2, true);
-		// ctx.closePath();
-		// ctx.fill();
+		// context.beginPath();
+		// context.arc(x, y, CLOUD_SIZE / Math.sqrt(2), 0, Math.PI * 2, true);
+		// context.closePath();
+		// context.fill();
 
-		// ctx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2, y -
+		// context.drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2, y -
 		// CLOUD_SIZE
 		// / 2, CLOUD_SIZE, CLOUD_SIZE);
 	}
 
 	function drawTestDotAt(x, y) {
-		ctx.scale(sc, sc);
-		ctx.drawImage(imagePreload['test-dot'], x - bbox_sx / sc, y - bbox_sy
+		context.scale(sc, sc);
+		context.drawImage(imagePreload['test-dot'], x - bbox_sx / sc, y - bbox_sy
 				/ sc);
-		ctx.scale(1 / sc, 1 / sc);
+		context.scale(1 / sc, 1 / sc);
 	}
 
 }
