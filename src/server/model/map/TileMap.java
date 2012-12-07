@@ -87,12 +87,12 @@ public class TileMap {
 		List<Point> points = getAllTileXY(type);
 		if (!points.isEmpty()) {
 			Point firstPoint = points.get(0);
-			float[] xy = { firstPoint.x, firstPoint.y };
+			float[] xy = {firstPoint.x, firstPoint.y};
 			return xy;
 		} else {
 			Tile randomWalk = this.getRandomWalkableTile();
-			float[] xy = { randomWalk.getX() * tileWidth,
-					randomWalk.getY() * tileHeight };
+			float[] xy = {randomWalk.getX() * tileWidth,
+					randomWalk.getY() * tileHeight};
 			return xy;
 		}
 	}
@@ -107,9 +107,12 @@ public class TileMap {
 	public List<Point> getAllTileXY(PositionType type) {
 		if (mapInfo.containsType(type)) {
 			List<Point> result = new LinkedList<Point>();
-			for (Point p : mapInfo.getPositions(type))
+			Point p;
+			for (EntityInfo e : mapInfo.getPositions(type)) {
+				p = e.getPosition();
 				result.add(new Point((int) (p.x * tileWidth),
 						(int) (p.y * tileHeight)));
+			}
 			return result;
 		} else {
 			return new ArrayList<Point>(0);

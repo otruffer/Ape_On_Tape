@@ -53,11 +53,11 @@ public class MapInfo {
 
 	// DYNAMIC FIELDS
 	private int[][] collisionMap;
-	private Map<PositionType, List<Point>> entities;
+	private Map<PositionType, List<EntityInfo>> entities;
 
 	// CONSTRUCTOR
 	public MapInfo() {
-		this.entities = new HashMap<PositionType, List<Point>>();
+		this.entities = new HashMap<PositionType, List<EntityInfo>>();
 	}
 
 	public void setCollisionMap(int[][] map) {
@@ -68,11 +68,11 @@ public class MapInfo {
 		return this.collisionMap;
 	}
 
-	public Map<PositionType, List<Point>> getPositionsMap() {
+	public Map<PositionType, List<EntityInfo>> getPositionsMap() {
 		return this.entities;
 	}
 
-	public List<Point> getPositions(PositionType type) {
+	public List<EntityInfo> getPositions(PositionType type) {
 		return this.entities.get(type);
 	}
 
@@ -86,9 +86,9 @@ public class MapInfo {
 			return;
 
 		if (!entities.containsKey(t)) {
-			entities.put(t, new ArrayList<Point>());
+			entities.put(t, new ArrayList<EntityInfo>());
 		}
-		this.entities.get(t).add(new Point(x, y));
+		this.entities.get(t).add(new EntityInfo(x, y));
 	}
 
 	public List<Entity> createEntities(TileMap map) {
@@ -102,8 +102,8 @@ public class MapInfo {
 
 	private List<Entity> createEntitesOfType(PositionType type, TileMap map) {
 		List<Entity> entities = new LinkedList<Entity>();
-		for (Point position : this.getPositions(type)) {
-			Entity e = this.createEntity(type, position, map);
+		for (EntityInfo entity : this.getPositions(type)) {
+			Entity e = this.createEntity(type, entity.getPosition(), map);
 			if (e != null)
 				entities.add(e);
 		}

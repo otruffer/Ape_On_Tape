@@ -25,17 +25,21 @@ var rotateImage = function(image, degrees) {
 	return canvas;
 }
 
-// WALKING ANIMATIONS ==========================================================
+// ANIMATIONS =================================================================
+
+Anim = {};
+
+/* keeps last animation time of entity indices */
+var lastAnimation = {};
 
 /* tileset properties */
-var animationIndices = {};
-animationIndices['down'] = new Array(1, 2, 3); // middle index -> standing
-animationIndices['left'] = new Array(4, 5, 6);
-animationIndices['right'] = new Array(7, 8, 9);
-animationIndices['up'] = new Array(10, 11, 12);
+var walkingIndices = {};
+walkingIndices['down'] = new Array(1, 2, 3); // middle index -> standing
+walkingIndices['left'] = new Array(4, 5, 6);
+walkingIndices['right'] = new Array(7, 8, 9);
+walkingIndices['up'] = new Array(10, 11, 12);
 
-var lastAnimation = {};
-var animIndex = function(entity) {
+Anim.getWalkingIndex = function(entity) {
 	var anim;
 	if (lastAnimation[entity.id] == undefined) {
 		lastAnimation[entity.id] = {};
@@ -76,7 +80,7 @@ var animIndex = function(entity) {
 	// swap index of same direction or change to other direction
 	if (direction == anim.direction) {
 		if (delta < 250) {
-			return animationIndices[anim.direction][anim.index];
+			return walkingIndices[anim.direction][anim.index];
 		} else {
 			// standing
 			if (Math.abs(anim.x - entity.x) <= 0.5
@@ -96,5 +100,5 @@ var animIndex = function(entity) {
 	anim.x = entity.x;
 	anim.y = entity.y;
 
-	return animationIndices[anim.direction][anim.index];
+	return walkingIndices[anim.direction][anim.index];
 }

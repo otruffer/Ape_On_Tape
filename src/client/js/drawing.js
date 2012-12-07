@@ -257,7 +257,7 @@ function RenderingEngine(tileSize, playerSize) {
 		case 'bot':
 			entitySize = self.ENTITY_SIZE;
 			effectiveSize = self.E;
-			tile = tilePreload['bot'][animIndex(entity)];
+			tile = tilePreload['bot'][Anim.getWalkingIndex(entity)];
 			break;
 		case 'bullet':
 			entitySize = self.BULLET_SIZE;
