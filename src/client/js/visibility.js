@@ -1,14 +1,12 @@
 var CloudRendering = function(id, renderingEngine) {
 
-	var context;
-
 	var map = renderingEngine.map;
 	var collisionMap;
 	var sc = renderingEngine.sc;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
-	var CLOUDS_PER_TILE = 4;
+	var CLOUDS_PER_TILE = 2;
 	/**
 	 * Not in tiles, nor in pixels, just some factor.
 	 */
@@ -30,15 +28,24 @@ var CloudRendering = function(id, renderingEngine) {
 	var bbox_sx = renderingEngine.bbox.sx;
 	var bbox_sy = renderingEngine.bbox.sy;
 
+	/**
+	 * Buffer canvas for drawing in background.
+	 */
+	var buffer;
+	var bufferCtx;
+
 	function init() {
+		buffer = document.createElement('canvas');
+		buffer.width = c.width;
+		buffer.height = c.height;
+		bufferCtx = buffer.getContext('2d');
 		MIN_X = (bbox_sx / (TILE_SIZE * sc)) << 0;
 		MIN_Y = (bbox_sy / (TILE_SIZE * sc)) << 0;
-		MAX_X = ((MIN_X + (c.width / (TILE_SIZE * sc))) << 0) + 2;
-		MAX_Y = ((MIN_Y + (c.height / (TILE_SIZE * sc))) << 0) + 2;
+		MAX_X = ((MIN_X + (buffer.width / (TILE_SIZE * sc))) << 0) + 2;
+		MAX_Y = ((MIN_Y + (buffer.height / (TILE_SIZE * sc))) << 0) + 2;
 		me = gameState.players[gameState.playerId];
 		me_x = me.x;
 		me_y = me.y;
-		context = ctx;
 		collisionMap = map.collisionMap;
 	}
 
@@ -53,15 +60,19 @@ var CloudRendering = function(id, renderingEngine) {
 				for ( var n = 0; n < CLOUDS_PER_TILE; n++) {
 					var subX = n * TILE_SIZE / CLOUDS_PER_TILE + TILE_SIZE
 							/ CLOUDS_PER_TILE / 2;
+					subX <<= 0;
 					for ( var m = 0; m < CLOUDS_PER_TILE; m++) {
 						var subY = m * TILE_SIZE / CLOUDS_PER_TILE + TILE_SIZE
 								/ CLOUDS_PER_TILE / 2;
+						subY <<= 0;
 						// now working in one special cloud
 						drawIfVisible(upLeftX + subX, upLeftY + subY);
 					}
 				}
 			}
 		}
+
+		flushBuffer();
 	}
 
 	function drawIfVisible(x, y) {
@@ -187,30 +198,30 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawCloudAt(x, y, opacity) {
-		context.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		context.scale(sc, sc);
-		context.fillRect(x - CLOUD_SIZE / 2 - bbox_sx / sc, y - CLOUD_SIZE / 2
-				- bbox_sy / sc, CLOUD_SIZE, CLOUD_SIZE);
-		context.scale(1 / sc, 1 / sc);
+		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+		bufferCtx.scale(sc, sc);
+		bufferCtx.fillRect(x - CLOUD_SIZE / 2 - bbox_sx / sc, y - CLOUD_SIZE
+				/ 2 - bbox_sy / sc, CLOUD_SIZE, CLOUD_SIZE);
+		bufferCtx.scale(1 / sc, 1 / sc);
 
-		// context.beginPath();
-		// context.arc(x, y, CLOUD_SIZE / Math.sqrt(2), 0, Math.PI * 2, true);
-		// context.closePath();
-		// context.fill();
-
-		// context.drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2, y -
+		// bufferCtx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2, y -
 		// CLOUD_SIZE
 		// / 2, CLOUD_SIZE, CLOUD_SIZE);
 	}
 
 	function drawTestDotAt(x, y) {
-		context.scale(sc, sc);
-		context.drawImage(imagePreload['test-dot'], x - bbox_sx / sc, y
+		bufferCtx.scale(sc, sc);
+		bufferCtx.drawImage(imagePreload['test-dot'], x - bbox_sx / sc, y
 				- bbox_sy / sc);
-		context.scale(1 / sc, 1 / sc);
+		bufferCtx.scale(1 / sc, 1 / sc);
+	}
+	
+	function flushBuffer() {
+//		var filtered = Pixastic.process(buffer, "blurfast", {amount:0.2});
+		ctx.drawImage(buffer, 0, 0);
 	}
 
-	// declare util functions locally for performance
+	/* declare util functions locally for performance */
 
 	var min = Math.min;
 	var max = Math.max;
