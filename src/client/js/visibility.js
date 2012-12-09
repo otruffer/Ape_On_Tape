@@ -1,17 +1,22 @@
 var CloudRendering = function(id, renderingEngine) {
 
+	/*
+	 * Performance idea: render clouds only pixel-wise and stretch them
+	 * afterwards (for some "anti-aliasing")
+	 */
+
 	var map = renderingEngine.map;
 	var collisionMap;
 	var sc = renderingEngine.sc;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
-	var CLOUDS_PER_TILE = 2;
+	var CLOUDS_PER_TILE = 6;
 	/**
 	 * Not in tiles, nor in pixels, just some factor.
 	 */
 	var VIEW_RANGE = 8;
-	var MIN_VISIBILITY = 0.95;
+	var MIN_VISIBILITY = 0.8;
 	var CLOUD_RGB = '0,0,10';
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
@@ -25,8 +30,10 @@ var CloudRendering = function(id, renderingEngine) {
 	var me_x = me.x;
 	var me_y = me.y;
 
-	var bbox_sx = renderingEngine.bbox.sx;
-	var bbox_sy = renderingEngine.bbox.sy;
+	var bbox_sx = renderingEngine.bbox.sx / sc;
+	var bbox_sy = renderingEngine.bbox.sy / sc;
+
+	var CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
 
 	/**
 	 * Buffer canvas for drawing in background.
@@ -52,6 +59,8 @@ var CloudRendering = function(id, renderingEngine) {
 	this.drawClouds = function() {
 		init();
 
+		bufferCtx.scale(sc, sc);
+
 		for ( var i = MIN_X; i < MAX_X; i++) {
 			var upLeftX = i * TILE_SIZE;
 			for ( var j = MIN_Y; j < MAX_Y; j++) {
@@ -71,6 +80,8 @@ var CloudRendering = function(id, renderingEngine) {
 				}
 			}
 		}
+
+		bufferCtx.scale(1 / sc, 1 / sc);
 
 		flushBuffer();
 	}
@@ -198,16 +209,13 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawCloudAt(x, y, opacity) {
-		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		bufferCtx.scale(sc, sc);
-		bufferCtx.fillRect(x - CLOUD_SIZE / 2 - bbox_sx / sc, y - CLOUD_SIZE
-				/ 2 - bbox_sy / sc, CLOUD_SIZE, CLOUD_SIZE);
-		bufferCtx.scale(1 / sc, 1 / sc);
+		// bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+		// bufferCtx.fillRect(x - CLOUD_SIZE_HALF - bbox_sx, y - CLOUD_SIZE_HALF
+		// - bbox_sy, CLOUD_SIZE, CLOUD_SIZE);
 
-		// bufferCtx
-		// .drawImage(imagePreload['cloud'], x - CLOUD_SIZE / 2 - bbox_sx
-		// / sc, y - CLOUD_SIZE / 2 - bbox_sy / sc, CLOUD_SIZE,
-		// CLOUD_SIZE);
+		if (opacity > 0.7) 
+			bufferCtx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE_HALF
+					- bbox_sx, y - CLOUD_SIZE_HALF - bbox_sy);
 	}
 
 	function drawTestDotAt(x, y) {
@@ -226,7 +234,7 @@ var CloudRendering = function(id, renderingEngine) {
 		// buffer.height);
 		// ctx.putImageData(imgData, 0, 0);
 
-		ctx.drawImage(buffer, 0, 0);
+		ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
 	}
 
 	/* declare util functions locally for performance */
