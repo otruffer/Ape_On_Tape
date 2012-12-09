@@ -45,10 +45,10 @@ public class MapInfo {
 			PositionType.None, // symbol #11
 			PositionType.None, // symbol #12
 			PositionType.SpikeTrap, // symbol #13
-			PositionType.None, // symbol #14
-			PositionType.None, // symbol #15
-			PositionType.None, // symbol #16
-			PositionType.None, // symbol #17
+			PositionType.LookingDirUp, // symbol #14
+			PositionType.LookingDirRight, // symbol #15
+			PositionType.LookingDirLeft, // symbol #16
+			PositionType.LookingDirDown, // symbol #17
 	};
 
 	// DYNAMIC FIELDS
@@ -80,15 +80,43 @@ public class MapInfo {
 		return this.entities.containsKey(type);
 	}
 
-	public void addEntityInfo(PositionType t, int x, int y) {
-		// only add entity if not Type.None
-		if (PositionType.None.equals(t))
-			return;
+	/**
+	 * Commit all entities that belong to the same tile which means: Searches
+	 * for PositionTypes that specify a looking direction and adds the
+	 * information (if present) to all the other entities in that tile. Adds
+	 * valid entities to the entities map.
+	 * 
+	 * @param tileEntities
+	 */
+	public void commitTileEntities(List<EntityInfo> tileEntities) {
+		PositionType t;
 
-		if (!entities.containsKey(t)) {
-			entities.put(t, new ArrayList<EntityInfo>());
+		// check if one of the EntityInfo types is a looking direction
+		boolean hasLookingDirs = false;
+		Point lookingDir = new Point(0, 0);
+		Point tempDir = null;
+		for (EntityInfo entity : tileEntities) {
+			t = entity.getType();
+			if (PositionType.isLookingType(t)) {
+				tempDir = PositionType.createLookingDirection(t);
+				// incrementally set direction
+				lookingDir.x += tempDir.x;
+				lookingDir.y += tempDir.y;
+				hasLookingDirs = true;
+			}
 		}
-		this.entities.get(t).add(new EntityInfo(x, y));
+
+		for (EntityInfo entity : tileEntities) {
+			t = entity.getType();
+			if (PositionType.None.equals(t) || PositionType.isLookingType(t))
+				continue; // skip invalid entities
+			if (hasLookingDirs)
+				entity.setLookingDirection(lookingDir);
+			if (!entities.containsKey(t)) {
+				entities.put(t, new ArrayList<EntityInfo>());
+			}
+			this.entities.get(t).add(entity);
+		}
 	}
 
 	public List<Entity> createEntities(TileMap map) {
@@ -103,14 +131,17 @@ public class MapInfo {
 	private List<Entity> createEntitesOfType(PositionType type, TileMap map) {
 		List<Entity> entities = new LinkedList<Entity>();
 		for (EntityInfo entity : this.getPositions(type)) {
-			Entity e = this.createEntity(type, entity.getPosition(), map);
+			Entity e = this.createEntity(entity, map);
 			if (e != null)
 				entities.add(e);
 		}
 		return entities;
 	}
 
-	private Entity createEntity(PositionType type, Point position, TileMap map) {
+	private Entity createEntity(EntityInfo entityInfo, TileMap map) {
+		PositionType type = entityInfo.getType();
+		Point position = entityInfo.getPosition();
+
 		Entity entity = null;
 		float x = position.x * map.getTileWidth();
 		float y = position.y * map.getTileHeight();
@@ -145,9 +176,14 @@ public class MapInfo {
 								+ "' doesn't get created yet. See MapInfo.createEntity");
 				break;
 		}
+
+		if (entity != null && entityInfo.hasLookingDirection()) {
+			entity.setDirX(entityInfo.getLookingDirection().x);
+			entity.setDirY(entityInfo.getLookingDirection().y);
+		}
+
 		return entity;
 	}
-
 	public static PositionType getEntityType(int number, int entityFirstgid) {
 		int index = number - entityFirstgid;
 		if (index < 0 || index >= entitySymbols.length)
@@ -228,20 +264,24 @@ public class MapInfo {
 		data = layer.data;
 		PositionType type;
 		int dIndex;
+		List<EntityInfo> tileCache = new LinkedList<EntityInfo>();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				// search for all defined entities in each subtile of a full
-				// tile
+				tileCache.clear();
+				// search for all defined entities in each subtile of the
+				// current full tile and cache them
 				for (int i = 0; i < subdivisions; i++) {
 					for (int j = 0; j < subdivisions; j++) {
 						dIndex = (y * subdivisions + j) * map.width
 								+ (x * subdivisions + i);
 						if (data[dIndex] != 0) {
 							type = getEntityType(data[dIndex], entityFirstgid);
-							mapInfo.addEntityInfo(type, x, y);
+							tileCache.add(new EntityInfo(x, y, type));
 						}
 					}
 				}
+				// commit all entities in this tile
+				mapInfo.commitTileEntities(tileCache);
 			}
 		}
 

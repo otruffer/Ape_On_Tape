@@ -291,8 +291,8 @@ function RenderingEngine(tileSize, playerSize) {
 		case 'barrier_open':
 			entitySize = self.TILE_SIZE;
 			effectiveSize = self.TILE_SIZE;
-			tile = self.rotateImageToCorridor(imagePreload['barrier_open'],
-					entity.x, entity.y);
+			tile = self.rotateImageToLookingDir(imagePreload['barrier_open'],
+					entity.dirX, entity.dirY);
 			break;
 		default:
 			tile = tilePreload['bullet'][1];
@@ -325,8 +325,18 @@ function RenderingEngine(tileSize, playerSize) {
 	}
 
 	/*
+	 * Rotates an image into the direction specified by dirX and dirY e[0,1].
+	 * The image is assumed to direct downwards initially. TODO: cannot
+	 * recognize direction
+	 */
+	this.rotateImageToLookingDir = function(image, dirX, dirY) {
+		var angle = Math.atan2(dirY, dirX) * 180 / Math.PI - 90;
+		return rotateImage(image, angle);
+	}
+
+	/*
 	 * Rotates an image into the direction of an open corridor. The image is
-	 * assumed to direct downwards initially. TODO: cannot recognize direction
+	 * assumed to direct downwards initially.cannot recognize direction
 	 */
 	this.rotateImageToCorridor = function(image, x, y) {
 		var tileX = Math.floor(x / self.TILE_SIZE);

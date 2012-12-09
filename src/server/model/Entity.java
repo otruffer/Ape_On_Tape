@@ -133,6 +133,14 @@ public abstract class Entity {
 		this.y = y;
 		positionChanged();
 	}
+	
+	public void setDirX(int dirX){
+		this.dirX = dirX;
+	}
+	
+	public void setDirY(int dirY){
+		this.dirY = dirY;
+	}
 
 	private void positionChanged() {
 		for (MoveListener listener : moveListeners)

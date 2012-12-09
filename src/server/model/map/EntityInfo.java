@@ -5,27 +5,23 @@ import java.awt.Point;
 public class EntityInfo {
 
 	private Point position;
-	private Point lookinDirection;
+	private Point lookingDirection;
+	private PositionType type;
 
 	private boolean hasLookingDirection;
 
-	public EntityInfo(int x, int y) {
-		this(new Point(x, y));
+	public EntityInfo(int x, int y, PositionType type) {
+		this(new Point(x, y), type);
 	}
 
-	public EntityInfo(Point position) {
+	public EntityInfo(Point position, PositionType type) {
 		this.position = position;
+		this.type = type;
 		this.hasLookingDirection = false;
 	}
 
-	public EntityInfo(int x, int y, int dirX, int dirY) {
-		this(new Point(x, y), new Point(dirX, dirY));
-	}
-
-	public EntityInfo(Point position, Point lookingDirection) {
-		this.position = position;
-		this.lookinDirection = lookingDirection;
-		this.hasLookingDirection = true;
+	public PositionType getType() {
+		return this.type;
 	}
 
 	public Point getPosition() {
@@ -37,7 +33,12 @@ public class EntityInfo {
 	}
 
 	public Point getLookingDirection() {
-		return this.lookinDirection;
+		return this.lookingDirection;
+	}
+
+	public void setLookingDirection(Point lookinDirection) {
+		this.lookingDirection = lookinDirection;
+		this.hasLookingDirection = true;
 	}
 
 }

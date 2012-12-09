@@ -50,7 +50,7 @@
  </layer>
  <layer name="entities" width="80" height="80">
   <data encoding="base64" compression="zlib">
-   eJzt2zEKwCAQBEANBMz/P5zGKoUIRs6DmfZAFuHcylIgXl2cAznY5bHd93NvPh9g1ve90w8A/3iiAwBAcroUAAAAIL8WHQAAAOBg/hQAcDpdBQAAAAAAAADAiis6AHQvQUcAMg==
+   eJzt27EKgCAQBmALgpyi93/ZGpoaIlA5re+DmwT5OfBuMiWINxWeA2Pwlp+17s/S+H6At+7zzn4AqCOftUWHAAB+LUcHGNweHQAAAAA+YI0OAAAA0DF/CgDonV0FAAAAAAAAAECJOToAXA7S3gBS
   </data>
  </layer>
 </map>
