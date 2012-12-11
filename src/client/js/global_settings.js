@@ -1,1 +1,2 @@
-MAP_FILE = 'maps/debug.json';
+MAP_FILE = 'maps/forest.json';
+CLOUDS_ON = false;

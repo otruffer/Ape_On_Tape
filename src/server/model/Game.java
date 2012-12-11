@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import server.GameHandler;
 import server.listeners.CollisionListener;
 import server.listeners.PlayerMoveListener;
 import server.model.map.MapInfo;
@@ -39,9 +40,7 @@ public class Game {
 		this.width = width;
 		this.height = height;
 		this.soundEvents = new HashSet<String>();
-
-		// TODO: replace map path (make dynamic choice)
-		String mapPath = ApeProperties.getProperty("mapPath");
+		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+ApeProperties.getProperty("startMap");
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
 		this.initEntities(mapInfo);

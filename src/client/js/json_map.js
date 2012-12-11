@@ -11,6 +11,7 @@ function JsonMap(path, onloadCallback) {
 	this.height;
 	this.bgData;
 	this.fgData;
+	this.collisionMap;
 	this.subdivision = 1; // dummy value
 	this.tiledata = {};
 	this.indextable = {};
@@ -23,6 +24,7 @@ function JsonMap(path, onloadCallback) {
 	// load json file from path
 	$.getJSON(path, function(json) {
 		extractData(json);
+		generateCollisionMap();
 		preloadTilesetImages();
 	}).error(function(jqXHR, textStatus, errorThrown) {
 		console.log("error: " + textStatus);
@@ -57,6 +59,35 @@ function JsonMap(path, onloadCallback) {
 					* (set.imageheight / set.tileheight);
 			self.tiledata[set.name] = set;
 			numberOfSetsToLoad++;
+		}
+	}
+
+	var generateCollisionMap = function() {
+		self.collisionMap = new Array(self.height);
+		var iRow1, iRow2;
+		var subCollisionCount;
+		var iOff = Math.abs((2 - self.subdivision) / 2);
+		for ( var y = 0; y < self.height; y++) {
+			self.collisionMap[y] = new Array(self.width);
+			for ( var x = 0; x < self.width; x++) {
+				subCollisionCount = 0;
+				// logic: a collision is defined if a square of 4 subtiles that
+				// is placed in the middle of a tile has more than 1
+				// occupied subtiles
+				iRow1 = (y * self.subdivision + iOff) * self.width
+						+ (x * self.subdivision + iOff);
+				iRow2 = (y * self.subdivision + iOff + 1) * self.width
+						+ (x * self.subdivision + iOff);
+				if (self.fgData[iRow1] != 0)
+					subCollisionCount++;
+				if (self.fgData[iRow1 + 1] != 0)
+					subCollisionCount++;
+				if (self.fgData[iRow2] != 0)
+					subCollisionCount++;
+				if (self.fgData[iRow2 + 1] != 0)
+					subCollisionCount++;
+				self.collisionMap[y][x] = (subCollisionCount > 1) ? 1 : 0;
+			}
 		}
 	}
 
@@ -147,8 +178,9 @@ function JsonMap(path, onloadCallback) {
 		return bgCanvas;
 	}
 
-	this.fgDataAtTile = function(x, y) {
-		var i = self.width * y * self.subdivision + x * self.subdivision;
-		return self.fgData[i];
+	this.isCollisionAtTile = function(x, y) {
+		if (self.collisionMap[y] == undefined)
+			return true; // consider boarders as collision or..
+		return self.collisionMap[y][x] != 0; // simply and anything except 0
 	}
 }

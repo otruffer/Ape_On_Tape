@@ -37,15 +37,15 @@ function RenderingEngine(tileSize, playerSize) {
 	this.PLAYER_SIZE = 20;
 	this.ENTITY_SIZE = 20;
 	this.TILE_SIZE = 30;
-	this.BACKGROUND_TYPES = [ "blood" ];
+	this.BACKGROUND_TYPES = [ "blood", "barrier_open" ];
 
 	/* display properties */
 	this.T = this.TILE_SIZE;
 	this.sc = 1 / 0.6; // scaling parameter
 	// effective drawing sizes of different entities
-	this.P = this.PLAYER_SIZE + 4;
-	this.E = this.ENTITY_SIZE + 4;
-	this.B = this.BULLET_SIZE * 20;
+	this.P = this.PLAYER_SIZE + 2;
+	this.E = this.ENTITY_SIZE + 2;
+	this.B = this.BULLET_SIZE * 18;
 
 	/* preloaded offline background canvas */
 	this.bgCanvas = document.createElement('canvas');
@@ -69,15 +69,15 @@ function RenderingEngine(tileSize, playerSize) {
 
 	this.cloudRendering;
 
+	/* individual player renderings */
+	this.compositeTiles = {};
+
 	// load the map
 	this.map = new JsonMap(MAP_FILE, function() {
 		self.loadMap();
 		self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		self.draw();
 	});
-	
-
-	/* Rendering for clouds */
 
 	// main draw loop
 	this.draw = function() {
@@ -98,13 +98,15 @@ function RenderingEngine(tileSize, playerSize) {
 					0, w, h);
 		}
 		self.computePlayerRelatives();
-		
-		// draw all entities relative to main player (need scaling to effective coordinates)
+
+		// draw all entities relative to main player (need scaling to effective
+		// coordinates)
 		ctx.scale(self.sc, self.sc);
 		self.drawEntities();
 		self.drawPlayers();
-		ctx.scale(1/self.sc, 1/self.sc);
-		self.cloudRendering.drawClouds();
+		ctx.scale(1 / self.sc, 1 / self.sc);
+		if (CLOUDS_ON)
+			self.cloudRendering.drawClouds();
 
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -124,13 +126,13 @@ function RenderingEngine(tileSize, playerSize) {
 	this.clear = function() {
 		c.width = width;
 		c.height = height;
-		ctx.fillStyle = '#FFCC66';
-		ctx.fillRect(0, 0, width, height);
+		// ctx.fillStyle = '#FFCC66';
+		// ctx.fillRect(0, 0, width, height);
 		if (!self.bgLoaded && !self.bgLoading) {
 			self.loadMap();
 		}
 	}
-	
+
 	this.computePlayerRelatives = function() {
 		// store information about the main player
 		for (id in gameState.players) {
@@ -140,7 +142,6 @@ function RenderingEngine(tileSize, playerSize) {
 			}
 		}
 	}
-
 
 	/**
 	 * Computes the bounding box parameters (offset positions sx and sy) if the
@@ -221,17 +222,18 @@ function RenderingEngine(tileSize, playerSize) {
 			self.drawPlayer(gameState.players[id], id == gameState.playerId);
 	}
 
-
 	this.drawPlayer = function(player, isself) {
 		var offset = (self.PLAYER_SIZE - self.P) / 2;
 		if (isself) {
-			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x + offset,
-					self.mainPlayer.y + offset, self.P, self.P);
+			ctx.drawImage(tilePreload['ape'][Anim.getWalkingIndex(player)],
+					self.mainPlayer.x + offset, self.mainPlayer.y + offset,
+					self.P, self.P);
 		} else { // draw other players relative to main player
 			var dx = self.mainPlayer.absX - player.x;
 			var dy = self.mainPlayer.absY - player.y;
-			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx + offset,
-					self.mainPlayer.y - dy + offset, self.P, self.P);
+			ctx.drawImage(tilePreload['ape'][Anim.getWalkingIndex(player)],
+					self.mainPlayer.x - dx + offset, self.mainPlayer.y - dy
+							+ offset, self.P, self.P);
 		}
 	}
 
@@ -246,7 +248,7 @@ function RenderingEngine(tileSize, playerSize) {
 				self.drawEntity(gameState.entities[id]);
 			}
 		}
-		
+
 	}
 
 	this.drawEntity = function(entity) {
@@ -259,7 +261,7 @@ function RenderingEngine(tileSize, playerSize) {
 		case 'bot':
 			entitySize = self.ENTITY_SIZE;
 			effectiveSize = self.E;
-			tile = tilePreload['bot'][animIndex(entity)];
+			tile = tilePreload['bot'][Anim.getWalkingIndex(entity)];
 			break;
 		case 'bullet':
 			entitySize = self.BULLET_SIZE;
@@ -289,7 +291,8 @@ function RenderingEngine(tileSize, playerSize) {
 		case 'barrier_open':
 			entitySize = self.TILE_SIZE;
 			effectiveSize = self.TILE_SIZE;
-			tile = imagePreload['barrier_open'];
+			tile = self.rotateImageToLookingDir(imagePreload['barrier_open'],
+					entity.dirX, entity.dirY);
 			break;
 		default:
 			tile = tilePreload['bullet'][1];
@@ -320,87 +323,30 @@ function RenderingEngine(tileSize, playerSize) {
 		self.bgLoaded = true;
 		self.bgLoading = false;
 	}
-}
 
-// returns the parameter that scales the game window to fullscreen
-var scale = function() {
-	var windowHeight = window.innerHeight - 2 - $('#header').height();
-	return (windowHeight / height > 1) ? windowHeight / height : 1;
-}
-
-// returns a scaled value to a corresponding input argument
-var _ = function(argument) {
-	return argument * scale();
-}
-
-/* tileset properties */
-var animationIndices = {};
-animationIndices['down'] = new Array(1, 2, 3); // middle index -> standing
-animationIndices['left'] = new Array(4, 5, 6);
-animationIndices['right'] = new Array(7, 8, 9);
-animationIndices['up'] = new Array(10, 11, 12);
-
-var lastAnimation = {};
-var animIndex = function(entity) {
-	var anim;
-	if (lastAnimation[entity.id] == undefined) {
-		lastAnimation[entity.id] = {};
-		anim = lastAnimation[entity.id];
-		anim.direction = 'down';
-		anim.index = 1;
-		anim.x = entity.x;
-		anim.y = entity.y;
-		anim.time = new Date().getTime();
-	} else {
-		anim = lastAnimation[entity.id];
+	/*
+	 * Rotates an image into the direction specified by dirX and dirY e[0,1].
+	 * The image is assumed to direct downwards initially. TODO: cannot
+	 * recognize direction
+	 */
+	this.rotateImageToLookingDir = function(image, dirX, dirY) {
+		var angle = Math.atan2(dirY, dirX) * 180 / Math.PI - 90;
+		return rotateImage(image, angle);
 	}
 
-	var direction;
-	if (entity.dirY < 0) // moving upwards
-		direction = 'up';
-	else if (entity.dirY > 0) // moving downwards
-		direction = 'down';
-	else { // moving either right, left or nowhere
-		if (entity.dirX < 0) // moving left
-			direction = 'left';
-		else if (entity.dirX > 0) // moving right
-			direction = 'right';
-	}
-	anim.direction = direction;
+	/*
+	 * Rotates an image into the direction of an open corridor. The image is
+	 * assumed to direct downwards initially.cannot recognize direction
+	 */
+	this.rotateImageToCorridor = function(image, x, y) {
+		var tileX = Math.floor(x / self.TILE_SIZE);
+		var tileY = Math.floor(y / self.TILE_SIZE);
 
-	var swap = function(index) {
-		if (index == 2)
-			return 0;
-		else if (index == 0)
-			return 2;
-		else
-			return 0;
-	}
-
-	var currTime = new Date().getTime();
-	var delta = currTime - anim.time;
-	// swap index of same direction or change to other direction
-	if (direction == anim.direction) {
-		if (delta < 250) {
-			return animationIndices[anim.direction][anim.index];
+		if (!self.map.isCollisionAtTile(tileX - 1, tileY)
+				&& !self.map.isCollisionAtTile(tileX + 1, tileY)) {
+			return rotateImage(image, -90);
 		} else {
-			// standing
-			if (Math.abs(anim.x - entity.x) <= 0.5
-					&& Math.abs(anim.y - entity.y) <= 0.5) {
-				anim.index = 1;
-			} else { // walking
-				anim.index = swap(anim.index);
-			}
-			anim.time = currTime;
+			return image;
 		}
-	} else {
-		anim.index = 0;
-		anim.time = currTime;
 	}
-
-	// update last x, y
-	anim.x = entity.x;
-	anim.y = entity.y;
-
-	return animationIndices[anim.direction][anim.index];
 }

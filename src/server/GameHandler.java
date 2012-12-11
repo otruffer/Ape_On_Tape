@@ -31,8 +31,7 @@ public class GameHandler implements Runnable {
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
 	final static int WEB_SERVER_PORT = 9876;
-	final static boolean USE_EXTERNAL_WEB_ROOT = true;
-	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
+	static String webRoot = "/var/www/Ape_On_Tape/";
 	private static final int PLAYERS_PER_GAME = Integer.parseInt(ApeProperties
 			.getProperty("minPlayersPerRoom"));
 	private final String DEFAULT_ROOMNAME = "soup";
@@ -50,6 +49,8 @@ public class GameHandler implements Runnable {
 		gameServer = new GameServer(this);
 		webServer = createWebServer(port).add("/apesocket", gameServer)
 				.add(new StaticFileHandler(webRoot)).start().get();
+		
+		GameHandler.webRoot = webRoot.getAbsolutePath();
 
 		this.games = new HashMap<String, Game>();
 		games.put(DEFAULT_ROOMNAME, new Game(800, 400));
@@ -224,5 +225,9 @@ public class GameHandler implements Runnable {
 		for (Player p : players)
 			ids.add(p.getId());
 		return ids;
+	}
+	
+	public static String getWebRoot(){
+		return webRoot;
 	}
 }
