@@ -7,6 +7,7 @@ var renderEngine;
 var lastSocketMessage = new Date();
 var socketDelta = 0;
 var syncs = 0;
+var resourceFolder = 0;
 
 var loginReady;
 var roomChosen;
@@ -114,12 +115,12 @@ function onMessage(incoming) {
 			else
 				gameState.entities[id] = entities[id];
 		}
-		if (incoming.soundEvents) {
-			handleSoundEvents(incoming.soundEvents);
+		if (incoming.events) {
+			handleEvents(incoming.events);
 		}
 		updatePlayerList();
-		if (incoming.gameRunning)
-			hideWaitInfo();
+		// if (incoming.gameRunning)
+		// hideWaitInfo();
 		break;
 	case 'INIT_GAME':
 		gameState.map = incoming.map;
@@ -225,8 +226,31 @@ function initGame() {
 	c.height = height;
 	gameState = new GameState();
 	renderEngine = new RenderingEngine(30, 20);
-	renderEngine.draw(); // start drawing loop
 	initBackgroundMusic();
+}
+
+function handleEvents(events) {
+	for ( var i in events) {
+		var event = events[i];
+		switch (event.type) {
+		case 'SOUND':
+			handleSoundEvent(event.content);
+		}
+	}
+}
+
+function handleSoundEvent(event) {
+	switch (event) {
+	case 'wall-collision':
+		playCollisionSound();
+		break;
+	case 'kill':
+		playKillSound();
+		break;
+	case 'win':
+		playWinSound();
+		break;
+	}
 }
 
 var backgroundMusic;
@@ -236,13 +260,6 @@ function initBackgroundMusic() {
 	else
 		backgroundMusic = new Audio('sound/follies.ogg');
 	$('#music-control').click(toggleBackgroundMusic);
-}
-
-function handleSoundEvents(events) {
-	if (events.indexOf('wall-collision') >= 0)
-		playCollisionSound();
-	if (events.indexOf('kill') >= 0)
-		playKillSound();
 }
 
 var bgMusicPlaying = false;
@@ -277,31 +294,51 @@ function playKillSound() {
 		new Audio('sound/jab.wav').play();
 }
 
+function playWinSound() {
+	if (mp3Suppport)
+		new Audio('sound/win.mp3').play();
+	else
+		// (oggSupport)
+		new Audio('sound/win.ogg').play();
+}
+
 function loadGraphics() {
 	preloadImage('ape', 'img/ape.png');
-	preloadImage('bot', 'img/bot.png');
+	preloadImage('blood', 'img/blood.png');
+	preloadImage('finish_flag', 'img/finish_flag.png');
+	preloadImage('cloud', 'img/cloud.png');
+	preloadImage('test-dot', 'img/test-dot.png');
+	preloadImage('barrier', 'img/barrier.png');
+	preloadImage('barrier_open', 'img/barrier_open.png');
+	preloadImage('turret', 'img/turret.png');
 	var materialPath = 'img/tiles/material_25px.png';
-	var bulletsPath = 'img/tiles/bullets_24px.png'
+	var bulletsPath = 'img/tiles/bullets_24px.png';
+	var botPath = 'img/tiles/bot_48px.png';
 	loadTileSet('mat', materialPath, 25, 25);
 	loadTileSet('bullet', bulletsPath, 24, 24);
+	loadTileSet('bot', botPath, 48, 48);
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
-var imagePreload = {};
-function preloadImage(name, imgPath) {
+imagePreload = {};
+function preloadImage(name, imgPath, callback) {
 	var img = new Image();
 	img.src = imgPath;
-	imagePreload[name] = img;
+	img.onload = function() {
+		imagePreload[name] = img;
+		if (callback != undefined)
+			callback();
+	}
 }
 
-var tilePreload = {};
+tilePreload = {};
 /*
  * Loads an image tile set as an array of pre-rendered canvas elements into the
  * tilePreload variable which can be accessed using tilePreload['name'].
  * tileWidth and tileHeight is the size of a subdivided tile in the tile set.
  * NOTE: index [0] is an empty (fully transparent) tile
  */
-function loadTileSet(name, imgPath, tileWidth, tileHeight) {
+loadTileSet = function(name, imgPath, tileWidth, tileHeight, callback) {
 	tilePreload[name] = new Array();
 	// push an empty tile to array position 0
 	var emptyTile = document.createElement('canvas');
@@ -315,7 +352,7 @@ function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 		var cols = img.width / tileWidth;
 		var rows = img.height / tileHeight;
 		var t_canvas, t_ctx;
-		for ( var y = 0; y < cols; y++) {
+		for ( var y = 0; y < rows; y++) {
 			for ( var x = 0; x < cols; x++) {
 				t_canvas = document.createElement('canvas');
 				t_canvas.width = tileWidth;
@@ -326,6 +363,8 @@ function loadTileSet(name, imgPath, tileWidth, tileHeight) {
 				tilePreload[name].push(t_canvas);
 			}
 		}
+		if (callback != undefined)
+			callback();
 	}
 }
 

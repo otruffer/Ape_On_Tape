@@ -32,12 +32,20 @@
 function RenderingEngine(tileSize, playerSize) {
 	var self = this; // assure callback to right element
 
+	/* Game server properties */
+	this.BULLET_SIZE = 1;
+	this.PLAYER_SIZE = 20;
+	this.ENTITY_SIZE = 20;
+	this.TILE_SIZE = 30;
+	this.BACKGROUND_TYPES = [ "blood" ];
+
 	/* display properties */
-	// TODO: make dynamic
-	this.T = 15; // half tile size
-	this.P = 20; // full player size
-	this.E = 20; // entity size (bullets, etc.)
+	this.T = this.TILE_SIZE;
 	this.sc = 1 / 0.6; // scaling parameter
+	// effective drawing sizes of different entities
+	this.P = this.PLAYER_SIZE + 4;
+	this.E = this.ENTITY_SIZE + 4;
+	this.B = this.BULLET_SIZE * 20;
 
 	/* preloaded offline background canvas */
 	this.bgCanvas = document.createElement('canvas');
@@ -59,6 +67,18 @@ function RenderingEngine(tileSize, playerSize) {
 	this.fpsUpdateDelta = 0;
 	this.fpsCounter = 0;
 
+	this.cloudRendering;
+
+	// load the map
+	this.map = new JsonMap(MAP_FILE, function() {
+		self.loadMap();
+		self.cloudRendering = new CloudRendering(gameState.playerId, self);
+		self.draw();
+	});
+	
+
+	/* Rendering for clouds */
+
 	// main draw loop
 	this.draw = function() {
 		// update state
@@ -77,8 +97,14 @@ function RenderingEngine(tileSize, playerSize) {
 			ctx.drawImage(self.bgCanvas, self.bbox.sx, self.bbox.sy, w, h, 0,
 					0, w, h);
 		}
-		self.drawPlayers();
+		self.computePlayerRelatives();
+		
+		// draw all entities relative to main player (need scaling to effective coordinates)
+		ctx.scale(self.sc, self.sc);
 		self.drawEntities();
+		self.drawPlayers();
+		ctx.scale(1/self.sc, 1/self.sc);
+		self.cloudRendering.drawClouds();
 
 		// print fps and socket update rate
 		if (self.fpsUpdateDelta >= 500) { // print fps every 500ms
@@ -101,18 +127,32 @@ function RenderingEngine(tileSize, playerSize) {
 		ctx.fillStyle = '#FFCC66';
 		ctx.fillRect(0, 0, width, height);
 		if (!self.bgLoaded && !self.bgLoading) {
-			// self.loadBackground();
-			self.loadMap('maps/map.json'); // use when loading map from json
+			self.loadMap();
+		}
+	}
+	
+	this.computePlayerRelatives = function() {
+		// store information about the main player
+		for (id in gameState.players) {
+			if (id == gameState.playerId) {
+				self.computePlayerBoundingBox(gameState.players[id]);
+				self.computePlayerEffectivePosition(gameState.players[id]);
+			}
 		}
 	}
 
+
+	/**
+	 * Computes the bounding box parameters (offset positions sx and sy) if the
+	 * map is too big to be drawn completely into the game's canvas.
+	 */
 	this.computePlayerBoundingBox = function(player) {
 		if (!player)
 			return;
 
 		// effective, scaled position of the main player
 		if (self.bbox.canScrollX) {
-			var pCenterX = (player.y + (self.P / 2)) * self.sc;
+			var pCenterX = (player.x + (self.PLAYER_SIZE / 2)) * self.sc;
 			var sx = pCenterX - (c.width / 2);
 			sx = (sx < 0) ? 0 : sx; // overlapping left edge
 			sx = (sx + c.width > self.bgCanvas.width) ? self.bgCanvas.width
@@ -123,7 +163,7 @@ function RenderingEngine(tileSize, playerSize) {
 		}
 
 		if (self.bbox.canScrollY) {
-			var pCenterY = (player.x + (self.P / 2)) * self.sc;
+			var pCenterY = (player.y + (self.PLAYER_SIZE / 2)) * self.sc;
 			var sy = pCenterY - (c.height / 2);
 			sy = (sy < 0) ? 0 : sy; // overlapping upper edge
 			sy = (sy + c.height > self.bgCanvas.height) ? self.bgCanvas.height
@@ -134,36 +174,41 @@ function RenderingEngine(tileSize, playerSize) {
 		}
 	}
 
-	// computes the effective positions (top left corner of the tile) of
-	// the player (main player) as non-scaled parameters
+	// Computes the effective position of the main player on the screen in the
+	// non-scaled coordinate system considering that the game canvas only draws
+	// the bounding box content. The x, y position represents the top left
+	// corner of the player-tile. The information is stored in the
+	// self.mainPlayer object
 	this.computePlayerEffectivePosition = function(player) {
-		// player relative to map (absolute position)
-		self.mainPlayer.absX = player.y;
-		self.mainPlayer.absY = player.x;
+		// player relative to map (absolute position - non scaled)
+		self.mainPlayer.absX = player.x;
+		self.mainPlayer.absY = player.y;
 
-		if (self.bbox.canScrollX) { // if scrolling possible
-			// effective player position in x direction
+		if (self.bbox.canScrollX) { // if scrolling in x-direction possible..
+			// effective player position in x direction:
 			if (self.bbox.sx == 0) {
 				self.mainPlayer.x = self.mainPlayer.absX;
 			} else if (self.bbox.sx >= self.bgCanvas.width - c.width) {
 				self.mainPlayer.x = self.mainPlayer.absX
 						- (self.bgCanvas.width - c.width) / self.sc;
 			} else {
-				self.mainPlayer.x = (c.width / self.sc) / 2 - (self.P / 2);
+				self.mainPlayer.x = (c.width / self.sc) / 2
+						- (self.PLAYER_SIZE / 2);
 			}
 		} else { // use the absolute position
 			self.mainPlayer.x = self.mainPlayer.absX;
 		}
 
-		if (self.bbox.canScrollY) { // if scrolling possible
-			// effective player position in y direction
+		if (self.bbox.canScrollY) { // if scrolling in y-direction possible..
+			// effective player position in y direction:
 			if (self.bbox.sy == 0) {
 				self.mainPlayer.y = self.mainPlayer.absY;
 			} else if (self.bbox.sy >= self.bgCanvas.height - c.height) {
 				self.mainPlayer.y = self.mainPlayer.absY
 						- (self.bgCanvas.height - c.height) / self.sc;
 			} else {
-				self.mainPlayer.y = (c.height / self.sc) / 2 - (self.P / 2);
+				self.mainPlayer.y = (c.height / self.sc) / 2
+						- (self.PLAYER_SIZE / 2);
 			}
 		} else { // use the absolute position
 			self.mainPlayer.y = self.mainPlayer.absY;
@@ -171,112 +216,109 @@ function RenderingEngine(tileSize, playerSize) {
 	}
 
 	this.drawPlayers = function() {
-		// store information about the main player
-		for (id in gameState.players) {
-			if (id == gameState.playerId) {
-				self.computePlayerBoundingBox(gameState.players[id]);
-				self.computePlayerEffectivePosition(gameState.players[id]);
-			}
-		}
 
-		// draw players relative to main player
-		ctx.scale(self.sc, self.sc);
 		for (id in gameState.players)
 			self.drawPlayer(gameState.players[id], id == gameState.playerId);
 	}
 
+
 	this.drawPlayer = function(player, isself) {
+		var offset = (self.PLAYER_SIZE - self.P) / 2;
 		if (isself) {
-			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x,
-					self.mainPlayer.y, self.P, self.P);
+			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x + offset,
+					self.mainPlayer.y + offset, self.P, self.P);
 		} else { // draw other players relative to main player
-			var dx = self.mainPlayer.absX - player.y;
-			var dy = self.mainPlayer.absY - player.x;
-			if (player.name == "uncleverbot" || player.name == "drunkbot") { // TODO: replace effective
-				ctx.drawImage(imagePreload['bot'], self.mainPlayer.x - dx,
-						self.mainPlayer.y - dy, self.P, self.P);
-			} else {
-				ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx,
-						self.mainPlayer.y - dy, self.P, self.P);
-			}
+			var dx = self.mainPlayer.absX - player.x;
+			var dy = self.mainPlayer.absY - player.y;
+			ctx.drawImage(imagePreload['ape'], self.mainPlayer.x - dx + offset,
+					self.mainPlayer.y - dy + offset, self.P, self.P);
 		}
 	}
+
 	this.drawEntities = function() {
-		for (id in gameState.entities)
-			self.drawEntity(gameState.entities[id]);
+		for ( var id in gameState.entities) {
+			if (this.BACKGROUND_TYPES.indexOf(gameState.entities[id].type) != -1) {
+				self.drawEntity(gameState.entities[id]);
+			}
+		}
+		for ( var id in gameState.entities) {
+			if (this.BACKGROUND_TYPES.indexOf(gameState.entities[id].type) == -1) {
+				self.drawEntity(gameState.entities[id]);
+			}
+		}
+		
 	}
 
 	this.drawEntity = function(entity) {
-		var dx = self.mainPlayer.absX - entity.y;
-		var dy = self.mainPlayer.absY - entity.x;
-		var offset = (self.P - self.E) / 2; // center the entity TODO: check
-		ctx.drawImage(tilePreload['bullet'][3],
-				self.mainPlayer.x - dx + offset, self.mainPlayer.y - dy
-						+ offset, self.E, self.E);
-	}
-
-	// draw background scene
-	// @depricated: read and draw map from json reader ('loadMap()')
-	this.loadBackground = function() {
-		self.bgCanvas = document.createElement('canvas');
-		self.bgCanvas.width = c.width;
-		self.bgCanvas.height = c.height;
-		var bctx = self.bgCanvas.getContext('2d');
-		bctx.scale(self.sc, self.sc);
-		for (ix in gameState.map) {
-			for (iy in gameState.map[ix]) {
-				// inefficient background drawing
-				bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2, iy
-						* self.T * 2, self.T, self.T);
-				bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2 + self.T,
-						iy * self.T * 2, self.T, self.T);
-				bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2, iy
-						* self.T * 2 + self.T, self.T, self.T);
-				bctx.drawImage(tilePreload['mat'][8], ix * self.T * 2 + self.T,
-						iy * self.T * 2 + self.T, self.T, self.T);
-				// grass tile overlay
-				if (gameState.map[ix][iy] == 1) {
-					bctx.drawImage(tilePreload['mat'][6], ix * self.T * 2, iy
-							* self.T * 2, self.T, self.T)
-					bctx.drawImage(tilePreload['mat'][10], ix * self.T * 2
-							+ self.T, iy * self.T * 2, self.T, self.T)
-					bctx.drawImage(tilePreload['mat'][6], ix * self.T * 2, iy
-							* self.T * 2 + self.T, self.T, self.T)
-					bctx.drawImage(tilePreload['mat'][10], ix * self.T * 2
-							+ self.T, iy * self.T * 2 + self.T, self.T, self.T)
-				}
-			}
+		// choose right entity size and tile to calculate deltas and to show the
+		// right image
+		var tile;
+		var entitySize;
+		var effectiveSize;
+		switch (entity.type) {
+		case 'bot':
+			entitySize = self.ENTITY_SIZE;
+			effectiveSize = self.E;
+			tile = tilePreload['bot'][animIndex(entity)];
+			break;
+		case 'bullet':
+			entitySize = self.BULLET_SIZE;
+			effectiveSize = self.B;
+			tile = tilePreload['bullet'][3];
+			break;
+		case 'blood':
+			entitySize = self.PLAYER_SIZE;
+			effectiveSize = self.PLAYER_SIZE;
+			tile = imagePreload['blood'];
+			break;
+		case 'finish_flag':
+			entitySize = self.PLAYER_SIZE;
+			effectiveSize = self.PLAYER_SIZE;
+			tile = imagePreload['finish_flag'];
+			break;
+		case 'barrier':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['barrier'];
+			break;
+		case 'turret':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['turret'];
+			break;
+		case 'barrier_open':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['barrier_open'];
+			break;
+		default:
+			tile = tilePreload['bullet'][1];
+			entitySize = self.E;
+			effectiveSize = self.E;
 		}
-		self.bgLoaded = true;
+
+		// calculate center-to-center distances
+		var dx = (self.mainPlayer.absX + self.PLAYER_SIZE / 2)
+				- (entity.x + entitySize / 2);
+		var dy = (self.mainPlayer.absY + self.PLAYER_SIZE / 2)
+				- (entity.y + entitySize / 2);
+
+		// calculate offset to center the entity to it's effective drawn size
+		var offset = (self.PLAYER_SIZE - effectiveSize) / 2;
+
+		ctx.drawImage(tile, self.mainPlayer.x - dx + offset, self.mainPlayer.y
+				- dy + offset, effectiveSize, effectiveSize);
 	}
 
-	this.loadMap = function(path) {
+	this.loadMap = function() {
 		self.bgLoading = true;
-		$.getJSON(path, function(json) {
-			self.bgCanvas = document.createElement('canvas');
-			// scale canvas to effective size
-			self.bgCanvas.width = json.width * self.T * self.sc;
-			self.bgCanvas.height = json.height * self.T * self.sc;
-			self.bbox.canScrollX = self.bgCanvas.width > c.width;
-			self.bbox.canScrollY = self.bgCanvas.height > c.height;
-			var bg_ctx = self.bgCanvas.getContext('2d');
-			// scale context to draw with standard (non-effective) sizes;
-			bg_ctx.scale(self.sc, self.sc);
-			var i = 0;
-			for ( var iy = 0; iy < json.height; iy++) {
-				for ( var ix = 0; ix < json.width; ix++) {
-					bg_ctx.drawImage(
-							tilePreload['mat'][json.layers[0].data[i]], ix
-									* self.T, iy * self.T, self.T, self.T);
-					bg_ctx.drawImage(
-							tilePreload['mat'][json.layers[1].data[i]], ix
-									* self.T, iy * self.T, self.T, self.T);
-					i += 1;
-				}
-			}
-			self.bgLoaded = true;
-			self.bgLoading = false;
-		});
+		self.bgCanvas = self.map.generateCanvas(self.T, self.sc);
+		// update bounding box parameters
+		self.bbox.canScrollX = self.bgCanvas.width > c.width;
+		self.bbox.canScrollY = self.bgCanvas.height > c.height;
+		// set loaded
+		self.bgLoaded = true;
+		self.bgLoading = false;
 	}
 }
 
@@ -289,4 +331,76 @@ var scale = function() {
 // returns a scaled value to a corresponding input argument
 var _ = function(argument) {
 	return argument * scale();
+}
+
+/* tileset properties */
+var animationIndices = {};
+animationIndices['down'] = new Array(1, 2, 3); // middle index -> standing
+animationIndices['left'] = new Array(4, 5, 6);
+animationIndices['right'] = new Array(7, 8, 9);
+animationIndices['up'] = new Array(10, 11, 12);
+
+var lastAnimation = {};
+var animIndex = function(entity) {
+	var anim;
+	if (lastAnimation[entity.id] == undefined) {
+		lastAnimation[entity.id] = {};
+		anim = lastAnimation[entity.id];
+		anim.direction = 'down';
+		anim.index = 1;
+		anim.x = entity.x;
+		anim.y = entity.y;
+		anim.time = new Date().getTime();
+	} else {
+		anim = lastAnimation[entity.id];
+	}
+
+	var direction;
+	if (entity.dirY < 0) // moving upwards
+		direction = 'up';
+	else if (entity.dirY > 0) // moving downwards
+		direction = 'down';
+	else { // moving either right, left or nowhere
+		if (entity.dirX < 0) // moving left
+			direction = 'left';
+		else if (entity.dirX > 0) // moving right
+			direction = 'right';
+	}
+	anim.direction = direction;
+
+	var swap = function(index) {
+		if (index == 2)
+			return 0;
+		else if (index == 0)
+			return 2;
+		else
+			return 0;
+	}
+
+	var currTime = new Date().getTime();
+	var delta = currTime - anim.time;
+	// swap index of same direction or change to other direction
+	if (direction == anim.direction) {
+		if (delta < 250) {
+			return animationIndices[anim.direction][anim.index];
+		} else {
+			// standing
+			if (Math.abs(anim.x - entity.x) <= 0.5
+					&& Math.abs(anim.y - entity.y) <= 0.5) {
+				anim.index = 1;
+			} else { // walking
+				anim.index = swap(anim.index);
+			}
+			anim.time = currTime;
+		}
+	} else {
+		anim.index = 0;
+		anim.time = currTime;
+	}
+
+	// update last x, y
+	anim.x = entity.x;
+	anim.y = entity.y;
+
+	return animationIndices[anim.direction][anim.index];
 }

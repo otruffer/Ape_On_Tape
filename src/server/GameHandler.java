@@ -17,14 +17,24 @@ import java.util.concurrent.ExecutionException;
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
 
+import server.listeners.RealCollisionListener;
+import server.model.Game;
+import server.model.Player;
+import server.network.GameServer;
+import server.properties.ApeProperties;
+import server.util.IdFactory;
+import server.util.Util;
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
 
 	final int GAME_RATE = 30;
 	final int SYNC_RATE = 30;
-	final static int WEB_SERVER_PORT = 9877;
-	public static String WEB_ROOT = "/var/www/Ape_On_Tape/";
+	final static int WEB_SERVER_PORT = 9876;
+	final static boolean USE_EXTERNAL_WEB_ROOT = true;
+	final static String EXTERNAL_WEB_ROOT = "/var/www/Ape_On_Tape/";
+	private static final int PLAYERS_PER_GAME = Integer.parseInt(ApeProperties
+			.getProperty("minPlayersPerRoom"));
 	private final String DEFAULT_ROOMNAME = "soup";
 
 	private GameServer gameServer;
@@ -84,7 +94,6 @@ public class GameHandler implements Runnable {
 			webRoot = new File(args[1]);
 		else
 			webRoot = ClientDirUtil.getClientDirectory();
-		WEB_ROOT = webRoot.getAbsolutePath();
 
 		GameHandler gameHandler = new GameHandler(port, webRoot);
 		Thread gameThread = new Thread(gameHandler);
@@ -111,12 +120,6 @@ public class GameHandler implements Runnable {
 		this.games.put(roomName, newRoom);
 		newRoom.addCollisionListener(new RealCollisionListener(this));
 		roomListUpdated();
-		createBots(newRoom);
-	}
-
-	private void createBots(Game room) {
-		room.addBot(IdFactory.getNextId(), "uncleverbot");
-		room.addDrunkBot(IdFactory.getNextId(), "drunkbot");
 	}
 
 	public void leavePlayer(int playerId) {
@@ -136,7 +139,7 @@ public class GameHandler implements Runnable {
 	}
 
 	private void updateGame(Game game) {
-		if (!game.isRunning() && game.getPlayers().size() > 1) {
+		if (!game.isRunning() && game.getPlayers().size() >= PLAYERS_PER_GAME) {
 			game.start();
 		}
 
@@ -151,7 +154,7 @@ public class GameHandler implements Runnable {
 	private void syncLoop() {
 		for (Game game : games.values()) {
 			this.gameServer.update(game.isRunning(), game.getAllEntitiesMap(),
-					game.popSoundEvents());
+					game.popEvents());
 		}
 	}
 
@@ -219,7 +222,7 @@ public class GameHandler implements Runnable {
 	public List<Integer> idsFromPlayers(List<Player> players) {
 		List<Integer> ids = new LinkedList<Integer>();
 		for (Player p : players)
-			ids.add(p.id);
+			ids.add(p.getId());
 		return ids;
 	}
 }
