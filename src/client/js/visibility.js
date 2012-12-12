@@ -209,13 +209,13 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawCloudAt(x, y, opacity) {
-		// bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		// bufferCtx.fillRect(x - CLOUD_SIZE_HALF - bbox_sx, y - CLOUD_SIZE_HALF
-		// - bbox_sy, CLOUD_SIZE, CLOUD_SIZE);
+		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+		bufferCtx.fillRect(x - CLOUD_SIZE_HALF - bbox_sx, y - CLOUD_SIZE_HALF
+				- bbox_sy, CLOUD_SIZE, CLOUD_SIZE);
 
-		if (opacity > 0.7) 
-			bufferCtx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE_HALF
-					- bbox_sx, y - CLOUD_SIZE_HALF - bbox_sy);
+		// if (opacity > 0.7)
+		// bufferCtx.drawImage(imagePreload['cloud'], x - CLOUD_SIZE_HALF
+		// - bbox_sx, y - CLOUD_SIZE_HALF - bbox_sy);
 	}
 
 	function drawTestDotAt(x, y) {
@@ -234,6 +234,7 @@ var CloudRendering = function(id, renderingEngine) {
 		// buffer.height);
 		// ctx.putImageData(imgData, 0, 0);
 
+//		bufferCtx.stroke();
 		ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
 	}
 

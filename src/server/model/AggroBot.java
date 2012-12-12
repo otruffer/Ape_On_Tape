@@ -40,11 +40,13 @@ public class AggroBot extends Bot {
 	}
 
 	private float memoryX() {
-		return lastMoveX * MOVE_DIRECTION_MEMORY;
+		float result = lastMoveX * MOVE_DIRECTION_MEMORY;
+		return Float.isInfinite(result) ? Float.MAX_VALUE : result;
 	}
 
 	private float memoryY() {
-		return lastMoveY * MOVE_DIRECTION_MEMORY;
+		float result = lastMoveY * MOVE_DIRECTION_MEMORY;
+		return Float.isInfinite(result) ? Float.MAX_VALUE : result;
 	}
 
 	private float abs(float f) {
