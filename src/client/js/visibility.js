@@ -38,11 +38,12 @@ var CloudRendering = function(id, renderingEngine) {
 	/**
 	 * Buffer canvas for drawing in background.
 	 */
-	var buffer;
+	var buffer = document.createElement('canvas');
 	var bufferCtx;
+	
+	var canvasImageData;
 
 	function init() {
-		buffer = document.createElement('canvas');
 		buffer.width = c.width;
 		buffer.height = c.height;
 		bufferCtx = buffer.getContext('2d');
@@ -54,11 +55,12 @@ var CloudRendering = function(id, renderingEngine) {
 		me_x = me.x;
 		me_y = me.y;
 		collisionMap = map.collisionMap;
+//		canvasImageData = 
 	}
 
 	this.drawClouds = function() {
 		init();
-
+		
 		bufferCtx.scale(sc, sc);
 
 		for ( var i = MIN_X; i < MAX_X; i++) {
