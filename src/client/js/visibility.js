@@ -26,12 +26,12 @@ var CloudRendering = function(id, renderingEngine) {
 	var MAX_X = map.width;
 	var MAX_Y = map.height;
 
-	var me = gameState.players[gameState.playerId];
-	var me_x = me.x;
-	var me_y = me.y;
+	var me;
+	var me_x;
+	var me_y;
 
-	var bbox_sx = renderingEngine.bbox.sx / sc;
-	var bbox_sy = renderingEngine.bbox.sy / sc;
+	var bbox_sx;
+	var bbox_sy;
 
 	var CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
 
@@ -49,6 +49,8 @@ var CloudRendering = function(id, renderingEngine) {
 		buffer.width = c.width;
 		buffer.height = c.height;
 		bufferCtx = buffer.getContext('2d');
+		bbox_sx = renderingEngine.bbox.sx / sc;
+		bbox_sy = renderingEngine.bbox.sy / sc;
 		MIN_X = (bbox_sx / (TILE_SIZE * sc)) << 0;
 		MIN_Y = (bbox_sy / (TILE_SIZE * sc)) << 0;
 		MAX_X = ((MIN_X + (buffer.width / (TILE_SIZE * sc))) << 0) + 2;
@@ -216,20 +218,21 @@ var CloudRendering = function(id, renderingEngine) {
 		var xx = x - CLOUD_SIZE_HALF - bbox_sx;
 		var yy = y - CLOUD_SIZE_HALF - bbox_sy;
 
-//		var opacity_cpl = 1 - opacity;
-//
-//		var arrayPos = ((yy - 1) * c_width + xx) * 4;
-//		for ( var i = arrayPos - CLOUD_SIZE * 2; i < arrayPos + CLOUD_SIZE * 2; i += 4) {
-//			for ( var j = i - CLOUD_SIZE_HALF * c_width * 4; j < i
-//					+ CLOUD_SIZE_HALF * c_width * 4; j += c_width * 4) {
-//				canvasImageData.data[j - 1] *= opacity_cpl;
-//				canvasImageData.data[j - 2] *= opacity_cpl;
-//				canvasImageData.data[j - 3] *= opacity_cpl;
-//			}
-//		}
+		// var opacity_cpl = 1 - opacity;
+		//
+		// var arrayPos = ((yy - 1) * c_width + xx) * 4;
+		// for ( var i = arrayPos - CLOUD_SIZE * 2; i < arrayPos + CLOUD_SIZE *
+		// 2; i += 4) {
+		// for ( var j = i - CLOUD_SIZE_HALF * c_width * 4; j < i
+		// + CLOUD_SIZE_HALF * c_width * 4; j += c_width * 4) {
+		// canvasImageData.data[j - 1] *= opacity_cpl;
+		// canvasImageData.data[j - 2] *= opacity_cpl;
+		// canvasImageData.data[j - 3] *= opacity_cpl;
+		// }
+		// }
 
-		 bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		 bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+		bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
 
 		// if (opacity > 0.7)
 		// bufferCtx.drawImage(imagePreload['cloud'], xx, yy);
@@ -252,9 +255,9 @@ var CloudRendering = function(id, renderingEngine) {
 		// ctx.putImageData(imgData, 0, 0);
 
 		// bufferCtx.stroke();
-		 ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
 
-//		ctx.putImageData(canvasImageData, 0, 0);
+		// ctx.putImageData(canvasImageData, 0, 0);
 	}
 
 	/* declare util functions locally for performance */
