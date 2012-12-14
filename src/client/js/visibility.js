@@ -11,7 +11,7 @@ var CloudRendering = function(id, renderingEngine) {
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
-	var CLOUDS_PER_TILE = 2;
+	var CLOUDS_PER_TILE = 3;
 	/**
 	 * Not in tiles, nor in pixels, just some factor.
 	 */
@@ -216,20 +216,20 @@ var CloudRendering = function(id, renderingEngine) {
 		var xx = x - CLOUD_SIZE_HALF - bbox_sx;
 		var yy = y - CLOUD_SIZE_HALF - bbox_sy;
 
-		var opacity_cpl = 1 - opacity;
+//		var opacity_cpl = 1 - opacity;
+//
+//		var arrayPos = ((yy - 1) * c_width + xx) * 4;
+//		for ( var i = arrayPos - CLOUD_SIZE * 2; i < arrayPos + CLOUD_SIZE * 2; i += 4) {
+//			for ( var j = i - CLOUD_SIZE_HALF * c_width * 4; j < i
+//					+ CLOUD_SIZE_HALF * c_width * 4; j += c_width * 4) {
+//				canvasImageData.data[j - 1] *= opacity_cpl;
+//				canvasImageData.data[j - 2] *= opacity_cpl;
+//				canvasImageData.data[j - 3] *= opacity_cpl;
+//			}
+//		}
 
-		var arrayPos = ((yy - 1) * c_width + xx) * 4;
-		for ( var i = arrayPos - CLOUD_SIZE * 2; i < arrayPos + CLOUD_SIZE * 2; i += 4) {
-			for ( var j = i - CLOUD_SIZE_HALF * c_width * 4; j < i
-					+ CLOUD_SIZE_HALF * c_width * 4; j += c_width * 4) {
-				canvasImageData.data[j - 1] *= opacity_cpl;
-				canvasImageData.data[j - 2] *= opacity_cpl;
-				canvasImageData.data[j - 3] *= opacity_cpl;
-			}
-		}
-
-		// bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		// bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+		 bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+		 bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
 
 		// if (opacity > 0.7)
 		// bufferCtx.drawImage(imagePreload['cloud'], xx, yy);
@@ -252,9 +252,9 @@ var CloudRendering = function(id, renderingEngine) {
 		// ctx.putImageData(imgData, 0, 0);
 
 		// bufferCtx.stroke();
-		// ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		 ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
 
-		ctx.putImageData(canvasImageData, 0, 0);
+//		ctx.putImageData(canvasImageData, 0, 0);
 	}
 
 	/* declare util functions locally for performance */
