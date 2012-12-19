@@ -73,10 +73,12 @@ function RenderingEngine(tileSize, playerSize) {
 	this.compositeTiles = {};
 
 	// load the map
+	pushStatus('loading map...');
 	this.map = new JsonMap(MAP_FILE, function() {
 		self.loadMap();
 		self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		self.draw();
+		clearStatus();
 	});
 
 	// main draw loop
@@ -326,8 +328,7 @@ function RenderingEngine(tileSize, playerSize) {
 
 	/*
 	 * Rotates an image into the direction specified by dirX and dirY e[0,1].
-	 * The image is assumed to direct downwards initially. TODO: cannot
-	 * recognize direction
+	 * The image is assumed to direct downwards initially.
 	 */
 	this.rotateImageToLookingDir = function(image, dirX, dirY) {
 		var angle = Math.atan2(dirY, dirX) * 180 / Math.PI - 90;

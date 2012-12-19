@@ -142,6 +142,7 @@ function onMessage(incoming) {
 function connect() {
 	// clear out any cached content
 	clearLog();
+	pushStatus('connecting...');
 
 	// connect to socket
 	logText('* Connecting...');

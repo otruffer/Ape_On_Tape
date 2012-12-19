@@ -28,10 +28,21 @@
 		</div>
 		<div id="music-control">Play Music</div>
 	</div>
-	<canvas id="canvas" width="800" height="600"></canvas>
-	<!-- <div id="canvas-overlay">
+	<div id="gameContent">
+		<canvas id="canvas" width="800" height="600"></canvas>
+		<div id="statusBox" class="statusBox"
+			style="position: absolute; top: 300px; left: 300px;">
+			<table>
+				<tr>
+					<th><img src="img/ape_animation.gif" style="float: left" /></th>
+					<th><p id="statusText" style="float: left"></p></th>
+				</tr>
+			</table>
+		</div>
+		<!-- <div id="canvas-overlay">
 		<div id="canvas-lightbox">Waiting for another player...</div>
 	</div> -->
+	</div>
 	<div id="playerList">
 		<h3>Players:</h3>
 		<ul></ul>

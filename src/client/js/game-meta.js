@@ -67,3 +67,22 @@ function changeRoom() {
 function hideWaitInfo() {
 	$('#canvas-overlay').hide();
 }
+
+var statusBoxText = new Array();
+function pushStatus(text) {
+	$('#statusBox').show();
+	$('#statusText').text(text);
+	statusBoxText.push(text);
+}
+
+function popStatus() {
+	statusBoxText.pop();
+	if (statusBoxText.length == 0) {
+		$('#statusBox').hide();
+	}
+}
+
+function clearStatus(){
+	statusBoxText = new Array();
+	$('#statusBox').hide();
+}
