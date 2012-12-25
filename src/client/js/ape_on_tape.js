@@ -311,6 +311,11 @@ function loadGraphics() {
 	preloadImage('barrier', 'img/barrier.png');
 	preloadImage('barrier_open', 'img/barrier_open.png');
 	preloadImage('turret', 'img/turret.png');
+	// composite objects
+	preloadImage('ape_mask_base', 'img/tiles/ape_32px.png');
+	preloadImage('ape_mask_hat', 'img/tiles/ape_mask_hat_32px.png');
+	preloadImage('ape_mask_stripe', 'img/tiles/ape_mask_stripe_32px.png');
+	// end composite objects
 	var materialPath = 'img/tiles/material_25px.png';
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';

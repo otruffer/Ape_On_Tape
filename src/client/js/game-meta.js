@@ -82,7 +82,29 @@ function popStatus() {
 	}
 }
 
-function clearStatus(){
+function clearStatus() {
 	statusBoxText = new Array();
 	$('#statusBox').hide();
+}
+
+function initLobby() {
+	var lobbyCanvas = document.getElementById('lobbyCanvas');
+	lobbyCanvas.width = 200;
+	lobbyCanvas.height = 200;
+	var lobbyCtx = lobbyCanvas.getContext('2d');
+	lobbyCtx.drawImage(imagePreload['ape_mask_base'], 0, 0);
+	$('#picker').farbtastic(selectPlayerOverlay());
+	showLobby();
+}
+
+function selectPlayerOverlay() {
+
+}
+
+function showLobby() {
+	$('#lobby').show();
+}
+
+function hideLobby() {
+	$('#lobby').hide();
 }

@@ -53,6 +53,43 @@ var composePlayerTileset = function() {
 	}
 }
 
+var maskOverlayBufferCanvas = document.createElement('canvas');
+var maskOverlayBuffer = maskOverlayBufferCanvas.getContext('2d');
+var getMaskColorOverlay = function(mask, r, g, b) {
+	// clear recent buffering
+	maskOverlayBuffer.clearRect(0, 0, mask.width, mask.height);
+
+	// draw mask and perform composite operation
+	maskOverlayBuffer.drawImage(mask, 0, 0);
+	maskOverlayBuffer.save();
+	maskOverlayBuffer.globalCompositeOperation = compositeTypes[9];
+	maskOverlayBuffer.fillStyle = "rgba(" + r + "," + g + "," + b + ",0.8)";
+	maskOverlayBuffer.fillRect(0, 0, mask.width, mask.height);
+	maskOverlayBuffer.restore();
+
+	// create output by composing with source
+	var overlayCanvas = document.createElement('canvas');
+	var overlay = overlayCanvas.getContext('2d');
+	overlay.drawImage(mask, 0, 0);
+	overlay.save();
+	overlay.globalCompositeOperation = 'source-in';
+	overlay.drawImage(maskOverlayBufferCanvas, 0, 0);
+	overlay.restore();
+
+	return overlayCanvas;
+}
+
+var testComposePlayerDetails = function() {
+	var compCtx = document.getElementById('ape_overlay').getContext('2d');
+	compCtx.drawImage(imagePreload['ape_mask_base'], 0, 0);
+
+	var overlay = getMaskColorOverlay(imagePreload['ape_mask_hat'], 255, 0, 0);
+	compCtx.drawImage(overlay, 0, 0);
+
+	overlay = getMaskColorOverlay(imagePreload['ape_mask_stripe'], 0, 255, 0);
+	compCtx.drawImage(overlay, 0, 0);
+}
+
 // ANIMATIONS =================================================================
 
 Anim = {}; // define animation logic as static function prototype

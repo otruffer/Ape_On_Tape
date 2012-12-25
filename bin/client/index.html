@@ -13,6 +13,8 @@
 <script type="text/javascript" src="js/drawing.js"></script>
 <script type="text/javascript" src="js/drawing_utils.js"></script>
 <script type="text/javascript" src="js/json_map.js"></script>
+<script type="text/javascript" src="js/farbtastic.js"></script>
+<link rel="stylesheet" type="text/css" href="css/farbtastic.css" />
 <link rel="stylesheet" type="text/css" href="css/ape_on_tape.css">
 <link href='http://fonts.googleapis.com/css?family=Finger+Paint'
 	rel='stylesheet' type='text/css'>
@@ -30,12 +32,28 @@
 	</div>
 	<div id="gameContent">
 		<canvas id="canvas" width="800" height="600"></canvas>
-		<div id="statusBox" class="statusBox"
-			style="position: absolute; top: 300px; left: 300px;">
+		<div id="statusBox">
 			<table>
 				<tr>
 					<th><img src="img/ape_animation.gif" style="float: left" /></th>
 					<th><p id="statusText" style="float: left"></p></th>
+				</tr>
+			</table>
+		</div>
+		<div id="lobby" style="display: none">
+			<p>Design your player:</p>
+			<table>
+				<tr>
+					<th><form action="">
+							<div id="picker"></div>
+						</form>
+					<th>
+						<canvas id="lobbyCanvas"></canvas>
+					</th>
+				</tr>
+				<tr>
+					<th><input type="button" name="hide_lobby" value="Hide lobby"
+						onclick="hideLobby()"></th>
 				</tr>
 			</table>
 		</div>
@@ -54,5 +72,6 @@
 	<!-- div id="delay-graph"></div -->
 	<div id="fps" width="200" height="100"
 		style="float: left; background-color: blue; position: absolute; top: 0; right: 0">-</div>
+
 </body>
 </html>
