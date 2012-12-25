@@ -79,7 +79,7 @@ function RenderingEngine(tileSize, playerSize) {
 		self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		clearStatus();
 		self.draw();
-		initLobby();
+		initDesigner();
 	});
 
 	// main draw loop

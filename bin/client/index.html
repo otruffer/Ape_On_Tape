@@ -40,20 +40,28 @@
 				</tr>
 			</table>
 		</div>
-		<div id="lobby" style="display: none">
+		<div id="designer" style="display: none">
 			<p>Design your player:</p>
 			<table>
 				<tr>
 					<th><form action="">
 							<div id="picker"></div>
+							<input type="text" id="color" name="color" value="#123456" />
 						</form>
 					<th>
-						<canvas id="lobbyCanvas"></canvas>
+						<canvas id="designerCanvas"></canvas>
 					</th>
 				</tr>
 				<tr>
-					<th><input type="button" name="hide_lobby" value="Hide lobby"
-						onclick="hideLobby()"></th>
+					<th><input type="button" name="applyHat" value="Apply hat"
+						onclick="designerApplyHat()" /> <input type="button"
+						name="applyStripe" value="Apply stripe"
+						onclick="designerApplyStripe()" /></th>
+				</tr>
+				<tr>
+
+					<th><input type="button" name="hide_designer"
+						value="Hide designer" onclick="hideDesigner()"></th>
 				</tr>
 			</table>
 		</div>
