@@ -1,2 +1,2 @@
 MAP_FILE = 'maps/forest.json';
-CLOUDS_ON = true;
+CLOUDS_ON = false;

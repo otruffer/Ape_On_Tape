@@ -88,28 +88,40 @@ function clearStatus() {
 }
 
 function initDesigner() {
-	var designerCanvas = document.getElementById('designerCanvas');
-	designerCanvas.width = 192;
-	designerCanvas.height = 256;
-	var designerCtx = designerCanvas.getContext('2d');
-	designerCtx.scale(2, 2);
-	designerCtx.drawImage(imagePreload['ape_mask_base'], 0, 0);
+	designerCanvasCache = document.getElementById('designerCanvas');
+	designerCanvasCache.width = 192;
+	designerCanvasCache.height = 256;
+	designerContextCache = designerCanvasCache.getContext('2d')
+	designerContextCache.scale(2, 2);
 	$('#picker').farbtastic('#color');
+	designerComposeShape();
 	showDesigner();
 }
 
+designerHatCache = undefined;
 function designerApplyHat() {
 	var color = $.parseColor($('#color').css("background-color"));
-	document.getElementById('designerCanvas').getContext('2d').drawImage(
-			getMaskColorOverlay(imagePreload['ape_mask_hat'], color[0],
-					color[1], color[2]), 0, 0);
+	designerHatCache = getMaskColorOverlay(imagePreload['ape_mask_hat'],
+			color[0], color[1], color[2]);
+	designerComposeShape();
 }
 
+designerStripeCache = undefined;
 function designerApplyStripe() {
 	var color = $.parseColor($('#color').css("background-color"));
-	document.getElementById('designerCanvas').getContext('2d').drawImage(
-			getMaskColorOverlay(imagePreload['ape_mask_stripe'], color[0],
-					color[1], color[2]), 0, 0);
+	designerStripeCache = getMaskColorOverlay(imagePreload['ape_mask_stripe'],
+			color[0], color[1], color[2]);
+	designerComposeShape();
+}
+
+function designerComposeShape() {
+	designerContextCache.clearRect(0, 0, designerCanvasCache.width,
+			designerCanvasCache.height);
+	designerContextCache.drawImage(imagePreload['ape_mask_base'], 0, 0);
+	if (designerHatCache != undefined)
+		designerContextCache.drawImage(designerHatCache, 0, 0);
+	if (designerStripeCache != undefined)
+		designerContextCache.drawImage(designerStripeCache, 0, 0);
 }
 
 function showDesigner() {

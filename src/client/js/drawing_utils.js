@@ -29,30 +29,6 @@ var compositeTypes = [ 'source-over', 'source-in', 'source-out', 'source-atop',
 		'destination-over', 'destination-in', 'destination-out',
 		'destination-atop', 'lighter', 'darker', 'copy', 'xor' ];
 
-// TODO: continue composing tilesets with colored masks. Think about
-// reimplementing tileset creation because its easier to compose first and then
-// split into tiles => needs caching of graphics for every player
-var composePlayerTileset = function() {
-	for (i = 0; i < compositeTypes.length; i++) {
-		var label = document.createTextNode(compositeTypes[i]);
-		document.getElementById('lab' + i).appendChild(label);
-		var ctx = document.getElementById('tut' + i).getContext('2d');
-
-		// draw rectangle
-		ctx.fillStyle = "#09f";
-		ctx.fillRect(15, 15, 70, 70);
-
-		// set composite property
-		ctx.globalCompositeOperation = compositeTypes[i];
-
-		// draw circle
-		ctx.fillStyle = "#f30";
-		ctx.beginPath();
-		ctx.arc(75, 75, 35, 0, Math.PI * 2, true);
-		ctx.fill();
-	}
-}
-
 var maskOverlayBufferCanvas = document.createElement('canvas');
 var maskOverlayBuffer = maskOverlayBufferCanvas.getContext('2d');
 var getMaskColorOverlay = function(mask, r, g, b) {
@@ -77,17 +53,6 @@ var getMaskColorOverlay = function(mask, r, g, b) {
 	overlay.restore();
 
 	return overlayCanvas;
-}
-
-var testComposePlayerDetails = function() {
-	var compCtx = document.getElementById('ape_overlay').getContext('2d');
-	compCtx.drawImage(imagePreload['ape_mask_base'], 0, 0);
-
-	var overlay = getMaskColorOverlay(imagePreload['ape_mask_hat'], 255, 0, 0);
-	compCtx.drawImage(overlay, 0, 0);
-
-	overlay = getMaskColorOverlay(imagePreload['ape_mask_stripe'], 0, 255, 0);
-	compCtx.drawImage(overlay, 0, 0);
 }
 
 // ANIMATIONS =================================================================
