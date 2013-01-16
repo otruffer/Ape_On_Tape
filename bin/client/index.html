@@ -28,7 +28,8 @@
 		<div id="gameRoom">
 			<span class="description">Room:</span> <span class="name"></span>
 		</div>
-		<div id="music-control">Play Music</div>
+		<div id="music-control" class="control">Play Music</div>
+		<div id="menu-control" class="control">Menu</div>
 	</div>
 	<div id="gameContent">
 		<canvas id="canvas" width="800" height="600"></canvas>
@@ -40,30 +41,35 @@
 				</tr>
 			</table>
 		</div>
-		<div id="designer" style="display: none">
-			<p>Design your player:</p>
-			<table>
-				<tr>
-					<th><form action="">
-							<div id="picker"></div>
-							<input type="text" id="color" name="color" value="#ff0000" />
-						</form>
-					<th>
-						<canvas id="designerCanvas"></canvas>
-					</th>
-				</tr>
-				<tr>
-					<th><input type="button" name="applyHat" value="Apply hat"
-						onclick="designerApplyHat()" /> <input type="button"
-						name="applyStripe" value="Apply stripe"
-						onclick="designerApplyStripe()" /></th>
-				</tr>
-				<tr>
-
-					<th><input type="button" name="hide_designer"
-						value="Hide designer" onclick="hideDesigner()"></th>
-				</tr>
-			</table>
+		<div id="menu" style="display: none">
+			<ul class="menu_tabs">
+				<li><a id="tab_quit" href="#">X</a></li>
+				<li><a id="tab_designer" href="#">Designer</a></li>
+				<li><a id="tab_settings" href="#">Game settings</a></li>
+			</ul>
+			<div id="m_designer" class="menu_content">
+				<h3>Design your player:</h3>
+				<table>
+					<tr>
+						<th><form action="">
+								<div id="picker"></div>
+								<input type="text" id="color" name="color" value="#ff0000" />
+							</form>
+						<th>
+							<canvas id="designerCanvas"></canvas>
+						</th>
+					</tr>
+					<tr>
+						<th><input type="button" name="applyHat" value="Apply hat"
+							onclick="designerApplyHat()" /> <input type="button"
+							name="applyStripe" value="Apply stripe"
+							onclick="designerApplyStripe()" /></th>
+					</tr>
+				</table>
+			</div>
+			<div id="m_settings" class="menu_content" style="display: none">
+					<h3>Settings:</h3>
+			</div>
 		</div>
 		<!-- <div id="canvas-overlay">
 		<div id="canvas-lightbox">Waiting for another player...</div>

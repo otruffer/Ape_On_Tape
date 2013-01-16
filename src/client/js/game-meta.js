@@ -3,6 +3,7 @@ $(document).ready(initGameMeta);
 function initGameMeta() {
 	initHeader();
 	initRooms();
+	initMenu();
 }
 
 function initHeader() {
@@ -37,6 +38,19 @@ function initRooms() {
 	} else {
 		setTimeout('initRooms()', 200);
 	}
+}
+
+function initMenu() {
+	$('#menu-control').click(toggleMenu);
+	$('#tab_quit').click(toggleMenu);
+	$('#tab_settings').click(function() {
+		$('#m_designer').hide();
+		$('#m_settings').slideDown();
+	});
+	$('#tab_designer').click(function() {
+		$('#m_settings').hide();
+		$('#m_designer').slideDown();
+	})
 }
 
 function updateRoomList() {
@@ -95,7 +109,6 @@ function initDesigner() {
 	designerContextCache.scale(2, 2);
 	$('#picker').farbtastic('#color');
 	designerComposeShape();
-	showDesigner();
 }
 
 designerHatCache = undefined;
@@ -124,12 +137,14 @@ function designerComposeShape() {
 		designerContextCache.drawImage(designerStripeCache, 0, 0);
 }
 
-function showDesigner() {
-	$('#designer').show();
-}
-
-function hideDesigner() {
-	$('#designer').hide();
+function toggleMenu() {
+	if ($('#menu').css('display') == 'none') {
+		$('#menu').show();
+		$('#menu-control').addClass('selected');
+	} else {
+		$('#menu').hide();
+		$('#menu-control').removeClass('selected');
+	}
 }
 
 // jquery extension

@@ -269,11 +269,11 @@ function toggleBackgroundMusic() {
 	var control = $('#music-control');
 	if (!bgMusicPlaying) {
 		backgroundMusic.play();
-		control.addClass('playing');
+		control.addClass('selected');
 		control.text('Stop Music');
 	} else {
 		backgroundMusic.pause();
-		control.removeClass('playing');
+		control.removeClass('selected');
 		control.text('Play Music');
 	}
 	bgMusicPlaying = !bgMusicPlaying;
