@@ -304,31 +304,33 @@ function playWinSound() {
 }
 
 function loadGraphics() {
-	preloadImage('blood', 'img/blood.png');
-	preloadImage('finish_flag', 'img/finish_flag.png');
-	preloadImage('cloud', 'img/cloud.png');
-	preloadImage('test-dot', 'img/test-dot.png');
-	preloadImage('barrier', 'img/barrier.png');
-	preloadImage('barrier_open', 'img/barrier_open.png');
-	preloadImage('turret', 'img/turret.png');
-	// composite objects
-	preloadImage('ape_mask_base', 'img/tiles/ape_32px.png');
-	preloadImage('ape_mask_hat', 'img/tiles/ape_mask_hat_32px.png');
-	preloadImage('ape_mask_stripe', 'img/tiles/ape_mask_stripe_32px.png');
-	// end composite objects
-	var materialPath = 'img/tiles/material_25px.png';
+	// IN-GAME GRAPHICS
+	loadImage('blood', 'img/blood.png');
+	loadImage('finish_flag', 'img/finish_flag.png');
+	loadImage('cloud', 'img/cloud.png');
+	loadImage('test-dot', 'img/test-dot.png');
+	loadImage('barrier', 'img/barrier.png');
+	loadImage('barrier_open', 'img/barrier_open.png');
+	loadImage('turret', 'img/turret.png');
+
+	// TILESETS
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';
 	var apePath = 'img/tiles/ape_32px.png'
-	loadTileSet('mat', materialPath, 25, 25);
 	loadTileSet('bullet', bulletsPath, 24, 24);
 	loadTileSet('bot', botPath, 48, 48);
 	loadTileSet('ape', apePath, 32, 32);
+
+	// GAME-META
+	// composite objects for designer
+	loadImage('ape_mask_hat', 'img/tiles/ape_mask_hat_32px.png');
+	loadImage('ape_mask_stripe', 'img/tiles/ape_mask_stripe_32px.png');
+	loadImage('ape_mask_base', 'img/tiles/ape_32px.png', initDesigner);
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
 imagePreload = {};
-function preloadImage(name, imgPath, callback) {
+function loadImage(name, imgPath, callback) {
 	var img = new Image();
 	img.src = imgPath;
 	img.onload = function() {
@@ -345,33 +347,37 @@ tilePreload = {};
  * tileWidth and tileHeight is the size of a subdivided tile in the tile set.
  * NOTE: index [0] is an empty (fully transparent) tile
  */
-loadTileSet = function(name, imgPath, tileWidth, tileHeight, callback) {
-	tilePreload[name] = new Array();
+function loadTileSet(name, imgPath, tileWidth, tileHeight, callback) {
+	var img = new Image();
+	img.src = imgPath;
+	img.onload = function() {
+		insertTileSetAt(tilePreload, name, img, tileWidth, tileHeight);
+		if (callback != undefined)
+			callback();
+	}
+}
+
+function insertTileSetAt(object, name, img, tileWidth, tileHeight) {
+	object[name] = new Array();
 	// push an empty tile to array position 0
 	var emptyTile = document.createElement('canvas');
 	emptyTile.width = tileWidth;
 	emptyTile.height = tileHeight;
-	tilePreload[name].push(emptyTile);
+	object[name].push(emptyTile);
 	// create tiles from tileset
-	var img = new Image();
-	img.src = imgPath;
-	img.onload = function() {
-		var cols = img.width / tileWidth;
-		var rows = img.height / tileHeight;
-		var t_canvas, t_ctx;
-		for ( var y = 0; y < rows; y++) {
-			for ( var x = 0; x < cols; x++) {
-				t_canvas = document.createElement('canvas');
-				t_canvas.width = tileWidth;
-				t_canvas.height = tileHeight;
-				t_ctx = t_canvas.getContext('2d');
-				t_ctx.drawImage(img, x * tileWidth, y * tileWidth, tileWidth,
-						tileHeight, 0, 0, tileWidth, tileHeight);
-				tilePreload[name].push(t_canvas);
-			}
+	var cols = img.width / tileWidth;
+	var rows = img.height / tileHeight;
+	var t_canvas, t_ctx;
+	for ( var y = 0; y < rows; y++) {
+		for ( var x = 0; x < cols; x++) {
+			t_canvas = document.createElement('canvas');
+			t_canvas.width = tileWidth;
+			t_canvas.height = tileHeight;
+			t_ctx = t_canvas.getContext('2d');
+			t_ctx.drawImage(img, x * tileWidth, y * tileWidth, tileWidth,
+					tileHeight, 0, 0, tileWidth, tileHeight);
+			object[name].push(t_canvas);
 		}
-		if (callback != undefined)
-			callback();
 	}
 }
 

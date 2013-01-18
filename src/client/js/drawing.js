@@ -79,7 +79,6 @@ function RenderingEngine(tileSize, playerSize) {
 		self.cloudRendering = new CloudRendering(gameState.playerId, self);
 		clearStatus();
 		self.draw();
-		initDesigner();
 	});
 
 	// main draw loop
@@ -227,16 +226,22 @@ function RenderingEngine(tileSize, playerSize) {
 
 	this.drawPlayer = function(player, isself) {
 		var offset = (self.PLAYER_SIZE - self.P) / 2;
+		var pCanvas;
+		if (tilePreload['players'] && tilePreload['players'][player['id']]) {
+			pCanvas = tilePreload['players'][player['id']][Anim
+					.getWalkingIndex(player)];
+		} else {
+			pCanvas = tilePreload['ape'][Anim.getWalkingIndex(player)];
+		}
+
 		if (isself) {
-			ctx.drawImage(tilePreload['ape'][Anim.getWalkingIndex(player)],
-					self.mainPlayer.x + offset, self.mainPlayer.y + offset,
-					self.P, self.P);
+			ctx.drawImage(pCanvas, self.mainPlayer.x + offset,
+					self.mainPlayer.y + offset, self.P, self.P);
 		} else { // draw other players relative to main player
 			var dx = self.mainPlayer.absX - player.x;
 			var dy = self.mainPlayer.absY - player.y;
-			ctx.drawImage(tilePreload['ape'][Anim.getWalkingIndex(player)],
-					self.mainPlayer.x - dx + offset, self.mainPlayer.y - dy
-							+ offset, self.P, self.P);
+			ctx.drawImage(pCanvas, self.mainPlayer.x - dx + offset,
+					self.mainPlayer.y - dy + offset, self.P, self.P);
 		}
 	}
 
@@ -350,5 +355,38 @@ function RenderingEngine(tileSize, playerSize) {
 		} else {
 			return image;
 		}
+	}
+
+	this.setPlayerColor = function(playerid, hatColor, stripeColor) {
+		if (!tilePreload['players']) {
+			tilePreload['players'] = {};
+		}
+
+		// init new canvas
+		var canvas = document.createElement('canvas');
+		canvas.height = imagePreload['ape_mask_base'].height;
+		canvas.width = imagePreload['ape_mask_base'].width;
+		var canvasCtx = canvas.getContext('2d');
+
+		// create base shape
+		canvasCtx.drawImage(imagePreload['ape_mask_base'], 0, 0);
+
+		// compose with existing colors;
+		if (hatColor) {
+			var colorH = $.parseColor(hatColor);
+			var hatCanv = getMaskColorOverlay(imagePreload['ape_mask_hat'],
+					colorH[0], colorH[1], colorH[2]);
+			canvasCtx.drawImage(hatCanv, 0, 0);
+		}
+
+		if (stripeColor) {
+			var colorS = $.parseColor(stripeColor);
+			var stripeCanv = getMaskColorOverlay(
+					imagePreload['ape_mask_stripe'], colorS[0], colorS[1],
+					colorS[2]);
+			canvasCtx.drawImage(stripeCanv, 0, 0);
+		}
+
+		insertTileSetAt(tilePreload['players'], playerid, canvas, 32, 32);
 	}
 }

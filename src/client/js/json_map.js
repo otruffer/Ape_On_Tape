@@ -102,7 +102,7 @@ function JsonMap(path, onloadCallback) {
 			if (imagePreload[setName] != undefined) {
 				numberOfSetsToLoad--; // set is already loaded
 			} else {
-				preloadImage(setName, self.tiledata[setName].image, function() {
+				loadImage(setName, self.tiledata[setName].image, function() {
 					numberOfSetsToLoad--;
 					if (numberOfSetsToLoad <= 0) {
 						onloadCallback();

@@ -43,13 +43,19 @@ function initRooms() {
 function initMenu() {
 	$('#menu-control').click(toggleMenu);
 	$('#tab_quit').click(toggleMenu);
+	$('#m_settings').hide();
+	$('#tab_designer').addClass('selected');
 	$('#tab_settings').click(function() {
 		$('#m_designer').hide();
+		$('#tab_designer').removeClass('selected');
 		$('#m_settings').slideDown();
+		$('#tab_settings').addClass('selected');
 	});
 	$('#tab_designer').click(function() {
 		$('#m_settings').hide();
+		$('#tab_settings').removeClass('selected');
 		$('#m_designer').slideDown();
+		$('#tab_designer').addClass('selected');
 	})
 }
 
@@ -101,42 +107,6 @@ function clearStatus() {
 	$('#statusBox').hide();
 }
 
-function initDesigner() {
-	designerCanvasCache = document.getElementById('designerCanvas');
-	designerCanvasCache.width = 192;
-	designerCanvasCache.height = 256;
-	designerContextCache = designerCanvasCache.getContext('2d')
-	designerContextCache.scale(2, 2);
-	$('#picker').farbtastic('#color');
-	designerComposeShape();
-}
-
-designerHatCache = undefined;
-function designerApplyHat() {
-	var color = $.parseColor($('#color').css("background-color"));
-	designerHatCache = getMaskColorOverlay(imagePreload['ape_mask_hat'],
-			color[0], color[1], color[2]);
-	designerComposeShape();
-}
-
-designerStripeCache = undefined;
-function designerApplyStripe() {
-	var color = $.parseColor($('#color').css("background-color"));
-	designerStripeCache = getMaskColorOverlay(imagePreload['ape_mask_stripe'],
-			color[0], color[1], color[2]);
-	designerComposeShape();
-}
-
-function designerComposeShape() {
-	designerContextCache.clearRect(0, 0, designerCanvasCache.width,
-			designerCanvasCache.height);
-	designerContextCache.drawImage(imagePreload['ape_mask_base'], 0, 0);
-	if (designerHatCache != undefined)
-		designerContextCache.drawImage(designerHatCache, 0, 0);
-	if (designerStripeCache != undefined)
-		designerContextCache.drawImage(designerStripeCache, 0, 0);
-}
-
 function toggleMenu() {
 	if ($('#menu').css('display') == 'none') {
 		$('#menu').show();
@@ -144,6 +114,59 @@ function toggleMenu() {
 	} else {
 		$('#menu').hide();
 		$('#menu-control').removeClass('selected');
+	}
+}
+
+function initDesigner() {
+	var designer = new Designer();
+	designer.composeShape();
+	$('#hatButton').click(designer.applyHat);
+	$('#stripeButton').click(designer.applyStripe);
+}
+
+Designer = function() {
+	var self = this;
+
+	// cache for colors
+	var hatColor = false;
+	var stripeColor = false;
+
+	// cache for canvas elements
+	var hatCache = false;
+	var stripeCache = false;
+	var canvasCache = document.getElementById('designerCanvas');
+	canvasCache.width = 192;
+	canvasCache.height = 256;
+	canvasCacheCtx = canvasCache.getContext('2d')
+	canvasCacheCtx.scale(2, 2);
+	$('#picker').farbtastic('#color');
+
+	this.applyHat = function() {
+		hatColor = $('#color').css("background-color");
+		var color = $.parseColor(hatColor);
+		hatCache = getMaskColorOverlay(imagePreload['ape_mask_hat'], color[0],
+				color[1], color[2]);
+		self.composeShape();
+	}
+
+	this.applyStripe = function() {
+		stripeColor = $('#color').css("background-color");
+		var color = $.parseColor(stripeColor);
+		stripeCache = getMaskColorOverlay(imagePreload['ape_mask_stripe'],
+				color[0], color[1], color[2]);
+		self.composeShape();
+	}
+
+	this.composeShape = function() {
+		canvasCacheCtx.clearRect(0, 0, canvasCache.width, canvasCache.height);
+		canvasCacheCtx.drawImage(imagePreload['ape_mask_base'], 0, 0);
+		if (hatCache)
+			canvasCacheCtx.drawImage(hatCache, 0, 0);
+		if (stripeCache)
+			canvasCacheCtx.drawImage(stripeCache, 0, 0);
+		if (gameState && gameState.playerId)
+			renderEngine.setPlayerColor(gameState.playerId, hatColor,
+					stripeColor);
 	}
 }
 
