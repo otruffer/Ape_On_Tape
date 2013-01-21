@@ -118,7 +118,7 @@ function toggleMenu() {
 }
 
 function initDesigner() {
-	var designer = new Designer();
+	designer = new Designer();
 	designer.composeShape();
 	$('#hatButton').click(designer.applyHat);
 	$('#stripeButton').click(designer.applyStripe);
@@ -141,8 +141,23 @@ Designer = function() {
 	canvasCacheCtx.scale(2, 2);
 	$('#picker').farbtastic('#color');
 
+	if (window.localStorage.hatColor) {
+		hatColor = window.localStorage.hatColor;
+		var color = $.parseColor(hatColor);
+		hatCache = getMaskColorOverlay(imagePreload['ape_mask_hat'], color[0],
+				color[1], color[2]);
+	}
+
+	if (window.localStorage.stripeColor) {
+		stripeColor = window.localStorage.stripeColor;
+		var color = $.parseColor(stripeColor);
+		stripeCache = getMaskColorOverlay(imagePreload['ape_mask_stripe'],
+				color[0], color[1], color[2]);
+	}
+
 	this.applyHat = function() {
 		hatColor = $('#color').css("background-color");
+		window.localStorage.hatColor = hatColor;
 		var color = $.parseColor(hatColor);
 		hatCache = getMaskColorOverlay(imagePreload['ape_mask_hat'], color[0],
 				color[1], color[2]);
@@ -151,6 +166,7 @@ Designer = function() {
 
 	this.applyStripe = function() {
 		stripeColor = $('#color').css("background-color");
+		window.localStorage.stripeColor = stripeColor;
 		var color = $.parseColor(stripeColor);
 		stripeCache = getMaskColorOverlay(imagePreload['ape_mask_stripe'],
 				color[0], color[1], color[2]);

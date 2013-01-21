@@ -126,6 +126,9 @@ function onMessage(incoming) {
 		gameState.map = incoming.map;
 		gameState.playerId = incoming.playerId;
 		renderEngine.bgLoaded = false;
+		if (designer) {
+			designer.composeShape();
+		}
 		break;
 	case 'ROOMS':
 		rooms = incoming.rooms;
@@ -322,10 +325,11 @@ function loadGraphics() {
 	loadTileSet('ape', apePath, 32, 32);
 
 	// GAME-META
-	// composite objects for designer
-	loadImage('ape_mask_hat', 'img/tiles/ape_mask_hat_32px.png');
-	loadImage('ape_mask_stripe', 'img/tiles/ape_mask_stripe_32px.png');
-	loadImage('ape_mask_base', 'img/tiles/ape_32px.png', initDesigner);
+	// initDesigner if all 3 images loaded
+	var c = new CallbackCountdown(3, initDesigner);
+	loadImage('ape_mask_hat', 'img/tiles/ape_mask_hat_32px.png', c.down);
+	loadImage('ape_mask_stripe', 'img/tiles/ape_mask_stripe_32px.png', c.down);
+	loadImage('ape_mask_base', 'img/tiles/ape_32px.png', c.down);
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
@@ -377,6 +381,17 @@ function insertTileSetAt(object, name, img, tileWidth, tileHeight) {
 			t_ctx.drawImage(img, x * tileWidth, y * tileWidth, tileWidth,
 					tileHeight, 0, 0, tileWidth, tileHeight);
 			object[name].push(t_canvas);
+		}
+	}
+}
+
+CallbackCountdown = function(initValue, execCallback) {
+	var count = initValue;
+
+	this.down = function() {
+		count--;
+		if (count <= 0) {
+			execCallback();
 		}
 	}
 }
