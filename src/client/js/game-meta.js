@@ -34,6 +34,9 @@ function initRooms() {
 			item.append(rooms[index]);
 			roomList.append(item);
 			item.click(changeRoom);
+			if (rooms[index] == window.localStorage.room) {
+				item.addClass('selected');
+			}
 		}
 	} else {
 		setTimeout('initRooms()', 200);
@@ -43,20 +46,44 @@ function initRooms() {
 function initMenu() {
 	$('#menu-control').click(toggleMenu);
 	$('#tab_quit').click(toggleMenu);
-	$('#m_settings').hide();
-	$('#tab_designer').addClass('selected');
-	$('#tab_settings').click(function() {
-		$('#m_designer').hide();
-		$('#tab_designer').removeClass('selected');
-		$('#m_settings').slideDown();
-		$('#tab_settings').addClass('selected');
-	});
-	$('#tab_designer').click(function() {
-		$('#m_settings').hide();
-		$('#tab_settings').removeClass('selected');
-		$('#m_designer').slideDown();
-		$('#tab_designer').addClass('selected');
-	})
+
+	// specify tabs
+	var menus = {};
+	menus['#tab_rooms'] = '#m_rooms';
+	menus['#tab_designer'] = '#m_designer';
+	menus['#tab_settings'] = '#m_settings';
+
+	// preselection
+	var selectedTab = '#tab_rooms';
+
+	function select(tab) {
+		$(selectedTab).removeClass('selected');
+		$(menus[selectedTab]).hide();
+		$(tab).addClass('selected');
+		$(menus[tab]).slideDown();
+		selectedTab = tab;
+	}
+
+	for ( var tab in menus) {
+		$(tab).click(function(e) {
+			select('#' + e.currentTarget.id);
+		});
+		if (tab == selectedTab) {
+			$(tab).addClass('selected');
+		} else {
+			$(menus[tab]).hide();
+		}
+	}
+}
+
+function toggleMenu() {
+	if ($('#menu').css('display') == 'none') {
+		$('#menu').show();
+		$('#menu-control').addClass('selected');
+	} else {
+		$('#menu').hide();
+		$('#menu-control').removeClass('selected');
+	}
 }
 
 function updateRoomList() {
@@ -107,16 +134,6 @@ function clearStatus() {
 	$('#statusBox').hide();
 }
 
-function toggleMenu() {
-	if ($('#menu').css('display') == 'none') {
-		$('#menu').show();
-		$('#menu-control').addClass('selected');
-	} else {
-		$('#menu').hide();
-		$('#menu-control').removeClass('selected');
-	}
-}
-
 function initDesigner() {
 	designer = new Designer();
 	designer.composeShape();
@@ -124,12 +141,12 @@ function initDesigner() {
 	$('#stripeButton').click(designer.applyStripe);
 }
 
-Designer = function() {
+var Designer = function() {
 	var self = this;
 
 	// cache for colors
-	var hatColor = false;
-	var stripeColor = false;
+	var hatColor = "#000314";
+	var stripeColor = "#420400";
 
 	// cache for canvas elements
 	var hatCache = false;
@@ -180,9 +197,16 @@ Designer = function() {
 			canvasCacheCtx.drawImage(hatCache, 0, 0);
 		if (stripeCache)
 			canvasCacheCtx.drawImage(stripeCache, 0, 0);
-		if (gameState && gameState.playerId)
+		// update render engine and send message to server
+		if (gameState && gameState.playerId) {
 			renderEngine.setPlayerColor(gameState.playerId, hatColor,
 					stripeColor);
+			colors = new Array(hatColor, stripeColor);
+			send({
+				action : 'COLOR',
+				colors : colors
+			});
+		}
 	}
 }
 

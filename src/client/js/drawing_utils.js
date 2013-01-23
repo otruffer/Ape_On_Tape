@@ -1,15 +1,9 @@
 // WINDOW SCALING =============================================================
 
-// returns the parameter that scales the game window to fullscreen
-var scale = function() {
-	var windowHeight = window.innerHeight - 2 - $('#header').height();
-	return (windowHeight / height > 1) ? windowHeight / height : 1;
-}
-
 // returns a scaled value to a corresponding input argument
-var _ = function(argument) {
-	return argument * scale();
-}
+//var _ = function(argument) {
+//	return argument * scale();
+//}
 
 // IMAGE MANIPULATION =========================================================
 

@@ -40,7 +40,7 @@ public class GameHandler implements Runnable {
 	private WebServer webServer;
 	private volatile Map<String, Game> games;
 	private Map<Integer, List<Integer>> keysPressed;
-
+	private Map<Integer, String[]> playerColors;
 	private Map<Integer, String> playerNames;
 	private Map<Integer, String> playerRooms;
 
@@ -49,7 +49,7 @@ public class GameHandler implements Runnable {
 		gameServer = new GameServer(this);
 		webServer = createWebServer(port).add("/apesocket", gameServer)
 				.add(new StaticFileHandler(webRoot)).start().get();
-		
+
 		GameHandler.webRoot = webRoot.getAbsolutePath();
 
 		this.games = new HashMap<String, Game>();
@@ -60,6 +60,7 @@ public class GameHandler implements Runnable {
 
 		this.playerNames = new HashMap<Integer, String>();
 		this.playerRooms = new HashMap<Integer, String>();
+		this.playerColors = new HashMap<Integer, String[]>();
 	}
 
 	@Override
@@ -163,6 +164,20 @@ public class GameHandler implements Runnable {
 		this.keysPressed.put(id, keysPressed);
 	}
 
+	public void setPlayerColor(int id, String[] playerColors) {
+		this.playerColors.put(id, playerColors);
+
+		List<Integer> playersInRoom = playersInRoomWith(id);
+		Map<Integer, String[]> colors = new HashMap<Integer, String[]>();
+		for (Integer player : playersInRoom) {
+			if (this.playerColors.containsKey(player)) {
+				colors.put(player, this.playerColors.get(player));
+			}
+		}
+
+		gameServer.sendPlayerColors(colors, playersInRoom);
+	}
+
 	public int[][] getGameMap(String roomName) {
 		return Util.getArrayFromMap(games.get(roomName).getMap());
 	}
@@ -226,8 +241,8 @@ public class GameHandler implements Runnable {
 			ids.add(p.getId());
 		return ids;
 	}
-	
-	public static String getWebRoot(){
+
+	public static String getWebRoot() {
 		return webRoot;
 	}
 }

@@ -1,6 +1,7 @@
 package server.network;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Incoming {
 		enum Action {
-			LOGIN, ROOM, SAY, KEYS_PRESSED
+			LOGIN, ROOM, SAY, KEYS_PRESSED, COLOR
 		}
 
 		Action action;
@@ -34,11 +35,12 @@ public class GameServer extends BaseWebSocketHandler {
 		String roomJoin;
 		String message;
 		List<Integer> keysPressed;
+		String[] colors;
 	}
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM
+			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM, COLOR
 		}
 
 		Action action;
@@ -51,6 +53,7 @@ public class GameServer extends BaseWebSocketHandler {
 		String newRoom;
 		GameEvent[] events;
 		public boolean gameRunning;
+		Map<Integer, String[]> colors;
 	}
 
 	public GameServer(GameHandler gameHandler) {
@@ -69,20 +72,24 @@ public class GameServer extends BaseWebSocketHandler {
 	public void onMessage(WebSocketConnection connection, String msg) {
 		Incoming incoming = json.fromJson(msg, Incoming.class);
 		switch (incoming.action) {
-		case LOGIN:
-			login(connection, incoming.loginUsername);
-			break;
-		case ROOM:
-			leaveCurrentRoom(connection);
-			joinRoom(connection, incoming.roomJoin);
-			break;
-		// case SAY:
-		// say(connection, incoming.message);
-		// break;
-		case KEYS_PRESSED:
-			this.gameHandler.setKeysPressed((Integer) connection.data(ID_KEY),
-					incoming.keysPressed);
-			break;
+			case LOGIN :
+				login(connection, incoming.loginUsername);
+				break;
+			case ROOM :
+				leaveCurrentRoom(connection);
+				joinRoom(connection, incoming.roomJoin);
+				break;
+			// case SAY:
+			// say(connection, incoming.message);
+			// break;
+			case KEYS_PRESSED :
+				this.gameHandler
+						.setKeysPressed((Integer) connection.data(ID_KEY),
+								incoming.keysPressed);
+				break;
+			case COLOR :
+				this.gameHandler.setPlayerColor(
+						(Integer) connection.data(ID_KEY), incoming.colors);
 		}
 	}
 
@@ -158,7 +165,8 @@ public class GameServer extends BaseWebSocketHandler {
 		connection.send(jsonStr);
 	}
 
-	private synchronized void broadcast(Outgoing outgoing, Collection<Integer> playerIds) {
+	private synchronized void broadcast(Outgoing outgoing,
+			Collection<Integer> playerIds) {
 		String jsonStr = this.json.toJson(outgoing);
 		for (WebSocketConnection connection : connections) {
 			if (playerIds.contains(connection.data(ID_KEY))) {
@@ -170,19 +178,20 @@ public class GameServer extends BaseWebSocketHandler {
 
 	@Override
 	public void onClose(WebSocketConnection connection) {
-		//due concurrency issues the connection may already have been lost strange but true (maybe).
-		if(connection == null)
+		// due concurrency issues the connection may already have been lost
+		// strange but true (maybe).
+		if (connection == null)
 			return;
 		int id = (Integer) connection.data(ID_KEY);
 		gameHandler.playerDisconnected(id);
 	}
 
 	public void sendDisconnectMessage(int id, String user,
-			List<Integer> receipents) {
+			List<Integer> recipients) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.LEAVE;
 		outgoing.username = user;
-		broadcast(outgoing, receipents);
+		broadcast(outgoing, recipients);
 	}
 
 	public void disconnect(int id) {
@@ -200,10 +209,18 @@ public class GameServer extends BaseWebSocketHandler {
 	}
 
 	public void sendNewRoomInfo(String newRoomName,
-			Collection<Integer> receipents) {
+			Collection<Integer> recipients) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.NEW_ROOM;
 		outgoing.newRoom = newRoomName;
-		broadcast(outgoing, receipents);
+		broadcast(outgoing, recipients);
+	}
+
+	public void sendPlayerColors(Map<Integer, String[]> colors,
+			Collection<Integer> recipients) {
+		Outgoing outgoing = new Outgoing();
+		outgoing.action = Outgoing.Action.COLOR;
+		outgoing.colors = colors;
+		broadcast(outgoing, recipients);
 	}
 }

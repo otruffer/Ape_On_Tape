@@ -109,7 +109,7 @@ function onMessage(incoming) {
 		syncs++;
 		gameState.players = new Array();
 		gameState.entities = new Array();
-		for (id in entities) {
+		for ( var id in entities) {
 			if (entities[id].type == "player")
 				gameState.players[id] = entities[id];
 			else
@@ -137,6 +137,15 @@ function onMessage(incoming) {
 	case 'NEW_ROOM':
 		window.localStorage.room = incoming.newRoom;
 		updateRoomInfo();
+		updateRoomList();
+		break;
+	case 'COLOR':
+		if (!renderEngine)
+			break;
+		for ( var id in incoming.colors) {
+			renderEngine.setPlayerColor(id, incoming.colors[id][0],
+					incoming.colors[id][1]);
+		}
 		break;
 	}
 }
@@ -396,10 +405,11 @@ CallbackCountdown = function(initValue, execCallback) {
 	}
 }
 
-function resizeHandler(e) {
-	if (renderEngine) {
-		renderEngine.needCanvasReload = true;
-	}
+// returns the parameter that scales the game window to fullscreen
+function windowScale() {
+	var windowHeight = window.innerHeight - $('#header').outerHeight();
+	// return (windowHeight / height > 1) ? windowHeight / height : 1;
+	return windowHeight / height;
 }
 
 // Connect on load.
@@ -408,4 +418,3 @@ $(document).ready(loadGraphics); // TODO evaluation order?
 $(document).ready(connect);
 $(window).bind("keydown", keyHandler.keyDown);
 $(window).bind("keyup", keyHandler.keyUp);
-$(window).resize(resizeHandler);

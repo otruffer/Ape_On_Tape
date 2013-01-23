@@ -32,16 +32,17 @@
 function RenderingEngine(tileSize, playerSize) {
 	var self = this; // assure callback to right element
 
-	/* Game server properties */
+	/* Game server fixed properties */
 	this.BULLET_SIZE = 1;
 	this.PLAYER_SIZE = 20;
 	this.ENTITY_SIZE = 20;
 	this.TILE_SIZE = 30;
+	this.SCALE = 1 / 0.6;
 	this.BACKGROUND_TYPES = [ "blood", "barrier_open" ];
 
 	/* display properties */
 	this.T = this.TILE_SIZE;
-	this.sc = 1 / 0.6; // scaling parameter
+	this.sc = this.SCALE; // scaling parameter
 	// effective drawing sizes of different entities
 	this.P = this.PLAYER_SIZE + 2;
 	this.E = this.ENTITY_SIZE + 2;
