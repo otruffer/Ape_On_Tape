@@ -40,7 +40,7 @@ function clearLog() {
 // Perform login: Ask user for name, and send message to socket.
 function login() {
 	var username = (window.localStorage && window.localStorage.username)
-			|| 'yourname';
+			|| window.localStorage.oldUsername || 'yourname';
 	if (!window.localStorage.username)
 		username = prompt('Choose a username', username);
 
@@ -354,10 +354,13 @@ function loadGraphics() {
 
 	// GAME-META
 	// initDesigner if all 3 images loaded
-	var c = new CallbackCountdown(3, initDesigner);
+	var c = new CallbackCountdown(6, initDesigner);
 	loadImage('ape_mask_hat', 'img/tiles/ape_mask_hat_32px.png', c.down);
 	loadImage('ape_mask_stripe', 'img/tiles/ape_mask_stripe_32px.png', c.down);
 	loadImage('ape_mask_base', 'img/tiles/ape_32px.png', c.down);
+	loadImage('hat_mask_hat', 'img/tiles/hat_mask_hat.png', c.down);
+	loadImage('hat_mask_stripe', 'img/tiles/hat_mask_stripe.png', c.down);
+	loadImage('hat_mask_base', 'img/tiles/hat_mask_base.png', c.down);
 }
 
 // preload images -> images can be accessed using imagePreload['name'].
