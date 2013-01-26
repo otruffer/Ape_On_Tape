@@ -163,13 +163,14 @@ function onMessage(incoming) {
 function connect() {
 	// clear out any cached content
 	clearLog();
-	pushStatus('connecting...');
+	var hash = pushStatus('connecting...');
 
 	// connect to socket
 	logText('* Connecting...');
 	ws = new WebSocket('ws://' + document.location.host + '/apesocket');
 	ws.onopen = function(e) {
 		logText('* Connected!');
+		popStatus(hash);
 		login();
 		roomSelection();
 		initGame();

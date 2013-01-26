@@ -78,15 +78,14 @@ function RenderingEngine() {
 	 * Loads a new map and starts the rendering process
 	 */
 	this.loadMap = function(mapPath) {
-		pushStatus('loading map...');
+		var hash = pushStatus('loading map...');
 		self.isDrawPause = true; // kill eventual outstanding drawings
 		self.map = new JsonMap(mapPath, function() {
 			self.prerenderMap();
 			self.cloudRendering = new CloudRendering(gameState.playerId, self);
 			self.isDrawPause = false; // ensure drawing is active
 			self.draw();
-			clearStatus();
-			// clearStatus(); //TODO: implement with id...
+			popStatus(hash);
 		})
 	}
 
