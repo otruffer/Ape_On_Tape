@@ -29,7 +29,7 @@
 }());
 // END -- requestAnimationFrame polyfill ---------------------------------------
 
-function RenderingEngine(tileSize, playerSize) {
+function RenderingEngine() {
 	var self = this; // assure callback to right element
 
 	/* Game server fixed properties */
@@ -67,23 +67,34 @@ function RenderingEngine(tileSize, playerSize) {
 	this.lastRender = new Date();
 	this.fpsUpdateDelta = 0;
 	this.fpsCounter = 0;
+	this.isDrawPause = false;
 
 	this.cloudRendering;
 
 	/* individual player renderings */
 	this.compositeTiles = {};
 
-	// load the map
-	pushStatus('loading map...');
-	this.map = new JsonMap(MAP_FILE, function() {
-		self.loadMap();
-		self.cloudRendering = new CloudRendering(gameState.playerId, self);
-		clearStatus();
-		self.draw();
-	});
+	/*
+	 * Loads a new map and starts the rendering process
+	 */
+	this.loadMap = function(mapPath) {
+		pushStatus('loading map...');
+		self.isDrawPause = true; // kill eventual outstanding drawings
+		self.map = new JsonMap(mapPath, function() {
+			self.prerenderMap();
+			self.cloudRendering = new CloudRendering(gameState.playerId, self);
+			self.isDrawPause = false; // ensure drawing is active
+			self.draw();
+			clearStatus();
+			// clearStatus(); //TODO: implement with id...
+		})
+	}
 
 	// main draw loop
 	this.draw = function() {
+		if (self.isDrawPause)
+			return;
+
 		// update state
 		var now = new Date();
 		self.fpsCounter++;
@@ -132,7 +143,7 @@ function RenderingEngine(tileSize, playerSize) {
 		// ctx.fillStyle = '#FFCC66';
 		// ctx.fillRect(0, 0, width, height);
 		if (!self.bgLoaded && !self.bgLoading) {
-			self.loadMap();
+			self.prerenderMap();
 		}
 	}
 
@@ -322,7 +333,7 @@ function RenderingEngine(tileSize, playerSize) {
 				- dy + offset, effectiveSize, effectiveSize);
 	}
 
-	this.loadMap = function() {
+	this.prerenderMap = function() {
 		self.bgLoading = true;
 		self.bgCanvas = self.map.generateCanvas(self.T, self.sc);
 		// update bounding box parameters
