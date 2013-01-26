@@ -193,14 +193,14 @@ public class Game {
 		EventHandler.getInstance().addEvent(new GameEvent(GameEvent.Type.SOUND, "win"));
 		EventHandler.getInstance().addEvent(new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, "Player "+p.getName()+" is the Winner of this round!", 3000));
 		/////TODO: FOR TESTING MAPCHANGE///
-		this.addFutureServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * 3, "map.json"));
+		this.addServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * 3, "map.json"));
 	}
 	
 	public void changeMap(String map){
 		this.loadMap(map);
 		this.movePlayersToStartingPosition();
 		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, mapName);
-		this.addServerEvent(new GameStartEvent(this, GameHandler.GAME_RATE * 3));
+		this.addFutureServerEvent(new GameStartEvent(this, GameHandler.GAME_RATE * 3));
 	}
 	
 	private void loadMap(String mapName){
@@ -208,6 +208,7 @@ public class Game {
 		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+mapName;
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
+		System.out.println("okaya!");
 		this.initEntities(mapInfo);
 
 	}
