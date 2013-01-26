@@ -43,6 +43,36 @@ function initRooms() {
 	}
 }
 
+function updateRoomList() {
+	initRooms();
+}
+
+function updatePlayerList() {
+	var list = $('#playerList ul');
+	list.empty();
+	for (i in gameState.players) {
+		var name = gameState.players[i].name + ": "
+				+ gameState.players[i].killCount + "/"
+				+ gameState.players[i].deathCount;
+		var li = $('<li>');
+		li.text(name);
+		list.append(li);
+	}
+}
+
+function createRoom() {
+	roomSelection();
+}
+
+function changeRoom() {
+	changeToRoom($(this).text());
+}
+
+function hideWaitInfo() {
+	$('#canvas-overlay').hide();
+}
+
+// IN-GAME MENU ----------------------------------------------------------------
 function initMenu() {
 	$('#menu-control').click(toggleMenu);
 	$('#tab_quit').click(toggleMenu);
@@ -86,46 +116,29 @@ function toggleMenu() {
 	}
 }
 
-function updateRoomList() {
-	initRooms();
-}
-
-function updatePlayerList() {
-	var list = $('#playerList ul');
-	list.empty();
-	for (i in gameState.players) {
-		var name = gameState.players[i].name + ": "
-				+ gameState.players[i].killCount + "/"
-				+ gameState.players[i].deathCount;
-		var li = $('<li>');
-		li.text(name);
-		list.append(li);
+// STATUS BOX -----------------------------------------------------------------
+String.prototype.hashCode = function() {
+	for ( var ret = 0, i = 0, len = this.length; i < len; i++) {
+		ret = (31 * ret + this.charCodeAt(i)) << 0;
 	}
-}
+	return ret;
+};
 
-function createRoom() {
-	roomSelection();
-}
-
-function changeRoom() {
-	changeToRoom($(this).text());
-}
-
-function hideWaitInfo() {
-	$('#canvas-overlay').hide();
-}
-
-var statusBoxText = new Array();
+var statusBoxText = {};
 function pushStatus(text) {
+	var hash = new Date().getTime();
+	statusBoxText[hash] = text;
 	$('#statusBox').show();
 	$('#statusText').text(text);
-	statusBoxText.push(text);
+	return hash;
 }
 
-function popStatus() {
-	statusBoxText.pop();
-	if (statusBoxText.length == 0) {
+function popStatus(hash) {
+	delete statusBoxText[hash];
+	if ($.isEmptyObject(statusBoxText)) {
 		$('#statusBox').hide();
+	} else {
+		//display last message
 	}
 }
 
@@ -134,6 +147,7 @@ function clearStatus() {
 	$('#statusBox').hide();
 }
 
+// DESIGNER --------------------------------------------------------------------
 function initDesigner() {
 	designer = new Designer();
 	designer.composeShape();

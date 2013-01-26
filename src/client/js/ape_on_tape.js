@@ -238,7 +238,7 @@ function initGame() {
 	c.width = width;
 	c.height = height;
 	gameState = new GameState();
-	renderEngine = new RenderingEngine(30, 20);
+	renderEngine = new RenderingEngine();
 	initBackgroundMusic();
 }
 
@@ -248,6 +248,10 @@ function handleEvents(events) {
 		switch (event.type) {
 		case 'SOUND':
 			handleSoundEvent(event.content);
+			break;
+		case 'MAPCHANGE':
+			renderEngine.loadMap('maps/' + event.content);
+			break;
 		}
 	}
 }
