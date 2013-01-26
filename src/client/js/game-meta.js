@@ -122,7 +122,6 @@ function toggleMenu() {
 	}
 }
 
-
 // STATUS BOX -----------------------------------------------------------------
 String.prototype.hashCode = function() {
 	for ( var ret = 0, i = 0, len = this.length; i < len; i++) {
@@ -131,7 +130,7 @@ String.prototype.hashCode = function() {
 	return ret;
 };
 
-var statusBoxText = {};
+statusBoxText = {};
 function pushStatus(text) {
 	var hash = new Date().getTime();
 	statusBoxText[hash] = text;
@@ -146,11 +145,17 @@ function popStatus(hash) {
 		$('#statusBox').hide();
 	} else {
 		// display last message
+		var lastElement = -1;
+		for ( var key in statusBoxText) {
+			if (key > lastElement)
+				lastElement = key;
+		}
+		$('#statusText').text(statusBoxText[key]);
 	}
 }
 
 function clearStatus() {
-	statusBoxText = new Array();
+	statusBoxText = {};
 	$('#statusBox').hide();
 }
 
