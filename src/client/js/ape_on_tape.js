@@ -264,6 +264,9 @@ function handleEvents(events) {
 		case 'MAPCHANGE':
 			renderEngine.loadMap('maps/' + event.content);
 			break;
+		case 'PUSH_MESSAGE':
+			pushStatusTimed(event.content, event.duration, event.fadeTime);
+			break;
 		}
 	}
 }

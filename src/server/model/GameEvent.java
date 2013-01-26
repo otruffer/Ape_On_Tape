@@ -6,8 +6,8 @@ public class GameEvent {
 		this.content = content;
 	}
 
-	enum Type {
-		SOUND, FINISH, MAPCHANGE
+	public enum Type {
+		SOUND, FINISH, MAPCHANGE, PUSH_MESSAGE
 	}
 
 	Type type;
