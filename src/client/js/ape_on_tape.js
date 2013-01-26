@@ -71,7 +71,7 @@ function roomSelection() {
 function newRoomPrompt() {
 	var defaultRoom = 'new room';
 	var room = prompt('Choose room name', defaultRoom);
-	
+
 	if (room) {
 		if (window.localStorage) { // store in browser localStorage, so we
 			// remember next next
@@ -136,7 +136,7 @@ function onMessage(incoming) {
 	case 'INIT_GAME':
 		gameState.map = incoming.map;
 		gameState.playerId = incoming.playerId;
-		renderEngine.bgLoaded = false;
+		renderEngine.loadMap('maps/' + gameState.map);
 		if (designer) {
 			designer.composeShape();
 		}
