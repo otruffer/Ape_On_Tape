@@ -24,6 +24,7 @@ public class Game {
 	private volatile Map<Integer, Player> players;
 	private volatile Map<Integer, Entity> entities;
 	TileMap map;
+	protected String mapName;
 	int width, height; // TODO: unused? (also in constructor)
 	private Collection<CollisionListener> collisionListeners;
 	
@@ -38,11 +39,8 @@ public class Game {
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
 		this.height = height;
-		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+ApeProperties.getProperty("startMap");
-		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
-		this.map = new TileMap(mapInfo);
-		this.initEntities(mapInfo);
-		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, ApeProperties.getProperty("startMap"));
+		
+		this.loadMap(ApeProperties.getProperty("startMap"));
 	}
 
 	private void initEntities(MapInfo mapInfo) {
@@ -181,12 +179,18 @@ public class Game {
 	}
 	
 	public void changeMap(String map){
+		this.loadMap(map);
+		this.movePlayersToStartingPosition();
+		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, mapName);
+	}
+	
+	private void loadMap(String mapName){
+		this.mapName = mapName;
 		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+map;
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
 		this.initEntities(mapInfo);
-		this.movePlayersToStartingPosition();
-		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, map);
+
 	}
 	
 	public void movePlayersToStartingPosition(){
@@ -197,6 +201,10 @@ public class Game {
 			player.setY(start[1]);
 			i++;
 		}
+	}
+	
+	public String getMapName(){
+		return this.mapName;
 	}
 
 }

@@ -47,7 +47,7 @@ public class GameServer extends BaseWebSocketHandler {
 		String username;
 		String message;
 		Map<Integer, Entity> entities;
-		int[][] map;
+		String map;
 		int playerId;
 		String[] rooms;
 		String newRoom;
@@ -118,7 +118,7 @@ public class GameServer extends BaseWebSocketHandler {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.JOIN;
 		outgoing.username = user;
-		this.sendGameInfo(findConnection(id), gameHandler.getGameMap(roomJoin));
+		this.sendGameInfo(findConnection(id), gameHandler.getGameRoom(roomJoin).getMapName());
 		broadcast(outgoing, receipants);
 	}
 
@@ -156,11 +156,11 @@ public class GameServer extends BaseWebSocketHandler {
 		broadcast(outgoing, entities.keySet());
 	}
 
-	public void sendGameInfo(WebSocketConnection connection, int[][] map) {
+	public void sendGameInfo(WebSocketConnection connection, String mapName) {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.INIT_GAME;
 		outgoing.playerId = (Integer) connection.data().get(ID_KEY);
-		outgoing.map = map;
+		outgoing.map = mapName;
 		String jsonStr = this.json.toJson(outgoing);
 		connection.send(jsonStr);
 	}
