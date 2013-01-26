@@ -11,7 +11,6 @@ body {
 	font-family: 'Finger Paint';
 	color: black;
 	font-size: 24px;
-	text-shadow: 2px 0px rgba(255, 255, 255, 0.5);
 	height: 40px;
 	line-height: 40px;
 	position: relative;
@@ -41,18 +40,15 @@ body {
 }
 
 #title {
-	
+	color: #888;
+	text-shadow: 2px 0px rgba(255, 255, 255, 0.5);
 }
 
-#playerName {
-	color: #f60;
+#playerName .name,#gameRoom .name {
+	color: #a40; /* or #082 or #f60 */
 }
 
-#gameRoom {
-	color: #082;
-}
-
-#gameRoom .description {
+#playerName .description,#gameRoom .description {
 	font-family: 'Marcellus';
 	text-shadow: none;
 	color: black;
@@ -84,14 +80,14 @@ body {
 	z-index: 1;
 }
 
-#canvas-overlay, #menu-overlay {
+#canvas-overlay,#menu-overlay {
 	background-color: rgba(0, 0, 0, 0.5);
 	height: 100%;
 	width: 100%;
 	position: fixed;
 	top: 0;
 	left: 0;
-	z-index: 2;
+	z-index: 3;
 }
 
 #canvas-lightbox {
@@ -132,8 +128,8 @@ body {
 	z-index: 2;
 }
 
-#roomList h3,#playerList h3 {
-	margin: 0.25em 0;
+#m_rooms h3,#playerList h3 {
+	margin: 0.5em 0 1em 0;
 }
 
 #roomList ul,#playerList ul {
@@ -251,4 +247,20 @@ body {
 	border: 5px inset #3FA8B1;
 	border-bottom-left-radius: 20px;
 	padding: 0 5px 0 5px;
+}
+
+#m_rooms .playerName,#m_rooms .playerName-title {
+	display: inline-block;
+	margin: 1em 0;
+}
+
+#m_rooms .playerName {
+	cursor: pointer;
+	font-weight: normal;
+	color: lightblue;
+}
+
+#m_rooms .playerName .playerName-changeInfo {
+	color: #bbb;
+	font-style: italic;
 }
