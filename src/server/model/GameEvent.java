@@ -1,12 +1,13 @@
 package server.model;
 
 public class GameEvent {
-	public GameEvent(Type type) {
+	public GameEvent(Type type, String content) {
 		this.type = type;
+		this.content = content;
 	}
 
 	enum Type {
-		SOUND, FINISH
+		SOUND, FINISH, MAPCHANGE
 	}
 
 	Type type;

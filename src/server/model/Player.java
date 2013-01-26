@@ -25,12 +25,15 @@ public class Player extends Entity {
 
 	@noGson
 	private boolean isSlow;
+	
+	protected int points;
 
 	public Player(int id, float x, float y, String name) {
 		super(id, x, y);
 		this.name = name;
 		this.collisionResolving = true;
 		this.type = "player";
+		this.points = 0;
 		this.isWinner = false;
 		this.setDeadlyForPlayer(false);
 	}
@@ -62,8 +65,6 @@ public class Player extends Entity {
 			return;
 		}
 
-		this.deathCount++;
-		bullet.getOwner().incrementKillCount();
 		if (bullet.getOwner().isDeadlyForPlayer())
 			respawn(game);
 		else
@@ -115,9 +116,11 @@ public class Player extends Entity {
 	}
 
 	public void win() {
-		this.collisionResolving = false;
-		this.isWinner = true;
-		this.tileCollision = false;
+		this.addPoints(3);
+	}
+	
+	public void addPoints(int points){
+		points += points;
 	}
 
 	public boolean isWinner() {

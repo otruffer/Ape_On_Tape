@@ -2,6 +2,7 @@ package server.model;
 
 public class Barrier extends Entity {
 
+	@SuppressWarnings("unused") //is used on client side.
 	private boolean open;
 
 	public Barrier(float x, float y) {

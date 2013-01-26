@@ -32,8 +32,6 @@ public abstract class Entity {
 	protected boolean collisionResolving = false;
 	@noGson
 	private boolean collisionState;
-	protected int killCount = 0;
-	protected int deathCount = 0;
 
 	@noGson
 	protected boolean tileCollision;
@@ -191,10 +189,6 @@ public abstract class Entity {
 
 	public String getType() {
 		return this.type;
-	}
-
-	public void incrementKillCount() {
-		this.killCount++;
 	}
 
 	protected float euclideanLength(float x, float y) {

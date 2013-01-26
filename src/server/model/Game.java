@@ -26,7 +26,7 @@ public class Game {
 	TileMap map;
 	int width, height; // TODO: unused? (also in constructor)
 	private Collection<CollisionListener> collisionListeners;
-	private Set<String> soundEvents;
+	
 	/**
 	 * True if game has already started, false if waiting for
 	 * <code>start()</code> signal
@@ -35,18 +35,18 @@ public class Game {
 
 	public Game(int width, int height) {
 		this.players = new HashMap<Integer, Player>();
-		this.entities = new HashMap<Integer, Entity>();
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
 		this.height = height;
-		this.soundEvents = new HashSet<String>();
 		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+ApeProperties.getProperty("startMap");
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
 		this.initEntities(mapInfo);
+		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, ApeProperties.getProperty("startMap"));
 	}
 
 	private void initEntities(MapInfo mapInfo) {
+		this.entities = new HashMap<Integer, Entity>();
 		for (Entity e : mapInfo.createEntities(this.getMap()))
 			this.addEntity(e);
 	}
@@ -161,22 +161,12 @@ public class Game {
 	}
 
 	public GameEvent[] popEvents() {
-		Collection<GameEvent> result = new ArrayList<GameEvent>();
-		for (String soundEvent : this.soundEvents) {
-			GameEvent event = new GameEvent(GameEvent.Type.SOUND);
-			event.content = soundEvent;
-			result.add(event);
-		}
-		this.soundEvents.clear();
+		Collection<GameEvent> result = new ArrayList<GameEvent>(EventHandler.getInstance().popEvents());
 		return result.toArray(new GameEvent[0]);
 	}
 
 	public void playerHit(Player player) {
-		this.playSound("kill");
-	}
-	
-	public void playSound(String sound){
-		this.soundEvents.add(sound);
+		EventHandler.getInstance().addEvent(new GameEvent(GameEvent.Type.SOUND, "kill"));
 	}
 
 	public boolean isRunning() {
@@ -185,7 +175,28 @@ public class Game {
 
 	public void playerFinished(Player p) {
 		p.win();
-		this.soundEvents.add("win");
+		EventHandler.getInstance().addEvent(new GameEvent(GameEvent.Type.SOUND, "win"));
+		/////TODO: FOR TESTING MAPCHANGE///
+		this.changeMap("map.json");
+	}
+	
+	public void changeMap(String map){
+		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+map;
+		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
+		this.map = new TileMap(mapInfo);
+		this.initEntities(mapInfo);
+		this.movePlayersToStartingPosition();
+		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, map);
+	}
+	
+	public void movePlayersToStartingPosition(){
+		int i = 0 ;
+		float[] start = this.map.getFirstTileXY(PositionType.PlayerStart);
+		for(Player player : this.getPlayersList()){
+			player.setX(start[0]+i);
+			player.setY(start[1]);
+			i++;
+		}
 	}
 
 }

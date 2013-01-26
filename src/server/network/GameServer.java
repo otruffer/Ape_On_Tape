@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 public class GameServer extends BaseWebSocketHandler {
 
 	Gson json = new GsonBuilder().setExclusionStrategies(
-			new GsonExclusionStrategy(String.class)).create();
+			new GsonExclusionStrategy()).create();
 	public static final String ID_KEY = "id";
 	public GameHandler gameHandler;
 
