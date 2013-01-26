@@ -146,18 +146,31 @@ String.prototype.hashCode = function() {
 };
 
 statusBoxText = {};
-function pushStatus(text) {
+function pushStatus(text, fadeDuration) {
 	var hash = new Date().getTime();
 	statusBoxText[hash] = text;
-	$('#statusBox').show();
+	if (fadeDuration === undefined)
+		$('#statusBox').show();
+	else
+		$('#statusBox').fadeIn(fadeDuration);
 	$('#statusText').text(text);
 	return hash;
 }
 
-function popStatus(hash) {
+function pushStatusTimed(text, duration, fadeDuration) {
+	var hash = pushStatus(text, fadeDuration);
+	setTimeout(function() {
+		popStatus(hash, fadeDuration);
+	}, duration);
+}
+
+function popStatus(hash, fadeDuration) {
 	delete statusBoxText[hash];
 	if ($.isEmptyObject(statusBoxText)) {
-		$('#statusBox').hide();
+		if (fadeDuration === undefined)
+			$('#statusBox').hide();
+		else
+			$('#statusBox').fadeOut(fadeDuration);
 	} else {
 		// display last message
 		var lastElement = -1;

@@ -177,9 +177,6 @@ public class GameHandler implements Runnable {
 		gameServer.sendPlayerColors(colors, playersInRoom);
 	}
 
-	public int[][] getGameMap(String roomName) {
-		return Util.getArrayFromMap(games.get(roomName).getMap());
-	}
 
 	public void playerDisconnected(int id) {
 		gameServer.sendDisconnectMessage(id, playerNames.get(id),
@@ -243,5 +240,9 @@ public class GameHandler implements Runnable {
 
 	public static String getWebRoot() {
 		return webRoot;
+	}
+
+	public Game getGameRoom(String roomName) {
+		return games.get(roomName);
 	}
 }
