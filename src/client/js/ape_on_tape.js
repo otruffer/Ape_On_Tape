@@ -149,6 +149,7 @@ function onMessage(incoming) {
 		window.localStorage.room = incoming.newRoom;
 		updateRoomInfo();
 		updateRoomList();
+		closeMenu();
 		break;
 	case 'COLOR':
 		if (!renderEngine)

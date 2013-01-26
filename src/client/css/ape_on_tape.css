@@ -36,7 +36,11 @@ body {
 
 #header div {
 	display: inline-block;
-	margin: 0 2em;
+	margin: 0 1.5em;
+}
+
+#header .shortcut-info {
+	opacity: 0.5;
 }
 
 #title {
