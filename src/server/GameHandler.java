@@ -20,6 +20,7 @@ import org.webbitserver.handler.StaticFileHandler;
 import server.listeners.RealCollisionListener;
 import server.model.Game;
 import server.model.Player;
+import server.model.ServerEvents.GameStartEvent;
 import server.network.GameServer;
 import server.properties.ApeProperties;
 import server.util.Util;
@@ -27,8 +28,8 @@ import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
 
-	final int GAME_RATE = 30;
-	final int SYNC_RATE = 30;
+	public final static int GAME_RATE = 30;
+	public final static int SYNC_RATE = 30;
 	final static int WEB_SERVER_PORT = 9876;
 	static String webRoot = "/var/www/Ape_On_Tape/";
 	private static final int PLAYERS_PER_GAME = Integer.parseInt(ApeProperties
@@ -140,8 +141,9 @@ public class GameHandler implements Runnable {
 	}
 
 	private void updateGame(Game game) {
-		if (!game.isRunning() && game.getPlayers().size() >= PLAYERS_PER_GAME) {
-			game.start();
+		if (!game.isStarted() && game.getPlayers().size() >= PLAYERS_PER_GAME) {
+			game.addServerEvent(new GameStartEvent(game, GAME_RATE * 3));
+			game.setStarted(true);
 		}
 
 		for (int id : new LinkedList<Integer>(keysPressed.keySet())) {

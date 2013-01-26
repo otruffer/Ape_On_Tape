@@ -118,12 +118,15 @@ body {
 #playerList {
 	background-color: rgba(0, 0, 0, 0.2);
 	padding: 4px;
-	width: 200px;
-	position: absolute;
+	min-width: 200px;
 	right: 0;
-	height: 590px;
-	overflow-y: scroll;
+	height: 592px;
+	overflow-y: auto;
 	z-index: 2;
+}
+
+#playerList .picto {
+	margin-right: 0.5em;
 }
 
 #roomList {

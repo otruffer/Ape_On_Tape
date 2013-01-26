@@ -13,6 +13,9 @@ import java.util.Set;
 import server.GameHandler;
 import server.listeners.CollisionListener;
 import server.listeners.PlayerMoveListener;
+import server.model.ServerEvents.GameStartEvent;
+import server.model.ServerEvents.MapChangeEvent;
+import server.model.ServerEvents.ServerEvent;
 import server.model.map.MapInfo;
 import server.model.map.PositionType;
 import server.model.map.TileMap;
@@ -23,10 +26,14 @@ public class Game {
 	// store players separatly.
 	private volatile Map<Integer, Player> players;
 	private volatile Map<Integer, Entity> entities;
+	private List<ServerEvent> serverEvents;
+	private List<ServerEvent> removeServerEvents;
+	private List<ServerEvent> addServerEvents;
 	TileMap map;
 	protected String mapName;
 	int width, height; // TODO: unused? (also in constructor)
 	private Collection<CollisionListener> collisionListeners;
+	private boolean started;
 	
 	/**
 	 * True if game has already started, false if waiting for
@@ -39,6 +46,8 @@ public class Game {
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
 		this.height = height;
+		this.started = false;
+		this.serverEvents = new LinkedList<ServerEvent>();
 		
 		this.loadMap(ApeProperties.getProperty("startMap"));
 	}
@@ -98,6 +107,14 @@ public class Game {
 	public void update() {
 		for (Entity entity : this.getAllEntites())
 			entity.brain(this);
+		removeServerEvents = new LinkedList<ServerEvent>();
+		addServerEvents = new LinkedList<ServerEvent>();
+
+		for(ServerEvent event: this.serverEvents)
+			event.work();
+		
+		this.serverEvents.removeAll(removeServerEvents);
+		this.serverEvents.addAll(addServerEvents);
 	}
 
 	public boolean hasPlayerWithId(int id) {
@@ -174,14 +191,16 @@ public class Game {
 	public void playerFinished(Player p) {
 		p.win();
 		EventHandler.getInstance().addEvent(new GameEvent(GameEvent.Type.SOUND, "win"));
+		EventHandler.getInstance().addEvent(new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, "Player "+p.getName()+" is the Winner of this round!", 3000));
 		/////TODO: FOR TESTING MAPCHANGE///
-		this.changeMap("map.json");
+		this.addServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * 3, "map.json"));
 	}
 	
 	public void changeMap(String map){
 		this.loadMap(map);
 		this.movePlayersToStartingPosition();
 		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, mapName);
+		this.addFutureServerEvent(new GameStartEvent(this, GameHandler.GAME_RATE * 3));
 	}
 	
 	private void loadMap(String mapName){
@@ -189,6 +208,7 @@ public class Game {
 		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+mapName;
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
+		System.out.println("okaya!");
 		this.initEntities(mapInfo);
 
 	}
@@ -199,6 +219,7 @@ public class Game {
 		for(Player player : this.getPlayersList()){
 			player.setX(start[0]+i);
 			player.setY(start[1]);
+			player.setWinner(false);
 			i++;
 		}
 	}
@@ -206,5 +227,27 @@ public class Game {
 	public String getMapName(){
 		return this.mapName;
 	}
+
+	public void removeServerEvent(ServerEvent serverEvent) {
+		this.removeServerEvents.add(serverEvent);
+	}
+	
+	public void addFutureServerEvent(ServerEvent serverEvent) {
+		this.addServerEvents.add(serverEvent);
+	}
+	
+	public void addServerEvent(ServerEvent event){
+		this.serverEvents.add(event);
+	}
+
+	public boolean isStarted() {
+		return started;
+	}
+
+	public void setStarted(boolean started) {
+		this.started = started;
+	}
+	
+	
 
 }

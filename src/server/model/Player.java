@@ -116,6 +116,7 @@ public class Player extends Entity {
 	}
 
 	public void win() {
+		this.isWinner = true;
 		this.addPoints(3);
 	}
 	
@@ -126,4 +127,18 @@ public class Player extends Entity {
 	public boolean isWinner() {
 		return this.isWinner;
 	}
+
+	public void setWinner(boolean winner) {
+		this.isWinner = false;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
 }
