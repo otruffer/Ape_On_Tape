@@ -7,12 +7,11 @@ function initGameMeta() {
 }
 
 function initHeader() {
-	if (loginReady && roomChosen) {
+	if (loginReady)
 		$('#playerName').text(window.localStorage.username);
+	if (roomChosen)
 		$('#gameRoom .name').text(window.localStorage.room);
-	} else {
-		setTimeout('initHeader()', 200);
-	}
+
 }
 
 function updateRoomInfo() {
@@ -45,6 +44,7 @@ function initRooms() {
 
 function initMenu() {
 	$('#menu-control').click(toggleMenu);
+	$('#menu-overlay').click(toggleMenu);
 	$('#tab_quit').click(toggleMenu);
 
 	// specify tabs
@@ -80,9 +80,15 @@ function toggleMenu() {
 	if ($('#menu').css('display') == 'none') {
 		$('#menu').show();
 		$('#menu-control').addClass('selected');
+		$('#menu-overlay').show();
 	} else {
+		if (!window.localStorage.room) {
+			alert('Select a room first!')
+			return;
+		}
 		$('#menu').hide();
 		$('#menu-control').removeClass('selected');
+		$('#menu-overlay').hide();
 	}
 }
 

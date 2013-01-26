@@ -84,7 +84,7 @@ body {
 	z-index: 1;
 }
 
-#canvas-overlay {
+#canvas-overlay, #menu-overlay {
 	background-color: rgba(0, 0, 0, 0.5);
 	height: 100%;
 	width: 100%;
@@ -205,6 +205,7 @@ body {
 	padding: 20px;
 	font-size: 80%;
 	box-shadow: inset 0 0 2px 10px rgba(230, 230, 230, .9);
+	z-index: 10;
 }
 
 #menu ul.menu_tabs {

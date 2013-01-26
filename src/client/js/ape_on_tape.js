@@ -58,11 +58,12 @@ function login() {
 	}
 
 	loginReady = true;
+	initHeader();
 }
 
 function roomSelection() {
 	// delete room and go to lobby
-	window.localStorage.room = null;
+	delete window.localStorage.room;
 	if ($('#menu').is(':hidden'))
 		toggleMenu();
 }
@@ -85,6 +86,7 @@ function newRoomPrompt() {
 	}
 
 	roomChosen = true;
+	initHeader();
 }
 
 function changeToRoom(roomName) {
