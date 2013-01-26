@@ -186,7 +186,7 @@ public class Game {
 	
 	private void loadMap(String mapName){
 		this.mapName = mapName;
-		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+map;
+		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+mapName;
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
 		this.initEntities(mapInfo);
