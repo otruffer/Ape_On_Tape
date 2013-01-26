@@ -138,7 +138,7 @@ function popStatus(hash) {
 	if ($.isEmptyObject(statusBoxText)) {
 		$('#statusBox').hide();
 	} else {
-		//display last message
+		// display last message
 	}
 }
 
