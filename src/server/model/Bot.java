@@ -1,6 +1,5 @@
 package server.model;
 
-import java.awt.Point;
 import java.util.Collection;
 import java.util.List;
 
@@ -73,8 +72,7 @@ public class Bot extends Entity {
 		if (bullet.getOwner() instanceof Bot || bullet.getOwner().equals(this)) {
 			return;
 		}
-		game.playSound("kill");
-		bullet.getOwner().incrementKillCount();
+		EventHandler.getInstance().addEvent(new GameEvent(GameEvent.Type.SOUND, "kill"));
 
 		this.hitCount++;
 		this.speed /= 2;

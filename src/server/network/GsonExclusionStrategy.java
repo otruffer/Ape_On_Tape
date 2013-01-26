@@ -10,11 +10,6 @@ import com.google.gson.FieldAttributes;
 
 
 public class GsonExclusionStrategy implements ExclusionStrategy {
-    private final Class<?> typeToSkip;
-
-    public GsonExclusionStrategy(Class<?> typeToSkip) {
-      this.typeToSkip = typeToSkip;
-    }
 
     public boolean shouldSkipClass(Class<?> clazz) {
       return false;
