@@ -42,6 +42,7 @@ public class Game {
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
 		this.initEntities(mapInfo);
+		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, ApeProperties.getProperty("startMap"));
 	}
 
 	private void initEntities(MapInfo mapInfo) {
