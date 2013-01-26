@@ -54,7 +54,10 @@ function updatePlayerList() {
 				+ gameState.players[i].killCount + "/"
 				+ gameState.players[i].deathCount;
 		var li = $('<li>');
-		li.text(name);
+		li.append(tilePreload['playersPicto'][gameState.players[i].id]);
+		$(tilePreload['playersPicto'][gameState.players[i].id]).addClass(
+				'picto');
+		li.append(name);
 		list.append(li);
 	}
 }
