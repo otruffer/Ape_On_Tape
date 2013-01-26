@@ -2,13 +2,16 @@ $(document).ready(initGameMeta);
 
 function initGameMeta() {
 	initHeader();
+	initNameChange();
 	initRooms();
 	initMenu();
 }
 
 function initHeader() {
-	if (loginReady)
-		$('#playerName').text(window.localStorage.username);
+	if (loginReady) {
+		$('#playerName .name').text(window.localStorage.username);
+		$('#menu .playerName .playerName-value').text(window.localStorage.username);
+	}
 	if (roomChosen)
 		$('#gameRoom .name').text(window.localStorage.room);
 
@@ -16,6 +19,18 @@ function initHeader() {
 
 function updateRoomInfo() {
 	$('#gameRoom .name').text(window.localStorage.room);
+}
+
+function initNameChange() {
+	$('#m_rooms .playerName').click(nameChange);
+}
+
+function nameChange() {
+	if (confirm("Warning: Changing username will remove you from the current game.")) {
+		window.localStorage.oldUsername = window.localStorage.username;
+		delete window.localStorage.username;
+		login();
+	}
 }
 
 function initRooms() {

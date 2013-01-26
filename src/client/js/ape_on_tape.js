@@ -40,7 +40,7 @@ function clearLog() {
 // Perform login: Ask user for name, and send message to socket.
 function login() {
 	var username = (window.localStorage && window.localStorage.username)
-			|| 'yourname';
+			|| window.localStorage.oldUsername || 'yourname';
 	if (!window.localStorage.username)
 		username = prompt('Choose a username', username);
 
