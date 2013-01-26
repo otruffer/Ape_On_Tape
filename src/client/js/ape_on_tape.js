@@ -302,11 +302,9 @@ function toggleBackgroundMusic() {
 	if (!bgMusicPlaying) {
 		backgroundMusic.play();
 		control.addClass('selected');
-		control.text('Stop Music');
 	} else {
 		backgroundMusic.pause();
 		control.removeClass('selected');
-		control.text('Play Music');
 	}
 	bgMusicPlaying = !bgMusicPlaying;
 }
