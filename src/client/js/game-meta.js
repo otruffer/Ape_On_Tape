@@ -104,7 +104,7 @@ function updatePlayerList() {
 }
 
 function createRoom() {
-	roomSelection();
+	newRoomPrompt();
 }
 
 function changeRoom() {

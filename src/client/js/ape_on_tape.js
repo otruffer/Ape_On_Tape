@@ -39,9 +39,11 @@ function clearLog() {
 
 // Perform login: Ask user for name, and send message to socket.
 function login() {
-	var defaultUsername = (window.localStorage && window.localStorage.username)
+	var username = (window.localStorage && window.localStorage.username)
 			|| 'yourname';
-	var username = prompt('Choose a username', defaultUsername);
+	if (!window.localStorage.username)
+		username = prompt('Choose a username', username);
+
 	if (username) {
 		if (window.localStorage) { // store in browser localStorage, so we
 			// remember next next
@@ -59,9 +61,16 @@ function login() {
 }
 
 function roomSelection() {
-	var defaultRoom = (window.localStorage && window.localStorage.room)
-			|| 'soup';
-	var room = prompt('Choose game room', defaultRoom);
+	// delete room and go to lobby
+	window.localStorage.room = null;
+	if ($('#menu').is(':hidden'))
+		toggleMenu();
+}
+
+function newRoomPrompt() {
+	var defaultRoom = 'new room';
+	var room = prompt('Choose room name', defaultRoom);
+	
 	if (room) {
 		if (window.localStorage) { // store in browser localStorage, so we
 			// remember next next
