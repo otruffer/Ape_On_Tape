@@ -18,7 +18,7 @@ public class GameStartEvent extends ServerEvent {
 		super.work();
 		if((counter-1) % GameHandler.GAME_RATE == 0){
 			int seconds = duration /GameHandler.GAME_RATE - (counter -1) / GameHandler.GAME_RATE; 
-			EventHandler.getInstance().addEvent(new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, "Game starts in "+ seconds+" seconds!", 1100));
+			EventHandler.getInstance().addEvent(new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, "Game starts in "+ seconds+" seconds!", 1200));
 		}
 	}
 

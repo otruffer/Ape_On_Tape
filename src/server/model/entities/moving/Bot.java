@@ -14,7 +14,7 @@ public class Bot extends Entity {
 
 	@noGson
 	protected float lastDX = 0, lastDY = 0;
-	private float lastX, lastY;
+	private float lastX, lastY, homeX, homeY;
 	private int hitCount;
 	/**
 	 * Number of hits until death/respawn.
@@ -26,6 +26,8 @@ public class Bot extends Entity {
 		super(id, x, y);
 		this.lastX = x;
 		this.lastY = y;
+		this.homeX = x;
+		this.homeY = y;
 		this.type = "bot";
 		this.collisionResolving = true;
 		this.speed *= 0.75;
@@ -93,8 +95,7 @@ public class Bot extends Entity {
 	}
 
 	protected void jumpHome(Game game) {
-		float xy[] = game.getMap().getFirstTileXY(PositionType.Bot);
-		jumpTo(xy[0], xy[1]);
+		jumpTo(homeX, homeY);
 	}
 
 	protected void jumpTo(float x, float y) {

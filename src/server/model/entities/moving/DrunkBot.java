@@ -74,10 +74,5 @@ public class DrunkBot extends Bot {
 	// .random() * RANDOMNESS - RANDOMNESS / 2));
 	// }
 
-	@Override
-	protected void jumpHome(Game game) {
-		float xy[] = game.getMap().getFirstTileXY(PositionType.DrunkBot);
-		jumpTo(xy[0], xy[1]);
-	}
 
 }

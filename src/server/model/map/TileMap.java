@@ -43,11 +43,16 @@ public class TileMap {
 
 	public Tile getTileXY(float x, float y) {
 		Tile tile;
+		// because -0.1 wont go to -1 but to 0.
+		if(x < 0 || y < 0)
+			return new Tile(this, (int) (x / tileWidth),
+					(int) (y / tileHeight), false);
 		try {
 			tile = tileMap[(int) (y / tileHeight)][(int) (x / tileWidth)];
 		} catch (IndexOutOfBoundsException e) {
 			tile = new Tile(this, (int) (x / tileWidth),
 					(int) (y / tileHeight), false);
+			System.out.println("jetzt.");
 		}
 		return tile;
 	}

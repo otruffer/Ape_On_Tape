@@ -54,10 +54,4 @@ public class AggroBot extends Bot {
 	private float abs(float f) {
 		return f < 0 ? -f : f;
 	}
-
-	@Override
-	protected void jumpHome(Game game) {
-		float xy[] = game.getMap().getFirstTileXY(PositionType.AggroBot);
-		jumpTo(xy[0], xy[1]);
-	}
 }
