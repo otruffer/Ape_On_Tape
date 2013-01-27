@@ -30,7 +30,7 @@ public class Player extends Entity {
 	private boolean isSlow;
 	
 	protected int points;
-
+	
 	public Player(int id, float x, float y, String name) {
 		super(id, x, y);
 		this.name = name;
@@ -120,11 +120,12 @@ public class Player extends Entity {
 
 	public void win() {
 		this.isWinner = true;
-		this.addPoints(3);
+		this.collisionResolving = false;
+		this.setTileCollision(false);
 	}
 	
 	public void addPoints(int points){
-		points += points;
+		this.points += points;
 	}
 
 	public boolean isWinner() {
@@ -141,6 +142,12 @@ public class Player extends Entity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void unwin() {
+		this.isWinner = false;
+		this.collisionResolving = true;
+		this.setTileCollision(true);		
 	}
 	
 	

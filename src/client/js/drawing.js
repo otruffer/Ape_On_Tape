@@ -244,6 +244,9 @@ function RenderingEngine() {
 		} else {
 			pCanvas = tilePreload['ape'][Anim.getWalkingIndex(player)];
 		}
+		
+		if(player.isWinner)
+			return;
 
 		if (isself) {
 			ctx.drawImage(pCanvas, self.mainPlayer.x + offset,

@@ -13,6 +13,7 @@ import server.listeners.CollisionListener;
 import server.listeners.PlayerMoveListener;
 import server.model.ServerEvents.GameStartEvent;
 import server.model.ServerEvents.MapChangeEvent;
+import server.model.ServerEvents.RoundEndEvent;
 import server.model.ServerEvents.ServerEvent;
 import server.model.entities.Barrier;
 import server.model.entities.Entity;
@@ -30,8 +31,17 @@ public class Game {
 	private List<ServerEvent> serverEvents;
 	private List<ServerEvent> removeServerEvents;
 	private List<ServerEvent> addServerEvents;
+	private Map<Player, Integer> winners;
 	private static final int MAP_COUNT_DOWN = Integer.parseInt(ApeProperties
 			.getProperty("firstMapCountDown"));
+	private static final int WAIT_AFTER_WIN = Integer.parseInt(ApeProperties
+			.getProperty("waitAfterWin"));
+	private static final int WAIT_AFTER_END_ROUND = Integer.parseInt(ApeProperties
+			.getProperty("waitAfterEndRound"));
+	private static final int FIRST_WINNER_POINTS = Integer.parseInt(ApeProperties
+			.getProperty("firstWinnerPoints"));
+	private static final int LATER_WINNER_POINTS = Integer.parseInt(ApeProperties
+			.getProperty("laterWinnerPoints"));
 	TileMap map;
 	protected String mapName;
 	int width, height; // TODO: unused? (also in constructor)
@@ -50,6 +60,7 @@ public class Game {
 		this.width = width;
 		this.height = height;
 		this.started = false;
+		this.winners = new HashMap<Player, Integer>();
 		this.serverEvents = new LinkedList<ServerEvent>();
 
 		this.loadMap(ApeProperties.getProperty("startMap"));
@@ -193,15 +204,34 @@ public class Game {
 		return running;
 	}
 
-	public void playerFinished(Player p) {
-		p.win();
+	public void playerFinished(Player player) {
+		player.win();
 		EventHandler.getInstance().addEvent(
 				new GameEvent(GameEvent.Type.SOUND, "win"));
+		if(winners.isEmpty()){
+			EventHandler.getInstance().addEvent(
+					new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, "Hurry up! "+WAIT_AFTER_WIN+" Seconds left!", 2 * 1000));
+			this.addServerEvent(new RoundEndEvent(this, WAIT_AFTER_WIN * GameHandler.GAME_RATE));
+			player.addPoints(FIRST_WINNER_POINTS);
+			winners.put(player, FIRST_WINNER_POINTS);
+		}else{
+			player.addPoints(LATER_WINNER_POINTS);
+			winners.put(player, LATER_WINNER_POINTS);
+		}
+			
+	}
+	
+	public void finishRound(){
+		List<Player> winners = new LinkedList<Player>(this.winners.keySet());
+		String message = "Winners of this round:";
+		for(Player winner : winners){
+			message += "&nbsp;&nbsp;<br>"+winner.getName()+" : "+this.winners.get(winner);
+		}
+		this.winners.clear();
 		EventHandler.getInstance().addEvent(
-				new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, "Player "
-						+ p.getName() + " is the Winner of this round!", 3000));
+				new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, message, WAIT_AFTER_END_ROUND * 1000));
 		// ///TODO: FOR TESTING MAPCHANGE///
-		this.addServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * 3,
+		this.addFutureServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * WAIT_AFTER_END_ROUND,
 				"map.json"));
 	}
 
@@ -229,8 +259,8 @@ public class Game {
 		for (Player player : this.getPlayersList()) {
 			player.setX(start[0] + i);
 			player.setY(start[1]);
-			player.setWinner(false);
 			i++;
+			player.unwin();
 		}
 	}
 
@@ -242,6 +272,10 @@ public class Game {
 		this.removeServerEvents.add(serverEvent);
 	}
 
+	/**
+	 * This is used if you want to add an event within a server event. It will be added at the end of the iteration over the events. So we don't get a concurrentModificationException
+	 * @param serverEvent
+	 */
 	public void addFutureServerEvent(ServerEvent serverEvent) {
 		this.addServerEvents.add(serverEvent);
 	}
