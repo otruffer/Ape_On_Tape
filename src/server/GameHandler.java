@@ -34,8 +34,8 @@ public class GameHandler implements Runnable {
 	static String webRoot = "/var/www/Ape_On_Tape/";
 	private static final int PLAYERS_PER_GAME = Integer.parseInt(ApeProperties
 			.getProperty("minPlayersPerRoom"));
-	private static final int FIRST_MAP_COUNT_DOWN = Integer.parseInt(ApeProperties
-			.getProperty("firstMapCountDown"));
+	private static final int FIRST_MAP_COUNT_DOWN = Integer
+			.parseInt(ApeProperties.getProperty("firstMapCountDown"));
 	private final String DEFAULT_ROOMNAME = "soup";
 
 	private GameServer gameServer;
@@ -45,6 +45,10 @@ public class GameHandler implements Runnable {
 	private Map<Integer, String[]> playerColors;
 	private Map<Integer, String> playerNames;
 	private Map<Integer, String> playerRooms;
+
+	// Important: Should be sync with client
+	private static final int MAX_USERNAME_CHARS = 20;
+	private static final int MAX_ROOMNAME_CHARS = 20;
 
 	public GameHandler(int port, File webRoot) throws InterruptedException,
 			ExecutionException {
@@ -120,6 +124,9 @@ public class GameHandler implements Runnable {
 	}
 
 	private void createRoom(String roomName) {
+		if (roomName.length() > MAX_ROOMNAME_CHARS)
+			roomName = roomName.substring(0, MAX_ROOMNAME_CHARS - 1);
+
 		Game newRoom = new Game(800, 400);
 		this.games.put(roomName, newRoom);
 		newRoom.addCollisionListener(new RealCollisionListener(this));
@@ -144,7 +151,8 @@ public class GameHandler implements Runnable {
 
 	private void updateGame(Game game) {
 		if (!game.isStarted() && game.getPlayers().size() >= PLAYERS_PER_GAME) {
-			game.addServerEvent(new GameStartEvent(game, GAME_RATE * FIRST_MAP_COUNT_DOWN));
+			game.addServerEvent(new GameStartEvent(game, GAME_RATE
+					* FIRST_MAP_COUNT_DOWN));
 			game.setStarted(true);
 		}
 
@@ -181,7 +189,6 @@ public class GameHandler implements Runnable {
 		gameServer.sendPlayerColors(colors, playersInRoom);
 	}
 
-
 	public void playerDisconnected(int id) {
 		gameServer.sendDisconnectMessage(id, playerNames.get(id),
 				playersInRoomWith(id));
@@ -191,6 +198,9 @@ public class GameHandler implements Runnable {
 	}
 
 	public void playerLogin(int id, String username) {
+		if (username.length() > MAX_USERNAME_CHARS)
+			username = username.substring(0, MAX_USERNAME_CHARS - 1);
+
 		playerNames.put(id, username);
 		gameServer.sendRoomList(allRooms(), asList(id));
 	}
