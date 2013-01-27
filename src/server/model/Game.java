@@ -298,9 +298,10 @@ public class Game {
 		this.started = started;
 	}
 
-	public void cloudPenaltyFor(Entity entity) {
+	public void cloudPenaltyFor(Player player) {
+		if(!player.isWinner())
 		EventHandler.getInstance().addEvent(GameEvent.Type.CLOUD_PENALTY,
-				entity.getId() + "");
+				player.getId() + "");
 	}
 
 }

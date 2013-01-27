@@ -15,9 +15,9 @@ public class CloudTrap extends Entity {
 
 	@Override
 	public void brain(Game game) {
-		List<Entity> entities = Util.getEntitiesOverlapping(game.getAllEntites(), this);
+		List<Entity> entities = Util.getEntitiesOverlapping(game.getPlayersList(), this);
 		for (Entity entity : entities)
-			game.cloudPenaltyFor(entity);
+			game.cloudPenaltyFor((Player) entity);
 	}
 
 	@Override
