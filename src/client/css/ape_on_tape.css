@@ -49,13 +49,13 @@ body {
 }
 
 #playerName .name,#gameRoom .name {
-	color: #a40; /* or #082 or #f60 */
+	color: #b22; /* or #082 or #f60 */
 }
 
 #playerName .description,#gameRoom .description {
 	font-family: 'Marcellus';
 	text-shadow: none;
-	color: black;
+	color: #444;
 }
 
 #header .control {
