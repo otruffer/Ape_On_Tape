@@ -208,7 +208,6 @@ public class Game {
 		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+mapName;
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
-		System.out.println("okaya!");
 		this.initEntities(mapInfo);
 
 	}
