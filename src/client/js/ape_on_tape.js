@@ -382,6 +382,8 @@ function loadGraphics() {
 	loadImage('barrier_open', 'img/barrier_open.png');
 	loadImage('turret', 'img/turret.png');
 	loadImage('nightTrap', 'img/night_trap.png');
+	loadImage('spike_up', 'img/spike_trap_up.png');
+	loadImage('spike_down', 'img/spike_trap_down.png');
 
 	// TILESETS
 	var bulletsPath = 'img/tiles/bullets_24px.png';

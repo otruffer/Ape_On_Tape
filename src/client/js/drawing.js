@@ -321,6 +321,16 @@ function RenderingEngine() {
 			effectiveSize = self.TILE_SIZE;
 			tile = imagePreload['nightTrap'];
 			break;
+		case 'spike_up':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['spike_up'];
+			break;
+		case 'spike_down':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['spike_down'];
+			break;
 		default:
 			tile = tilePreload['bullet'][1];
 			entitySize = self.E;
