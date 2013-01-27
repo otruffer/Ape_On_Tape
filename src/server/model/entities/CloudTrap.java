@@ -4,6 +4,7 @@ import java.util.List;
 
 import server.model.Game;
 import server.model.entities.moving.Bullet;
+import server.model.entities.moving.Player;
 import server.util.Util;
 
 public class CloudTrap extends Entity {
