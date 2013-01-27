@@ -19,8 +19,8 @@ import org.webbitserver.handler.StaticFileHandler;
 
 import server.listeners.RealCollisionListener;
 import server.model.Game;
-import server.model.Player;
 import server.model.ServerEvents.GameStartEvent;
+import server.model.entities.moving.Player;
 import server.network.GameServer;
 import server.properties.ApeProperties;
 import server.util.Util;

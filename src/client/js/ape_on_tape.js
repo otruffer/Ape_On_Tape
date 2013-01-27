@@ -268,6 +268,9 @@ function handleEvents(events) {
 		case 'PUSH_MESSAGE':
 			pushStatusTimed(event.content, event.duration, event.fadeTime);
 			break;
+		case 'CLOUD_PENALTY':
+			cloudPenaltyFor(event.content);
+			break;
 		}
 	}
 }
@@ -331,6 +334,27 @@ function playWinSound() {
 	else
 		// (oggSupport)
 		new Audio('sound/win.ogg').play();
+}
+
+var cloudTimeout;
+function cloudPenaltyFor(id) {
+	if (gameState.playerId == id) {
+		if (!enableClouds())
+			clearTimeout(cloudTimeout);
+		cloudTimeout = setTimeout(disableClouds, CLOUD_PENALTY_DURATION);
+	}
+}
+
+function enableClouds() {
+	if (CLOUDS_ON)
+		return false;
+
+	CLOUDS_ON= true;
+	return true;
+}
+
+function disableClouds() {
+	CLOUDS_ON = false;
 }
 
 function loadGraphics() {

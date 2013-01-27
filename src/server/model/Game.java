@@ -4,11 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import server.GameHandler;
 import server.listeners.CollisionListener;
@@ -16,6 +14,9 @@ import server.listeners.PlayerMoveListener;
 import server.model.ServerEvents.GameStartEvent;
 import server.model.ServerEvents.MapChangeEvent;
 import server.model.ServerEvents.ServerEvent;
+import server.model.entities.Barrier;
+import server.model.entities.Entity;
+import server.model.entities.moving.Player;
 import server.model.map.MapInfo;
 import server.model.map.PositionType;
 import server.model.map.TileMap;
@@ -34,7 +35,7 @@ public class Game {
 	int width, height; // TODO: unused? (also in constructor)
 	private Collection<CollisionListener> collisionListeners;
 	private boolean started;
-	
+
 	/**
 	 * True if game has already started, false if waiting for
 	 * <code>start()</code> signal
@@ -48,7 +49,7 @@ public class Game {
 		this.height = height;
 		this.started = false;
 		this.serverEvents = new LinkedList<ServerEvent>();
-		
+
 		this.loadMap(ApeProperties.getProperty("startMap"));
 	}
 
@@ -64,7 +65,7 @@ public class Game {
 	public synchronized void start() {
 		this.running = true;
 		for (Entity e : entities.values()) {
-			if (e instanceof Barrier){
+			if (e instanceof Barrier) {
 				((Barrier) e).open();
 				e.type = "barrier_open";
 			}
@@ -110,9 +111,9 @@ public class Game {
 		removeServerEvents = new LinkedList<ServerEvent>();
 		addServerEvents = new LinkedList<ServerEvent>();
 
-		for(ServerEvent event: this.serverEvents)
+		for (ServerEvent event : this.serverEvents)
 			event.work();
-		
+
 		this.serverEvents.removeAll(removeServerEvents);
 		this.serverEvents.addAll(addServerEvents);
 	}
@@ -176,12 +177,14 @@ public class Game {
 	}
 
 	public GameEvent[] popEvents() {
-		Collection<GameEvent> result = new ArrayList<GameEvent>(EventHandler.getInstance().popEvents());
+		Collection<GameEvent> result = new ArrayList<GameEvent>(EventHandler
+				.getInstance().popEvents());
 		return result.toArray(new GameEvent[0]);
 	}
 
 	public void playerHit(Player player) {
-		EventHandler.getInstance().addEvent(new GameEvent(GameEvent.Type.SOUND, "kill"));
+		EventHandler.getInstance().addEvent(
+				new GameEvent(GameEvent.Type.SOUND, "kill"));
 	}
 
 	public boolean isRunning() {
@@ -190,53 +193,59 @@ public class Game {
 
 	public void playerFinished(Player p) {
 		p.win();
-		EventHandler.getInstance().addEvent(new GameEvent(GameEvent.Type.SOUND, "win"));
-		EventHandler.getInstance().addEvent(new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, "Player "+p.getName()+" is the Winner of this round!", 3000));
-		/////TODO: FOR TESTING MAPCHANGE///
-		this.addServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * 3, "map.json"));
+		EventHandler.getInstance().addEvent(
+				new GameEvent(GameEvent.Type.SOUND, "win"));
+		EventHandler.getInstance().addEvent(
+				new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, "Player "
+						+ p.getName() + " is the Winner of this round!", 3000));
+		// ///TODO: FOR TESTING MAPCHANGE///
+		this.addServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * 3,
+				"map.json"));
 	}
-	
-	public void changeMap(String map){
+
+	public void changeMap(String map) {
 		this.loadMap(map);
 		this.movePlayersToStartingPosition();
 		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, mapName);
-		this.addFutureServerEvent(new GameStartEvent(this, GameHandler.GAME_RATE * 3));
+		this.addFutureServerEvent(new GameStartEvent(this,
+				GameHandler.GAME_RATE * 3));
 	}
-	
-	private void loadMap(String mapName){
+
+	private void loadMap(String mapName) {
 		this.mapName = mapName;
-		String mapPath = GameHandler.getWebRoot()+File.separator+"maps"+File.separator+mapName;
+		String mapPath = GameHandler.getWebRoot() + File.separator + "maps"
+				+ File.separator + mapName;
 		MapInfo mapInfo = MapInfo.fromJSON(mapPath);
 		this.map = new TileMap(mapInfo);
 		System.out.println("okaya!");
 		this.initEntities(mapInfo);
 
 	}
-	
-	public void movePlayersToStartingPosition(){
-		int i = 0 ;
+
+	public void movePlayersToStartingPosition() {
+		int i = 0;
 		float[] start = this.map.getFirstTileXY(PositionType.PlayerStart);
-		for(Player player : this.getPlayersList()){
-			player.setX(start[0]+i);
+		for (Player player : this.getPlayersList()) {
+			player.setX(start[0] + i);
 			player.setY(start[1]);
 			player.setWinner(false);
 			i++;
 		}
 	}
-	
-	public String getMapName(){
+
+	public String getMapName() {
 		return this.mapName;
 	}
 
 	public void removeServerEvent(ServerEvent serverEvent) {
 		this.removeServerEvents.add(serverEvent);
 	}
-	
+
 	public void addFutureServerEvent(ServerEvent serverEvent) {
 		this.addServerEvents.add(serverEvent);
 	}
-	
-	public void addServerEvent(ServerEvent event){
+
+	public void addServerEvent(ServerEvent event) {
 		this.serverEvents.add(event);
 	}
 
@@ -247,7 +256,10 @@ public class Game {
 	public void setStarted(boolean started) {
 		this.started = started;
 	}
-	
-	
+
+	public void cloudPenaltyFor(Entity entity) {
+		EventHandler.getInstance().addEvent(GameEvent.Type.CLOUD_PENALTY,
+				entity.getId() + "");
+	}
 
 }

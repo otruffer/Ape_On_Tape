@@ -1,8 +1,8 @@
 package server.listeners;
 
 import server.GameHandler;
-import server.model.Entity;
 import server.model.Game;
+import server.model.entities.Entity;
 
 public class RealCollisionListener implements CollisionListener {
 

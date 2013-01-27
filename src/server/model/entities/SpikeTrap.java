@@ -1,7 +1,9 @@
-package server.model;
+package server.model.entities;
 
 import java.util.List;
 
+import server.model.Game;
+import server.model.entities.moving.Bullet;
 import server.network.GsonExclusionStrategy.noGson;
 import server.util.Util;
 

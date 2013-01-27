@@ -11,8 +11,8 @@ import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
 
 import server.GameHandler;
-import server.model.Entity;
 import server.model.GameEvent;
+import server.model.entities.Entity;
 import server.util.IdFactory;
 
 import com.google.gson.Gson;

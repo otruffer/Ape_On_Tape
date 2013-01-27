@@ -227,7 +227,7 @@ body {
 	border-top-right-radius: 8px;
 }
 
-#menu ul.menu_tabs li a {
+#menu ul.menu_tabs li .tab {
 	text-decoration: none;
 	display: block;
 	padding: 0.24em 1em;
@@ -235,9 +235,10 @@ body {
 	text-align: center;
 	font-weight: bold;
 	border-top-right-radius: 7px;
+	cursor: pointer;
 }
 
-#menu li a:hover {
+#menu li .tab:hover {
 	background: rgba(220, 220, 255, 0.5);
 }
 

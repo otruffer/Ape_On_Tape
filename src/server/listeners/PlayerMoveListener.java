@@ -1,8 +1,8 @@
 package server.listeners;
 
-import server.model.Entity;
 import server.model.Game;
-import server.model.Player;
+import server.model.entities.Entity;
+import server.model.entities.moving.Player;
 import server.model.map.TileMap;
 
 public class PlayerMoveListener implements MoveListener {

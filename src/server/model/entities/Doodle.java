@@ -1,4 +1,7 @@
-package server.model;
+package server.model.entities;
+
+import server.model.Game;
+import server.model.entities.moving.Bullet;
 
 /**
  * This class is for placing graphic elements without a brain.
