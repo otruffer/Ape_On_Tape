@@ -30,6 +30,8 @@ public class Game {
 	private List<ServerEvent> serverEvents;
 	private List<ServerEvent> removeServerEvents;
 	private List<ServerEvent> addServerEvents;
+	private static final int MAP_COUNT_DOWN = Integer.parseInt(ApeProperties
+			.getProperty("firstMapCountDown"));
 	TileMap map;
 	protected String mapName;
 	int width, height; // TODO: unused? (also in constructor)
@@ -208,7 +210,7 @@ public class Game {
 		this.movePlayersToStartingPosition();
 		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, mapName);
 		this.addFutureServerEvent(new GameStartEvent(this,
-				GameHandler.GAME_RATE * 3));
+				GameHandler.GAME_RATE * MAP_COUNT_DOWN ));
 	}
 
 	private void loadMap(String mapName) {

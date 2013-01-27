@@ -38,7 +38,7 @@ function RenderingEngine() {
 	this.ENTITY_SIZE = 20;
 	this.TILE_SIZE = 30;
 	this.SCALE = 1 / 0.6;
-	this.BACKGROUND_TYPES = [ "blood", "barrier_open" ];
+	this.BACKGROUND_TYPES = [ "blood", "barrier_open", "spike_down", "spike_up", "cloudtrap" ];
 
 	/* display properties */
 	this.T = this.TILE_SIZE;

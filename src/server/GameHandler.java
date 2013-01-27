@@ -34,6 +34,8 @@ public class GameHandler implements Runnable {
 	static String webRoot = "/var/www/Ape_On_Tape/";
 	private static final int PLAYERS_PER_GAME = Integer.parseInt(ApeProperties
 			.getProperty("minPlayersPerRoom"));
+	private static final int FIRST_MAP_COUNT_DOWN = Integer.parseInt(ApeProperties
+			.getProperty("firstMapCountDown"));
 	private final String DEFAULT_ROOMNAME = "soup";
 
 	private GameServer gameServer;
@@ -142,7 +144,7 @@ public class GameHandler implements Runnable {
 
 	private void updateGame(Game game) {
 		if (!game.isStarted() && game.getPlayers().size() >= PLAYERS_PER_GAME) {
-			game.addServerEvent(new GameStartEvent(game, GAME_RATE * 3));
+			game.addServerEvent(new GameStartEvent(game, GAME_RATE * FIRST_MAP_COUNT_DOWN));
 			game.setStarted(true);
 		}
 
