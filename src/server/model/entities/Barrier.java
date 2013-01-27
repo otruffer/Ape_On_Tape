@@ -1,4 +1,8 @@
-package server.model;
+package server.model.entities;
+
+import server.model.Game;
+import server.model.entities.moving.Bot;
+import server.model.entities.moving.Bullet;
 
 public class Barrier extends Entity {
 

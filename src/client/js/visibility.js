@@ -16,8 +16,8 @@ var CloudRendering = function(id, renderingEngine) {
 	 * Not in tiles, nor in pixels, just some factor.
 	 */
 	var VIEW_RANGE = 8;
-	var MIN_VISIBILITY = 0.8;
-	var CLOUD_RGB = '0,0,10';
+	var MIN_VISIBILITY = 0.95;
+	var CLOUD_RGB = '0,0,0';
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
 

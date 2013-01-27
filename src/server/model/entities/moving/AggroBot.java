@@ -1,7 +1,9 @@
-package server.model;
+package server.model.entities.moving;
 
 import java.util.List;
 
+import server.model.Game;
+import server.model.entities.Entity;
 import server.model.map.PositionType;
 
 public class AggroBot extends Bot {

@@ -1,7 +1,11 @@
-package server.model;
+package server.model.entities;
 
 import java.util.List;
 
+import server.model.Game;
+import server.model.entities.moving.Bullet;
+import server.model.entities.moving.Player;
+import server.model.entities.moving.TurretBullet;
 import server.util.Util;
 
 public class Turret extends Entity {
@@ -16,6 +20,7 @@ public class Turret extends Entity {
 		this.speed = 0;
 		this.shootTimer = 0;
 		this.range = 200;
+		this.setDeadlyForPlayer(true);
 	}
 
 	@Override

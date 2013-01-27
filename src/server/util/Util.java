@@ -3,8 +3,8 @@ package server.util;
 import java.util.LinkedList;
 import java.util.List;
 
-import server.model.Entity;
 import server.model.Game;
+import server.model.entities.Entity;
 import server.model.map.Tile;
 import server.model.map.TileMap;
 

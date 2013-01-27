@@ -7,7 +7,7 @@ public class GameEvent {
 	}
 
 	public enum Type {
-		SOUND, FINISH, MAPCHANGE, PUSH_MESSAGE
+		SOUND, FINISH, MAPCHANGE, PUSH_MESSAGE, CLOUD_PENALTY
 	}
 
 	Type type;

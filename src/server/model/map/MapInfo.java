@@ -11,14 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 import server.exceptions.MapParseException;
-import server.model.AggroBot;
-import server.model.Barrier;
-import server.model.Bot;
-import server.model.Doodle;
-import server.model.DrunkBot;
-import server.model.Entity;
-import server.model.SpikeTrap;
-import server.model.Turret;
+import server.model.entities.Barrier;
+import server.model.entities.CloudTrap;
+import server.model.entities.Doodle;
+import server.model.entities.Entity;
+import server.model.entities.SpikeTrap;
+import server.model.entities.Turret;
+import server.model.entities.moving.AggroBot;
+import server.model.entities.moving.Bot;
+import server.model.entities.moving.DrunkBot;
 import server.util.IdFactory;
 
 import com.google.gson.Gson;
@@ -43,7 +44,7 @@ public class MapInfo {
 			PositionType.Barrier, // symbol #09
 			PositionType.None, // symbol #10
 			PositionType.None, // symbol #11
-			PositionType.None, // symbol #12
+			PositionType.CloudTrap, // symbol #12
 			PositionType.SpikeTrap, // symbol #13
 			PositionType.LookingDirUp, // symbol #14
 			PositionType.LookingDirRight, // symbol #15
@@ -146,35 +147,36 @@ public class MapInfo {
 		float x = position.x * map.getTileWidth();
 		float y = position.y * map.getTileHeight();
 		switch (type) {
-			case Barrier :
-				entity = new Barrier(x, y);
-				break;
-			case Turret :
-				entity = new Turret(x, y);
-				break;
-			case Bot :
-				entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
-				break;
-			case DrunkBot :
-				entity = new DrunkBot(IdFactory.getNextId(), x, y, "Oskar");
-				break;
-			case AggroBot :
-				entity = new AggroBot(IdFactory.getNextId(), x, y, "Remo");
-				break;
-			case PlayerStart :
-				break;
-			case PlayerFinish :
-				entity = new Doodle(x, y, "finish_flag");
-				break;
-			case SpikeTrap :
-				entity = new SpikeTrap(x, y);
-				break;
-			default :
-				System.err
-						.println("WARNING the specified type '"
-								+ type
-								+ "' doesn't get created yet. See MapInfo.createEntity");
-				break;
+		case Barrier:
+			entity = new Barrier(x, y);
+			break;
+		case Turret:
+			entity = new Turret(x, y);
+			break;
+		case Bot:
+			entity = new Bot(IdFactory.getNextId(), x, y, "Eduardo");
+			break;
+		case DrunkBot:
+			entity = new DrunkBot(IdFactory.getNextId(), x, y, "Oskar");
+			break;
+		case AggroBot:
+			entity = new AggroBot(IdFactory.getNextId(), x, y, "Remo");
+			break;
+		case PlayerStart:
+			break;
+		case PlayerFinish:
+			entity = new Doodle(x, y, "finish_flag");
+			break;
+		case SpikeTrap:
+			entity = new SpikeTrap(x, y);
+			break;
+		case CloudTrap:
+			entity = new CloudTrap(x, y);
+			break;
+		default: // gr8, thx
+			System.err.println("WARNING the specified type '" + type
+					+ "' doesn't get created yet. See MapInfo.createEntity");
+			break;
 		}
 
 		if (entity != null && entityInfo.hasLookingDirection()) {
@@ -184,6 +186,7 @@ public class MapInfo {
 
 		return entity;
 	}
+
 	public static PositionType getEntityType(int number, int entityFirstgid) {
 		int index = number - entityFirstgid;
 		if (index < 0 || index >= entitySymbols.length)
@@ -287,6 +290,7 @@ public class MapInfo {
 
 		return mapInfo;
 	}
+
 	private static JsonMapLayer getLayer(String layerName, JsonMap map)
 			throws MapParseException {
 		JsonMapLayer layer = null;

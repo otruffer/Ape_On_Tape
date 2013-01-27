@@ -10,7 +10,8 @@ function initGameMeta() {
 function initHeader() {
 	if (loginReady) {
 		$('#playerName .name').text(window.localStorage.username);
-		$('#menu .playerName .playerName-value').text(window.localStorage.username);
+		$('#menu .playerName .playerName-value').text(
+				window.localStorage.username);
 	}
 	if (roomChosen)
 		$('#gameRoom .name').text(window.localStorage.room);
@@ -26,11 +27,22 @@ function initNameChange() {
 }
 
 function nameChange() {
-	if (confirm("Warning: Changing username will remove you from the current game.")) {
+	if (!isInARoom()
+			|| confirm("Warning: Changing username will remove you from the current game.")) {
+		leaveRoom();
 		window.localStorage.oldUsername = window.localStorage.username;
 		delete window.localStorage.username;
 		login();
 	}
+}
+
+function leaveRoom() {
+	delete window.localStorage.room;
+	changeToRoom(null);
+}
+
+function isInARoom() {
+	return window.localStorage.room;
 }
 
 function initRooms() {
@@ -78,10 +90,16 @@ function updatePlayerList() {
 
 function createRoom() {
 	newRoomPrompt();
+	closeMenu();
 }
 
 function changeRoom() {
 	changeToRoom($(this).text());
+}
+
+function closeMenu() {
+	if ($('#menu').is(':visible'))
+		toggleMenu();
 }
 
 function hideWaitInfo() {

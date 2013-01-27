@@ -1,10 +1,12 @@
-package server.model;
+package server.model.entities;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import server.listeners.MoveListener;
+import server.model.Game;
+import server.model.entities.moving.Bullet;
 import server.network.GsonExclusionStrategy.noGson;
 import server.util.IdFactory;
 import server.util.Util;
@@ -19,7 +21,7 @@ public abstract class Entity {
 	// the direction the entity is looking.
 	protected int dirX = 1;
 	protected int dirY;
-	protected String type = "entity";
+	public String type = "entity";
 
 	@noGson
 	protected boolean deadlyForPlayer;
@@ -29,7 +31,7 @@ public abstract class Entity {
 	@noGson
 	protected float speed = 5;
 	@noGson
-	protected boolean collisionResolving = false;
+	public boolean collisionResolving = false;
 	@noGson
 	private boolean collisionState;
 
@@ -46,7 +48,7 @@ public abstract class Entity {
 		this.y = y;
 		this.height = 20f;
 		this.width = 20f;
-		this.deadlyForPlayer = true;
+		this.deadlyForPlayer = false;
 		this.tileCollision = true;
 
 		this.moveListeners = new LinkedList<MoveListener>();

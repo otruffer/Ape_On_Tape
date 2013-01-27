@@ -1,5 +1,7 @@
 package server.model;
 
+import server.model.entities.moving.Player;
+
 public class PlayerPenalty extends Thread {
 
 	private Player player;

@@ -1,4 +1,7 @@
-package server.model;
+package server.model.entities.moving;
+
+import server.model.Game;
+import server.model.entities.Entity;
 
 public class TurretBullet extends Bullet {
 

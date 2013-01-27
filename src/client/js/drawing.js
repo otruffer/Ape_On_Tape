@@ -313,6 +313,11 @@ function RenderingEngine() {
 			tile = self.rotateImageToLookingDir(imagePreload['barrier_open'],
 					entity.dirX, entity.dirY);
 			break;
+		case 'cloudtrap':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['nightTrap'];
+			break;
 		default:
 			tile = tilePreload['bullet'][1];
 			entitySize = self.E;

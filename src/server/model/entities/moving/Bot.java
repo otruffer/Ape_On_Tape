@@ -1,8 +1,12 @@
-package server.model;
+package server.model.entities.moving;
 
 import java.util.Collection;
 import java.util.List;
 
+import server.model.EventHandler;
+import server.model.Game;
+import server.model.GameEvent;
+import server.model.entities.Entity;
 import server.model.map.PositionType;
 import server.network.GsonExclusionStrategy.noGson;
 
@@ -28,6 +32,7 @@ public class Bot extends Entity {
 		this.originalSpeed = speed;
 		this.hitCount = 0;
 		this.lifePoints = 2;
+		this.setDeadlyForPlayer(true);
 	}
 
 	@Override

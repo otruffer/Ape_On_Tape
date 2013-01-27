@@ -77,10 +77,7 @@ function newRoomPrompt() {
 			// remember next next
 			window.localStorage.room = room;
 		}
-		send({
-			action : 'ROOM',
-			roomJoin : room
-		});
+		changeToRoom(room);
 	} else {
 		ws.close();
 	}
@@ -94,7 +91,6 @@ function changeToRoom(roomName) {
 		action : 'ROOM',
 		roomJoin : roomName
 	});
-	clearLog();
 }
 
 var lastTime;
@@ -149,6 +145,7 @@ function onMessage(incoming) {
 		window.localStorage.room = incoming.newRoom;
 		updateRoomInfo();
 		updateRoomList();
+		closeMenu();
 		break;
 	case 'COLOR':
 		if (!renderEngine)
@@ -267,6 +264,9 @@ function handleEvents(events) {
 		case 'PUSH_MESSAGE':
 			pushStatusTimed(event.content, event.duration, event.fadeTime);
 			break;
+		case 'CLOUD_PENALTY':
+			cloudPenaltyFor(event.content);
+			break;
 		}
 	}
 }
@@ -301,11 +301,9 @@ function toggleBackgroundMusic() {
 	if (!bgMusicPlaying) {
 		backgroundMusic.play();
 		control.addClass('selected');
-		control.text('Stop Music');
 	} else {
 		backgroundMusic.pause();
 		control.removeClass('selected');
-		control.text('Play Music');
 	}
 	bgMusicPlaying = !bgMusicPlaying;
 }
@@ -334,6 +332,27 @@ function playWinSound() {
 		new Audio('sound/win.ogg').play();
 }
 
+var cloudTimeout;
+function cloudPenaltyFor(id) {
+	if (gameState.playerId == id) {
+		if (!enableClouds())
+			clearTimeout(cloudTimeout);
+		cloudTimeout = setTimeout(disableClouds, CLOUD_PENALTY_DURATION);
+	}
+}
+
+function enableClouds() {
+	if (CLOUDS_ON)
+		return false;
+
+	CLOUDS_ON= true;
+	return true;
+}
+
+function disableClouds() {
+	CLOUDS_ON = false;
+}
+
 function loadGraphics() {
 	// IN-GAME GRAPHICS
 	loadImage('blood', 'img/blood.png');
@@ -343,11 +362,12 @@ function loadGraphics() {
 	loadImage('barrier', 'img/barrier.png');
 	loadImage('barrier_open', 'img/barrier_open.png');
 	loadImage('turret', 'img/turret.png');
+	loadImage('nightTrap', 'img/night_trap.png');
 
 	// TILESETS
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';
-	var apePath = 'img/tiles/ape_32px.png'
+	var apePath = 'img/tiles/ape_32px.png';
 	loadTileSet('bullet', bulletsPath, 24, 24);
 	loadTileSet('bot', botPath, 48, 48);
 	loadTileSet('ape', apePath, 32, 32);

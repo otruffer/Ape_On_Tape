@@ -11,8 +11,8 @@ import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
 
 import server.GameHandler;
-import server.model.Entity;
 import server.model.GameEvent;
+import server.model.entities.Entity;
 import server.util.IdFactory;
 
 import com.google.gson.Gson;
@@ -72,24 +72,28 @@ public class GameServer extends BaseWebSocketHandler {
 	public void onMessage(WebSocketConnection connection, String msg) {
 		Incoming incoming = json.fromJson(msg, Incoming.class);
 		switch (incoming.action) {
-			case LOGIN :
-				login(connection, incoming.loginUsername);
-				break;
-			case ROOM :
-				leaveCurrentRoom(connection);
+		case LOGIN:
+			login(connection, incoming.loginUsername);
+			break;
+		case ROOM:
+			leaveCurrentRoom(connection);
+			if (incoming.roomJoin != null)
 				joinRoom(connection, incoming.roomJoin);
-				break;
-			// case SAY:
-			// say(connection, incoming.message);
-			// break;
-			case KEYS_PRESSED :
-				this.gameHandler
-						.setKeysPressed((Integer) connection.data(ID_KEY),
-								incoming.keysPressed);
-				break;
-			case COLOR :
-				this.gameHandler.setPlayerColor(
-						(Integer) connection.data(ID_KEY), incoming.colors);
+			break;
+		// case SAY:
+		// say(connection, incoming.message);
+		// break;
+		case KEYS_PRESSED:
+			this.gameHandler.setKeysPressed((Integer) connection.data(ID_KEY),
+					incoming.keysPressed);
+			break;
+		case COLOR:
+			this.gameHandler.setPlayerColor((Integer) connection.data(ID_KEY),
+					incoming.colors);
+			break;
+		default:
+			System.err
+					.println("Warning: Unknown incoming action action (see GameServer.onMessage)");
 		}
 	}
 
@@ -118,7 +122,8 @@ public class GameServer extends BaseWebSocketHandler {
 		Outgoing outgoing = new Outgoing();
 		outgoing.action = Outgoing.Action.JOIN;
 		outgoing.username = user;
-		this.sendGameInfo(findConnection(id), gameHandler.getGameRoom(roomJoin).getMapName());
+		this.sendGameInfo(findConnection(id), gameHandler.getGameRoom(roomJoin)
+				.getMapName());
 		broadcast(outgoing, receipants);
 	}
 
