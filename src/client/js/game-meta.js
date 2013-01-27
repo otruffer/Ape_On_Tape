@@ -173,7 +173,7 @@ function pushStatus(text, fadeDuration) {
 		$('#statusBox').show();
 	else
 		$('#statusBox').fadeIn(fadeDuration);
-	$('#statusText').html(text);
+	$('#statusText').text(text);
 	return hash;
 }
 

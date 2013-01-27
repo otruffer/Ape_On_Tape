@@ -26,8 +26,8 @@ public class Turret extends Entity {
 	@Override
 	public void brain(Game game) {
 		shootTimer++;
-		Entity target = getClosestPlayer(game.getPlayersList());
-		if(target == null)
+		Player target = getClosestPlayer(game.getPlayersList());
+		if(target == null || target.isWinner())
 			return;
 		if(shootTimer > shootSpeed){
 			shootTimer = 0;
@@ -49,16 +49,16 @@ public class Turret extends Entity {
 	 * @param players all players the turret can shoot at.
 	 * @return the closest player IN RANGE
 	 */
-	protected Entity getClosestPlayer(List<Player> players){
+	protected Player getClosestPlayer(List<Player> players){
 		if (players.isEmpty())
 			return null;
-		Entity e = players.get(0);
+		Player e = players.get(0);
 		players.remove(0);
 		float delta = (float) Util.euclidian(this, e);
-		for(Entity entity : players){
-			float newDelta = (float) Util.euclidian(this, entity); 
-			if(newDelta  < delta){
-				e = entity;
+		for(Player player : players){
+			float newDelta = (float) Util.euclidian(this, player); 
+			if(newDelta  < delta && !player.isWinner()){
+				e = player;
 				delta = newDelta;
 			}
 		}

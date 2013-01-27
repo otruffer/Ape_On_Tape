@@ -42,6 +42,7 @@ public class Game {
 			.getProperty("firstWinnerPoints"));
 	private static final int LATER_WINNER_POINTS = Integer.parseInt(ApeProperties
 			.getProperty("laterWinnerPoints"));
+	private boolean finishRound;
 	TileMap map;
 	protected String mapName;
 	int width, height; // TODO: unused? (also in constructor)
@@ -59,6 +60,7 @@ public class Game {
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
 		this.height = height;
+		this.finishRound = false;
 		this.started = false;
 		this.winners = new HashMap<Player, Integer>();
 		this.serverEvents = new LinkedList<ServerEvent>();
@@ -214,7 +216,7 @@ public class Game {
 			this.addServerEvent(new RoundEndEvent(this, WAIT_AFTER_WIN * GameHandler.GAME_RATE));
 			player.addPoints(FIRST_WINNER_POINTS);
 			winners.put(player, FIRST_WINNER_POINTS);
-		}else{
+		}else if(!finishRound){
 			player.addPoints(LATER_WINNER_POINTS);
 			winners.put(player, LATER_WINNER_POINTS);
 		}
@@ -225,19 +227,19 @@ public class Game {
 		List<Player> winners = new LinkedList<Player>(this.winners.keySet());
 		String message = "Winners of this round:";
 		for(Player winner : winners){
-			message += "&nbsp;&nbsp;<br>"+winner.getName()+" : "+this.winners.get(winner)+" points.";
+			message += "\n "+winner.getName()+" : "+this.winners.get(winner)+" points";
 		}
-		this.winners.clear();
 		EventHandler.getInstance().addEvent(
 				new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, message, WAIT_AFTER_END_ROUND * 1000));
-		// ///TODO: FOR TESTING MAPCHANGE///
 		this.addFutureServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * WAIT_AFTER_END_ROUND,
 				"map.json"));
+		this.finishRound = true;
 	}
 
 	public void changeMap(String map) {
 		this.loadMap(map);
 		this.movePlayersToStartingPosition();
+		this.finishRound = false;
 		EventHandler.getInstance().addEvent(GameEvent.Type.MAPCHANGE, mapName);
 		this.addFutureServerEvent(new GameStartEvent(this,
 				GameHandler.GAME_RATE * MAP_COUNT_DOWN ));
@@ -253,9 +255,13 @@ public class Game {
 
 	}
 
+	/**
+	 * moves players back to start and "undwins" them.
+	 */
 	public void movePlayersToStartingPosition() {
 		int i = 0;
 		float[] start = this.map.getFirstTileXY(PositionType.PlayerStart);
+		this.winners.clear();
 		for (Player player : this.getPlayersList()) {
 			player.setX(start[0] + i);
 			player.setY(start[1]);
