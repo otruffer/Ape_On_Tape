@@ -77,10 +77,7 @@ function newRoomPrompt() {
 			// remember next next
 			window.localStorage.room = room;
 		}
-		send({
-			action : 'ROOM',
-			roomJoin : room
-		});
+		changeToRoom(room);
 	} else {
 		ws.close();
 	}
@@ -94,7 +91,6 @@ function changeToRoom(roomName) {
 		action : 'ROOM',
 		roomJoin : roomName
 	});
-	clearLog();
 }
 
 var lastTime;
@@ -366,11 +362,12 @@ function loadGraphics() {
 	loadImage('barrier', 'img/barrier.png');
 	loadImage('barrier_open', 'img/barrier_open.png');
 	loadImage('turret', 'img/turret.png');
+	loadImage('nightTrap', 'img/night_trap.png');
 
 	// TILESETS
 	var bulletsPath = 'img/tiles/bullets_24px.png';
 	var botPath = 'img/tiles/bot_48px.png';
-	var apePath = 'img/tiles/ape_32px.png'
+	var apePath = 'img/tiles/ape_32px.png';
 	loadTileSet('bullet', bulletsPath, 24, 24);
 	loadTileSet('bot', botPath, 48, 48);
 	loadTileSet('ape', apePath, 32, 32);

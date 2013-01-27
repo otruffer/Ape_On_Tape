@@ -27,11 +27,22 @@ function initNameChange() {
 }
 
 function nameChange() {
-	if (confirm("Warning: Changing username will remove you from the current game.")) {
+	if (!isInARoom()
+			|| confirm("Warning: Changing username will remove you from the current game.")) {
+		leaveRoom();
 		window.localStorage.oldUsername = window.localStorage.username;
 		delete window.localStorage.username;
 		login();
 	}
+}
+
+function leaveRoom() {
+	delete window.localStorage.room;
+	changeToRoom(null);
+}
+
+function isInARoom() {
+	return window.localStorage.room;
 }
 
 function initRooms() {
