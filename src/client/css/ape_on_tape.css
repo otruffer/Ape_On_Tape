@@ -11,7 +11,7 @@ body {
 	font-family: 'Finger Paint';
 	color: black;
 	font-size: 24px;
-	height: 40px;
+	min-height: 40px;
 	line-height: 40px;
 	position: relative;
 	z-index: 10;

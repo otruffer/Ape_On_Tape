@@ -110,7 +110,10 @@ function hideWaitInfo() {
 function initMenu() {
 	$('#menu-control').click(toggleMenu);
 	$('#menu-overlay').click(toggleMenu);
-	$('#tab_quit').click(toggleMenu);
+	$('#tab_quit').click(function() {
+		if (!toggleMenu())
+			alert('Select a room first!');
+	});
 
 	// specify tabs
 	var menus = {};
@@ -148,13 +151,13 @@ function toggleMenu() {
 		$('#menu-overlay').show();
 	} else {
 		if (!window.localStorage.room) {
-			alert('Select a room first!')
-			return;
+			return false;
 		}
 		$('#menu').hide();
 		$('#menu-control').removeClass('selected');
 		$('#menu-overlay').hide();
 	}
+	return true;
 }
 
 // STATUS BOX -----------------------------------------------------------------

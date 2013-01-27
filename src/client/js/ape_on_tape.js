@@ -42,7 +42,12 @@ function login() {
 	var username = (window.localStorage && window.localStorage.username)
 			|| window.localStorage.oldUsername || 'yourname';
 	if (!window.localStorage.username)
-		username = prompt('Choose a username', username);
+		do {
+			username = prompt('Choose a username (max. ' + MAX_NAME_CHARACTERS
+					+ ' characters)', username);
+			if (username == null)
+				username = window.localStorage.oldUsername;
+		} while (!usernameAllowed(username));
 
 	if (username) {
 		if (window.localStorage) { // store in browser localStorage, so we
@@ -61,6 +66,10 @@ function login() {
 	initHeader();
 }
 
+function usernameAllowed(name) {
+	return name.length > 0 && name.length <= MAX_NAME_CHARACTERS;
+}
+
 function roomSelection() {
 	// delete room and go to lobby
 	delete window.localStorage.room;
@@ -70,7 +79,13 @@ function roomSelection() {
 
 function newRoomPrompt() {
 	var defaultRoom = 'new room';
-	var room = prompt('Choose room name', defaultRoom);
+	var room;
+	do {
+		room = prompt('Choose room name (max. ' + MAX_ROOMNAME_CHARS
+				+ ' characters)', room ? room : defaultRoom);
+		if (!room)
+			return;
+	} while (!roomnameAllowed(room));
 
 	if (room) {
 		if (window.localStorage) { // store in browser localStorage, so we
@@ -84,6 +99,10 @@ function newRoomPrompt() {
 
 	roomChosen = true;
 	initHeader();
+}
+
+function roomnameAllowed(roomname) {
+	return roomname.length > 0 && roomname.length <= MAX_ROOMNAME_CHARS;
 }
 
 function changeToRoom(roomName) {
@@ -345,7 +364,7 @@ function enableClouds() {
 	if (CLOUDS_ON)
 		return false;
 
-	CLOUDS_ON= true;
+	CLOUDS_ON = true;
 	return true;
 }
 
@@ -363,6 +382,8 @@ function loadGraphics() {
 	loadImage('barrier_open', 'img/barrier_open.png');
 	loadImage('turret', 'img/turret.png');
 	loadImage('nightTrap', 'img/night_trap.png');
+	loadImage('spike_up', 'img/spike_trap_up.png');
+	loadImage('spike_down', 'img/spike_trap_down.png');
 
 	// TILESETS
 	var bulletsPath = 'img/tiles/bullets_24px.png';
