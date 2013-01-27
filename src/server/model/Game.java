@@ -225,7 +225,7 @@ public class Game {
 		List<Player> winners = new LinkedList<Player>(this.winners.keySet());
 		String message = "Winners of this round:";
 		for(Player winner : winners){
-			message += "&nbsp;&nbsp;<br>"+winner.getName()+" : "+this.winners.get(winner);
+			message += "&nbsp;&nbsp;<br>"+winner.getName()+" : "+this.winners.get(winner)+" points.";
 		}
 		this.winners.clear();
 		EventHandler.getInstance().addEvent(
