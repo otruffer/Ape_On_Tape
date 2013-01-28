@@ -50,12 +50,16 @@ public class GameHandler implements Runnable {
 	private static final int MAX_USERNAME_CHARS = 20;
 	private static final int MAX_ROOMNAME_CHARS = 20;
 
-	public GameHandler(int port, File webRoot) throws InterruptedException,
-			ExecutionException {
+	public GameHandler(int port, File webRoot) throws Exception {
 		gameServer = new GameServer(this);
+		try{
 		webServer = createWebServer(port).add("/apesocket", gameServer)
 				.add(new StaticFileHandler(webRoot)).start().get();
-
+		}catch(Exception e){
+			System.out.println("Webserver could not be started! The port may already be in use. Make sure no other instance of this program runs.");
+			throw e;
+		}
+		
 		GameHandler.webRoot = webRoot.getAbsolutePath();
 
 		this.games = new HashMap<String, Game>();
@@ -92,8 +96,7 @@ public class GameHandler implements Runnable {
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException,
-			ExecutionException {
+	public static void main(String[] args) throws Exception {
 		int port = WEB_SERVER_PORT;
 		File webRoot;
 		if (args.length > 0)
