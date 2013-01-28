@@ -65,10 +65,13 @@ var CloudRendering = function(id, renderingEngine) {
 		me_y = me.y;
 
 		// GRADIENT OVERLAY
-		var grd = bufferCtx.createRadialGradient((me.x + PLAYER_SIZE / 2) * sc,
-				(me.y + PLAYER_SIZE / 2) * sc, VIEW_RANGE * 20,
-				(me.x + PLAYER_SIZE / 2) * sc, (me.y + PLAYER_SIZE / 2) * sc,
-				VIEW_RANGE * 30);
+		var grd = bufferCtx.createRadialGradient(
+				(me.x + PLAYER_SIZE / 2 - bbox_sx) * sc, (me.y + PLAYER_SIZE
+						/ 2 - bbox_sy)
+						* sc, VIEW_RANGE * 10,
+				(me.x + PLAYER_SIZE / 2 - bbox_sx) * sc, (me.y + PLAYER_SIZE
+						/ 2 - bbox_sy)
+						* sc, VIEW_RANGE * 30);
 		grd.addColorStop(0, 'transparent');
 		grd.addColorStop(1, 'rgba(0,0,0,' + MIN_VISIBILITY + ')');
 		bufferCtx.fillStyle = grd;
