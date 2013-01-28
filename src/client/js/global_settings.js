@@ -1,4 +1,4 @@
-CLOUDS_ON = true;
+CLOUDS_ON = false;
 CLOUD_PENALTY_DURATION = 6000;
 
 // Important: Should be sync with server
