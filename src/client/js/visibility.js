@@ -41,14 +41,22 @@ var CloudRendering = function(id, renderingEngine) {
 	var buffer = document.createElement('canvas');
 	var bufferCtx;
 
-	var canvasImageData;
+	// var canvasImageData;
 	var c_width;
+
+	// REMO: associative array to hold opacity indices
+	var cloudStorage = {};
+	// END REMO
 
 	function init() {
 		c_width = c.width;
 		buffer.width = c.width;
 		buffer.height = c.height;
 		bufferCtx = buffer.getContext('2d');
+		// REMO start with a dark canvas since most of the area will be dark:
+		bufferCtx.fillStyle = 'rgba(0,0,0,' + MIN_VISIBILITY + ')';
+		bufferCtx.fillRect(0, 0, c.width, c.height);
+		// END REMO
 		bbox_sx = renderingEngine.bbox.sx / sc;
 		bbox_sy = renderingEngine.bbox.sy / sc;
 		MIN_X = (bbox_sx / (TILE_SIZE)) << 0;
@@ -59,7 +67,10 @@ var CloudRendering = function(id, renderingEngine) {
 		me_x = me.x;
 		me_y = me.y;
 		collisionMap = map.collisionMap;
-		canvasImageData = ctx.getImageData(0, 0, c.width, c.height);
+		// REMO: clear associative array
+		cloudStorage = {};
+		// END REMO
+		// canvasImageData = ctx.getImageData(0, 0, c.width, c.height);
 	}
 
 	this.drawClouds = function() {
@@ -86,6 +97,22 @@ var CloudRendering = function(id, renderingEngine) {
 				}
 			}
 		}
+
+		// REMO: do only one context switch for fillStyle per opacity...
+		// eventually put to flushBuffer (keep track of scale)
+		for ( var op in cloudStorage) {
+			bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + op + ")";
+			for ( var pos in cloudStorage[op]) {
+				// clear the dark area
+				bufferCtx.clearRect(cloudStorage[op][pos][0],
+						cloudStorage[op][pos][1], CLOUD_SIZE, CLOUD_SIZE);
+				if (op != 0) { // only draw visible opacities
+					bufferCtx.fillRect(cloudStorage[op][pos][0],
+							cloudStorage[op][pos][1], CLOUD_SIZE, CLOUD_SIZE);
+				}
+			}
+		}
+		// END REMO
 
 		bufferCtx.scale(1 / sc, 1 / sc);
 
@@ -211,7 +238,9 @@ var CloudRendering = function(id, renderingEngine) {
 		var distance = distanceSquared(x, y, me_x + PLAYER_SIZE / 2, me_y
 				+ PLAYER_SIZE / 2);
 		distance /= (TILE_SIZE * TILE_SIZE);
-		return min(1, VIEW_RANGE / distance);
+		return Math.round(min(1, VIEW_RANGE / distance) * 255) / 255; // REMO:
+		// todo
+		// improve
 	}
 
 	function drawCloudAt(x, y, opacity) {
@@ -231,8 +260,17 @@ var CloudRendering = function(id, renderingEngine) {
 		// }
 		// }
 
-		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+		// REMO: only store opacity and position instead of drawing
+		if (opacity < MIN_VISIBILITY - 0.001) {
+			if (!cloudStorage[opacity]) {
+				cloudStorage[opacity] = new Array();
+			}
+			cloudStorage[opacity].push(new Array(xx, yy));
+		}
+		// DO NOT DRAW HERE:
+		// bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+		// bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+		// END REMO
 
 		// if (opacity > 0.7)
 		// bufferCtx.drawImage(imagePreload['cloud'], xx, yy);
@@ -246,6 +284,7 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function flushBuffer() {
+
 		// var filtered = Pixastic.process(buffer, "blurfast", {amount:0.2});
 
 		// pngUrl = buffer.toDataURL();
