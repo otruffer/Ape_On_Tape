@@ -11,6 +11,10 @@ var CloudRendering = function(id, renderingEngine) {
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
+	// for adaptive number of clouds
+	var MAX_CYCLE_TIME = 25;
+	var MIN_CYCLE_TIME = 10;
+
 	var CLOUDS_PER_TILE = 3;
 	/**
 	 * Not in tiles, nor in pixels, just some factor.
@@ -74,6 +78,8 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	this.drawClouds = function() {
+		var before = new Date().getTime();
+
 		init();
 
 		bufferCtx.scale(sc, sc);
@@ -98,6 +104,18 @@ var CloudRendering = function(id, renderingEngine) {
 			}
 		}
 
+		function adjustCloudNumber(ms) {
+			if (ms < MIN_CYCLE_TIME)
+				CLOUDS_PER_TILE++;
+			else if (ms > MAX_CYCLE_TIME)
+				CLOUDS_PER_TILE--;
+			else
+				return;
+
+			var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
+			var CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
+		}
+
 		// REMO: do only one context switch for fillStyle per opacity...
 		// eventually put to flushBuffer (keep track of scale)
 		for ( var op in cloudStorage) {
@@ -117,6 +135,10 @@ var CloudRendering = function(id, renderingEngine) {
 		bufferCtx.scale(1 / sc, 1 / sc);
 
 		flushBuffer();
+
+		var after = new Date().getTime();
+		var consumedMS = after - before;
+		adjustCloudNumber(consumedMS);
 	}
 
 	function drawIfVisible(x, y) {

@@ -23,7 +23,6 @@ import server.model.ServerEvents.GameStartEvent;
 import server.model.entities.moving.Player;
 import server.network.GameServer;
 import server.properties.ApeProperties;
-import server.util.Util;
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
@@ -92,8 +91,7 @@ public class GameHandler implements Runnable {
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException,
-			ExecutionException {
+	public static void main(String[] args) {
 		int port = WEB_SERVER_PORT;
 		File webRoot;
 		if (args.length > 0)
@@ -103,9 +101,20 @@ public class GameHandler implements Runnable {
 		else
 			webRoot = ClientDirUtil.getClientDirectory();
 
-		GameHandler gameHandler = new GameHandler(port, webRoot);
-		Thread gameThread = new Thread(gameHandler);
-		gameThread.run();
+		startServer(port, webRoot);
+	}
+
+	private static void startServer(int port, File webRoot) {
+		try {
+			GameHandler gameHandler = new GameHandler(port, webRoot);
+			Thread gameThread = new Thread(gameHandler);
+			gameThread.run();
+		} catch (Throwable t) {
+			t.printStackTrace();
+			System.err.println("Server was shut down due to a fatal error!");
+			System.out.println("Restarting whole server...");
+			startServer(port, webRoot);
+		}
 	}
 
 	public void joinRoom(int id, String roomName) {
