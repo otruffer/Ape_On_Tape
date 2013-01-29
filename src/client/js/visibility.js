@@ -22,6 +22,7 @@ var CloudRendering = function(id, renderingEngine) {
 	var CLOUD_RGB = '0,0,0';
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
+	var CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
 
 	var MIN_X = 0;
 	var MIN_Y = 0;
@@ -33,8 +34,6 @@ var CloudRendering = function(id, renderingEngine) {
 
 	var bbox_sx;
 	var bbox_sy;
-
-	var CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
 
 	/**
 	 * Buffer canvas for drawing in background.
@@ -64,7 +63,6 @@ var CloudRendering = function(id, renderingEngine) {
 		var before = new Date().getTime();
 
 		init();
-
 		bufferCtx.scale(sc, sc);
 
 		// DRAW GRADIENT OVERLAY
@@ -74,10 +72,14 @@ var CloudRendering = function(id, renderingEngine) {
 						+ PLAYER_SIZE / 2 - bbox_sx),
 				(me.y + PLAYER_SIZE / 2 - bbox_sy), VIEW_RANGE * TILE_SIZE);
 		grd.addColorStop(0, 'transparent');
-		grd.addColorStop(1, 'rgba(0,0,0,' + MIN_VISIBILITY + ')');
+		grd.addColorStop(1, 'rgba(' + CLOUD_RGB + ',' + MIN_VISIBILITY + ')');
 		bufferCtx.fillStyle = grd;
 		bufferCtx.fillRect(0, 0, c.width, c.height);
 		// END GRADIENT OVERLAY
+
+		// only complete opaque rectangles will be drawn - avoid switching in
+		// drawCloudAt() method itself for performance increase:
+		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + MIN_VISIBILITY + ")";
 
 		for ( var i = MIN_X; i < MAX_X; i++) {
 			var upLeftX = i * TILE_SIZE;
@@ -121,15 +123,17 @@ var CloudRendering = function(id, renderingEngine) {
 	}
 
 	function drawIfVisible(x, y) {
-		if (viewBlocked(x, y, me_x + PLAYER_SIZE / 2, me_y + PLAYER_SIZE / 2) >= 2) {
+		if (viewBlocked(x, y, me_x + PLAYER_SIZE / 2, me_y + PLAYER_SIZE / 2) >= 2
+				&& distanceSquared(x, y, me_x, me_y) < VIEW_RANGE_PX_PLUS_SQUARED) {
+			// drawCloudAt(x, y, MIN_VISIBILITY);
 
-			shizzl = (VIEW_RANGE * VIEW_RANGE * TILE_SIZE * TILE_SIZE);
-			// TODO: replace VIEW_RANGE values
-			if (distanceSquared(x, y, me_x, me_y) < VIEW_RANGE_PX_PLUS_SQUARED)
-				drawCloudAt(x, y, MIN_VISIBILITY);
+			var xx = x - CLOUD_SIZE_HALF - bbox_sx;
+			var yy = y - CLOUD_SIZE_HALF - bbox_sy;
+			bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+
+			// } else
+			// drawCloudAt(x, y, min(1 - visibilityAt(x, y), MIN_VISIBILITY));
 		}
-		// } else
-		// drawCloudAt(x, y, min(1 - visibilityAt(x, y), MIN_VISIBILITY));
 	}
 
 	function viewBlocked(xA, yA, xB, yB) {
@@ -247,29 +251,29 @@ var CloudRendering = function(id, renderingEngine) {
 	// return min(1, VIEW_RANGE / distance);
 	// }
 
-	function drawCloudAt(x, y, opacity) {
-		var xx = x - CLOUD_SIZE_HALF - bbox_sx;
-		var yy = y - CLOUD_SIZE_HALF - bbox_sy;
-
-		// var opacity_cpl = 1 - opacity;
-		//
-		// var arrayPos = ((yy - 1) * c_width + xx) * 4;
-		// for ( var i = arrayPos - CLOUD_SIZE * 2; i < arrayPos + CLOUD_SIZE *
-		// 2; i += 4) {
-		// for ( var j = i - CLOUD_SIZE_HALF * c_width * 4; j < i
-		// + CLOUD_SIZE_HALF * c_width * 4; j += c_width * 4) {
-		// canvasImageData.data[j - 1] *= opacity_cpl;
-		// canvasImageData.data[j - 2] *= opacity_cpl;
-		// canvasImageData.data[j - 3] *= opacity_cpl;
-		// }
-		// }
-
-		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
-
-		// if (opacity > 0.7)
-		// bufferCtx.drawImage(imagePreload['cloud'], xx, yy);
-	}
+	// function drawCloudAt(x, y, opacity) {
+	// var xx = x - CLOUD_SIZE_HALF - bbox_sx;
+	// var yy = y - CLOUD_SIZE_HALF - bbox_sy;
+	//
+	// // var opacity_cpl = 1 - opacity;
+	// //
+	// // var arrayPos = ((yy - 1) * c_width + xx) * 4;
+	// // for ( var i = arrayPos - CLOUD_SIZE * 2; i < arrayPos + CLOUD_SIZE *
+	// // 2; i += 4) {
+	// // for ( var j = i - CLOUD_SIZE_HALF * c_width * 4; j < i
+	// // + CLOUD_SIZE_HALF * c_width * 4; j += c_width * 4) {
+	// // canvasImageData.data[j - 1] *= opacity_cpl;
+	// // canvasImageData.data[j - 2] *= opacity_cpl;
+	// // canvasImageData.data[j - 3] *= opacity_cpl;
+	// // }
+	// // }
+	//
+	// bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+	// bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+	//
+	// // if (opacity > 0.7)
+	// // bufferCtx.drawImage(imagePreload['cloud'], xx, yy);
+	// }
 
 	function drawTestDotAt(x, y) {
 		bufferCtx.scale(sc, sc);
@@ -317,5 +321,4 @@ var CloudRendering = function(id, renderingEngine) {
 		yy = abs(dY);
 		return xx * xx + yy * yy;
 	}
-
 }
