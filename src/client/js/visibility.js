@@ -118,8 +118,8 @@ var CloudRendering = function(id, renderingEngine) {
 		else
 			return;
 
-		var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
-		var CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
+		CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
+		CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
 	}
 
 	function drawIfVisible(x, y) {
@@ -129,6 +129,9 @@ var CloudRendering = function(id, renderingEngine) {
 
 			var xx = x - CLOUD_SIZE_HALF - bbox_sx;
 			var yy = y - CLOUD_SIZE_HALF - bbox_sy;
+			// bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + MIN_VISIBILITY
+			// + ")";
+			// FIXME: Completely black shadows look strange...
 			bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
 
 			// } else
