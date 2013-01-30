@@ -38,7 +38,8 @@ function RenderingEngine() {
 	this.ENTITY_SIZE = 20;
 	this.TILE_SIZE = 30;
 	this.SCALE = 1 / 0.6;
-	this.BACKGROUND_TYPES = [ "blood", "barrier_open", "spike_down", "spike_up", "cloudtrap" ];
+	this.BACKGROUND_TYPES = [ "blood", "barrier_open", "spike_down",
+			"spike_up", "cloudtrap" ];
 
 	/* display properties */
 	this.T = this.TILE_SIZE;
@@ -244,16 +245,22 @@ function RenderingEngine() {
 		} else {
 			pCanvas = tilePreload['ape'][Anim.getWalkingIndex(player)];
 		}
-		
-		if(player.isWinner)
+
+		if (player.isWinner)
 			return;
 
 		if (isself) {
+			ctx.drawImage(Anim.getFX('flashYellow'),
+					self.mainPlayer.x + offset, self.mainPlayer.y + offset
+							+ self.P / 6, self.P, self.P);
 			ctx.drawImage(pCanvas, self.mainPlayer.x + offset,
 					self.mainPlayer.y + offset, self.P, self.P);
 		} else { // draw other players relative to main player
 			var dx = self.mainPlayer.absX - player.x;
 			var dy = self.mainPlayer.absY - player.y;
+			ctx.drawImage(Anim.getFX('flashBlue'), self.mainPlayer.x - dx
+					+ offset, self.mainPlayer.y - dy + offset + self.P / 6,
+					self.P, self.P);
 			ctx.drawImage(pCanvas, self.mainPlayer.x - dx + offset,
 					self.mainPlayer.y - dy + offset, self.P, self.P);
 		}
