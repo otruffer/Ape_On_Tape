@@ -3,6 +3,7 @@ function JsonMap(path, onloadCallback) {
 
 	/* static properties */
 	this.BG_LAYER_NAME = 'background';
+	this.BG_LAYER2_NAME = 'background-front';
 	this.FG_LAYER_NAME = 'foreground';
 	this.ENTITY_TILESET_NAME = 'entities';
 
@@ -10,6 +11,7 @@ function JsonMap(path, onloadCallback) {
 	this.width;
 	this.height;
 	this.bgData;
+	this.bgData2;
 	this.fgData;
 	this.collisionMap;
 	this.subdivision = 1; // dummy value
@@ -39,6 +41,8 @@ function JsonMap(path, onloadCallback) {
 		for ( var id in json.layers) {
 			if (json.layers[id].name == self.BG_LAYER_NAME)
 				self.bgData = json.layers[id].data;
+			else if (json.layers[id].name == self.BG_LAYER2_NAME)
+				self.bgData2 = json.layers[id].data;
 			else if (json.layers[id].name == self.FG_LAYER_NAME)
 				self.fgData = json.layers[id].data;
 		}
@@ -158,6 +162,20 @@ function JsonMap(path, onloadCallback) {
 							tiledata.tilewidth, tiledata.tileheight, ix
 									* tilesize, iy * tilesize, tilesize,
 							tilesize);
+				}
+				// background-layer-front (optional)
+				if (self.bgData2) {
+					tiledata = self.getTileDataAt(self.bgData2[i]);
+					if (tiledata != undefined) {
+						tileindex = (self.bgData2[i] - tiledata.firstgid);
+						tx = tileindex % tiledata.numtilesX;
+						ty = (tileindex - tx) / tiledata.numtilesX;
+						bg_ctx.drawImage(imagePreload[tiledata.name], tx
+								* tiledata.tilewidth, ty * tiledata.tilewidth,
+								tiledata.tilewidth, tiledata.tileheight, ix
+										* tilesize, iy * tilesize, tilesize,
+								tilesize);
+					}
 				}
 				// foreground-layer
 				tiledata = self.getTileDataAt(self.fgData[i]);
