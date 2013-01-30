@@ -52,7 +52,6 @@ public class TileMap {
 		} catch (IndexOutOfBoundsException e) {
 			tile = new Tile(this, (int) (x / tileWidth),
 					(int) (y / tileHeight), false);
-			System.out.println("jetzt.");
 		}
 		return tile;
 	}
