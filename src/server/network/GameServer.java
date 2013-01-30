@@ -12,6 +12,7 @@ import org.webbitserver.WebSocketConnection;
 import server.GameHandler;
 import server.model.GameEvent;
 import server.model.entities.Entity;
+import server.model.entities.moving.Player;
 import server.util.IdFactory;
 
 import com.google.gson.Gson;
@@ -39,7 +40,7 @@ public class GameServer extends BaseWebSocketHandler {
 
 	static class Outgoing {
 		enum Action {
-			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM, COLOR
+			JOIN, LEAVE, SAY, UPDATE, INIT_GAME, ROOMS, NEW_ROOM, COLOR, END_GAME
 		}
 
 		Action action;
@@ -53,6 +54,7 @@ public class GameServer extends BaseWebSocketHandler {
 		GameEvent[] events;
 		public boolean gameRunning;
 		Map<Integer, String[]> colors;
+		List<Player> players;
 	}
 
 	public GameServer(GameHandler gameHandler) {
@@ -179,6 +181,13 @@ public class GameServer extends BaseWebSocketHandler {
 			}
 		}
 	}
+	
+	private synchronized void broadcast(Outgoing outgoing, List<Player> receipents){
+		Collection<Integer> receipent = new HashSet<Integer>();
+		for(Player player : receipents)
+			receipent.add(player.getId());
+		this.broadcast(outgoing, receipent);
+	}
 
 	@Override
 	public void onClose(WebSocketConnection connection) {
@@ -210,6 +219,13 @@ public class GameServer extends BaseWebSocketHandler {
 		outgoing.action = Outgoing.Action.ROOMS;
 		outgoing.rooms = rooms.toArray(new String[0]);
 		broadcast(outgoing, receipent);
+	}
+	
+	public void sendEndGame(List<Player> players){
+		Outgoing outgoing = new Outgoing();
+		outgoing.action = Outgoing.Action.END_GAME;
+		outgoing.players = players;
+		broadcast(outgoing, players);
 	}
 
 	public void sendNewRoomInfo(String newRoomName,

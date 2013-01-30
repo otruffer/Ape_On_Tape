@@ -392,6 +392,11 @@ function loadGraphics() {
 	loadTileSet('bullet', bulletsPath, 24, 24);
 	loadTileSet('bot', botPath, 48, 48);
 	loadTileSet('ape', apePath, 32, 32);
+	// FX-TILESETS
+	var flashBluePath = 'img/fx/blue_130px.png';
+	var flashYellowPath = 'img/fx/yellow_130px.png';
+	loadTileSet('flashBlue', flashBluePath, 130, 130);
+	loadTileSet('flashYellow', flashYellowPath, 130, 130);
 
 	// GAME-META
 	// initDesigner if all 3 images loaded

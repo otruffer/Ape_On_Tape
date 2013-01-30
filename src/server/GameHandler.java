@@ -58,7 +58,7 @@ public class GameHandler implements Runnable {
 		GameHandler.webRoot = webRoot.getAbsolutePath();
 
 		this.games = new HashMap<String, Game>();
-		games.put(DEFAULT_ROOMNAME, new Game(800, 400));
+		games.put(DEFAULT_ROOMNAME, new Game(this, "default Room", 800, 400));
 		this.keysPressed = new HashMap<Integer, List<Integer>>();
 
 		System.out.println("Game Server running on: " + webServer.getUri());
@@ -113,7 +113,7 @@ public class GameHandler implements Runnable {
 			t.printStackTrace();
 			System.err.println("Server was shut down due to a fatal error!");
 			System.out.println("Restarting whole server...");
-			startServer(port, webRoot);
+			//startServer(port, webRoot);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class GameHandler implements Runnable {
 		if (roomName.length() > MAX_ROOMNAME_CHARS)
 			roomName = roomName.substring(0, MAX_ROOMNAME_CHARS - 1);
 
-		Game newRoom = new Game(800, 400);
+		Game newRoom = new Game(this, roomName, 800, 400);
 		this.games.put(roomName, newRoom);
 		newRoom.addCollisionListener(new RealCollisionListener(this));
 		roomListUpdated();
@@ -267,5 +267,10 @@ public class GameHandler implements Runnable {
 
 	public Game getGameRoom(String roomName) {
 		return games.get(roomName);
+	}
+
+	public void endGame(Game game) {
+		this.gameServer.sendEndGame(game.getPlayersList());
+		//TODO maybe destroy room... but there are problems with synchronization.
 	}
 }

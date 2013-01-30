@@ -15,6 +15,7 @@ import server.model.entities.Barrier;
 import server.model.entities.CloudTrap;
 import server.model.entities.Doodle;
 import server.model.entities.Entity;
+import server.model.entities.PlayerFinish;
 import server.model.entities.SpikeTrap;
 import server.model.entities.Turret;
 import server.model.entities.moving.AggroBot;
@@ -165,7 +166,7 @@ public class MapInfo {
 		case PlayerStart:
 			break;
 		case PlayerFinish:
-			entity = new Doodle(x, y, "finish_flag");
+			entity = new PlayerFinish(x, y, "finish_flag");
 			break;
 		case SpikeTrap:
 			entity = new SpikeTrap(x, y);
