@@ -174,6 +174,10 @@ function onMessage(incoming) {
 					incoming.colors[id][1]);
 		}
 		break;
+	case 'END_GAME':
+		$("#winNotification").fadeIn();
+		$("#winText").text("FEGGIG.");
+		break;
 	}
 }
 
