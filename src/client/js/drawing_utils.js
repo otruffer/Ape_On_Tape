@@ -126,3 +126,32 @@ Anim.getWalkingIndex = function(entity) {
 
 	return walkingIndices[anim.direction][anim.index];
 }
+
+var lastFX;
+Anim.getFX = function(type) {
+	var delta;
+	var currTime = new Date().getTime();
+
+	if (lastFX === undefined) {
+		lastFX = {};
+		lastFX.index = 1;
+		lastFX.time = currTime;
+		delta = 0;
+	} else {
+		delta = currTime - lastFX.time;
+	}
+
+	if (delta > 100) { // increase index
+		lastFX.index = (lastFX.index + 1) % 7;
+		lastFX.time = currTime;
+	}
+
+	switch (type) {
+	case 'flashBlue':
+		return tilePreload['flashBlue'][lastFX.index];
+	case 'flashYellow':
+		return tilePreload['flashYellow'][lastFX.index];
+	default:
+		return tilePreload['flashBlue'][lastFX.index];
+	}
+}
