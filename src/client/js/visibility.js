@@ -18,7 +18,7 @@ var CloudRendering = function(id, renderingEngine) {
 
 	var VIEW_RANGE = 5; // Range in tiles
 	var VIEW_RANGE_PX_PLUS_SQUARED = Math.pow((VIEW_RANGE + 1) * TILE_SIZE, 2);
-	var MIN_VISIBILITY = 0.95;
+	var MIN_VISIBILITY = 0.9;
 	var CLOUD_RGB = '0,0,0';
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
@@ -40,6 +40,13 @@ var CloudRendering = function(id, renderingEngine) {
 	 */
 	var buffer = document.createElement('canvas');
 	var bufferCtx = buffer.getContext('2d');
+	// set the base color - do not use transparency, this will be acheived using
+	// the global alpha parameter while copying the buffer
+	bufferCtx.fillStyle = 'black';
+
+	// background-image buffer
+	var bgBuffer = document.createElement('canvas');
+	var bgBufferCtx = bgBuffer.getContext('2d');
 
 	// var canvasImageData;
 	var c_width;
@@ -48,6 +55,8 @@ var CloudRendering = function(id, renderingEngine) {
 		c_width = c.width;
 		buffer.width = c.width;
 		buffer.height = c.height;
+		bgBuffer.width = c.width;
+		bgBuffer.height = c.height;
 		bbox_sx = renderingEngine.bbox.sx / sc;
 		bbox_sy = renderingEngine.bbox.sy / sc;
 		MIN_X = (bbox_sx / (TILE_SIZE)) << 0;
@@ -64,22 +73,19 @@ var CloudRendering = function(id, renderingEngine) {
 
 		init();
 		bufferCtx.scale(sc, sc);
+		bgBufferCtx.scale(sc, sc);
 
 		// DRAW GRADIENT OVERLAY
-		var grd = bufferCtx.createRadialGradient(
+		var grd = bgBufferCtx.createRadialGradient(
 				(me.x + PLAYER_SIZE / 2 - bbox_sx),
 				(me.y + PLAYER_SIZE / 2 - bbox_sy), TILE_SIZE, (me.x
 						+ PLAYER_SIZE / 2 - bbox_sx),
 				(me.y + PLAYER_SIZE / 2 - bbox_sy), VIEW_RANGE * TILE_SIZE);
 		grd.addColorStop(0, 'transparent');
 		grd.addColorStop(1, 'rgba(' + CLOUD_RGB + ',' + MIN_VISIBILITY + ')');
-		bufferCtx.fillStyle = grd;
-		bufferCtx.fillRect(0, 0, c.width, c.height);
+		bgBufferCtx.fillStyle = grd;
+		bgBufferCtx.fillRect(0, 0, c.width, c.height);
 		// END GRADIENT OVERLAY
-
-		// only complete opaque rectangles will be drawn - avoid switching in
-		// drawCloudAt() method itself for performance increase:
-		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + MIN_VISIBILITY + ")";
 
 		for ( var i = MIN_X; i < MAX_X; i++) {
 			var upLeftX = i * TILE_SIZE;
@@ -102,8 +108,9 @@ var CloudRendering = function(id, renderingEngine) {
 		}
 
 		bufferCtx.scale(1 / sc, 1 / sc);
+		bgBufferCtx.scale(1 / sc, 1 / sc);
 
-		flushBuffer();
+		flushBuffers();
 
 		var after = new Date().getTime();
 		var consumedMS = after - before;
@@ -129,9 +136,6 @@ var CloudRendering = function(id, renderingEngine) {
 
 			var xx = x - CLOUD_SIZE_HALF - bbox_sx;
 			var yy = y - CLOUD_SIZE_HALF - bbox_sy;
-			// bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + MIN_VISIBILITY
-			// + ")";
-			// FIXME: Completely black shadows look strange...
 			bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
 
 			// } else
@@ -285,8 +289,7 @@ var CloudRendering = function(id, renderingEngine) {
 		bufferCtx.scale(1 / sc, 1 / sc);
 	}
 
-	function flushBuffer() {
-
+	function flushBuffers() {
 		// var filtered = Pixastic.process(buffer, "blurfast", {amount:0.2});
 
 		// pngUrl = buffer.toDataURL();
@@ -295,8 +298,15 @@ var CloudRendering = function(id, renderingEngine) {
 		// buffer.height);
 		// ctx.putImageData(imgData, 0, 0);
 
-		// bufferCtx.stroke();
-		ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		// first clear out gradient area at hidden tiles
+		bgBufferCtx.globalCompositeOperation = 'destination-out';
+		bgBufferCtx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		// then copy hidden tiles using the MIN_VISIBILITY alpha:
+		bgBufferCtx.globalAlpha = MIN_VISIBILITY;
+		bgBufferCtx.globalCompositeOperation = 'source-over';
+		bgBufferCtx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		// finally flush back to game-context
+		ctx.drawImage(bgBuffer, 0, 0, bgBuffer.width, bgBuffer.height);
 
 		// ctx.putImageData(canvasImageData, 0, 0);
 	}
