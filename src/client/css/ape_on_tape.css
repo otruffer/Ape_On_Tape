@@ -272,3 +272,16 @@ body {
 	color: #bbb;
 	font-style: italic;
 }
+
+#winNotification {
+	display: none;
+	position: absolute;
+
+	width: 600px;
+	height: 400px;
+}
+
+#winNotificationX{
+	float: right;
+	font-color: red;
+}

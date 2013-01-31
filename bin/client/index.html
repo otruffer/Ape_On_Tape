@@ -3,8 +3,7 @@
 
 <head>
 <title>Apes With Capes On Tape Escape From Rape</title>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/pixastic.custom.js"></script>
 <script type="text/javascript" src="js/global_settings.js"></script>
 <script type="text/javascript" src="js/ape_on_tape.js"></script>
@@ -31,8 +30,12 @@
 		<div id="gameRoom">
 			<span class="description">Room:</span> <span class="name"></span>
 		</div>
-		<div id="music-control" class="control">Music<span class="shortcut-info"> (m)</span></div>
-		<div id="menu-control" class="control">Menu<span class="shortcut-info"> (s)</span></div>
+		<div id="music-control" class="control">
+			Music<span class="shortcut-info"> (m)</span>
+		</div>
+		<div id="menu-control" class="control">
+			Menu<span class="shortcut-info"> (s)</span>
+		</div>
 	</div>
 	<div id="gameContent">
 		<canvas id="canvas" width="800" height="600"></canvas>
@@ -93,6 +96,13 @@
 	<div id="playerList">
 		<h3>Players:</h3>
 		<ul></ul>
+	</div>
+	<div id="winNotification">
+		<div id="winText">
+		</div>
+		<div id="winNotificationX">
+		x
+		</div>
 	</div>
 
 	<!-- div id="delay-graph"></div -->

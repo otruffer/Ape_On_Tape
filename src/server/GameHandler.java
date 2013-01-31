@@ -23,7 +23,6 @@ import server.model.ServerEvents.GameStartEvent;
 import server.model.entities.moving.Player;
 import server.network.GameServer;
 import server.properties.ApeProperties;
-import server.util.Util;
 import client.ClientDirUtil;
 
 public class GameHandler implements Runnable {
@@ -63,7 +62,7 @@ public class GameHandler implements Runnable {
 		GameHandler.webRoot = webRoot.getAbsolutePath();
 
 		this.games = new HashMap<String, Game>();
-		games.put(DEFAULT_ROOMNAME, new Game(800, 400));
+		games.put(DEFAULT_ROOMNAME, new Game(this, "default Room", 800, 400));
 		this.keysPressed = new HashMap<Integer, List<Integer>>();
 
 		System.out.println("Game Server running on: " + webServer.getUri());
@@ -106,9 +105,20 @@ public class GameHandler implements Runnable {
 		else
 			webRoot = ClientDirUtil.getClientDirectory();
 
-		GameHandler gameHandler = new GameHandler(port, webRoot);
-		Thread gameThread = new Thread(gameHandler);
-		gameThread.run();
+		startServer(port, webRoot);
+	}
+
+	private static void startServer(int port, File webRoot) {
+		try {
+			GameHandler gameHandler = new GameHandler(port, webRoot);
+			Thread gameThread = new Thread(gameHandler);
+			gameThread.run();
+		} catch (Throwable t) {
+			t.printStackTrace();
+			System.err.println("Server was shut down due to a fatal error!");
+			System.out.println("Restarting whole server...");
+			//startServer(port, webRoot);
+		}
 	}
 
 	public void joinRoom(int id, String roomName) {
@@ -130,7 +140,7 @@ public class GameHandler implements Runnable {
 		if (roomName.length() > MAX_ROOMNAME_CHARS)
 			roomName = roomName.substring(0, MAX_ROOMNAME_CHARS - 1);
 
-		Game newRoom = new Game(800, 400);
+		Game newRoom = new Game(this, roomName, 800, 400);
 		this.games.put(roomName, newRoom);
 		newRoom.addCollisionListener(new RealCollisionListener(this));
 		roomListUpdated();
@@ -261,5 +271,10 @@ public class GameHandler implements Runnable {
 
 	public Game getGameRoom(String roomName) {
 		return games.get(roomName);
+	}
+
+	public void endGame(Game game) {
+		this.gameServer.sendEndGame(game.getPlayersList());
+		//TODO maybe destroy room... but there are problems with synchronization.
 	}
 }

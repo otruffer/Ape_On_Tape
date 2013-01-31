@@ -52,7 +52,6 @@ public class TileMap {
 		} catch (IndexOutOfBoundsException e) {
 			tile = new Tile(this, (int) (x / tileWidth),
 					(int) (y / tileHeight), false);
-			System.out.println("jetzt.");
 		}
 		return tile;
 	}
@@ -98,6 +97,7 @@ public class TileMap {
 			Tile randomWalk = this.getRandomWalkableTile();
 			float[] xy = {randomWalk.getX() * tileWidth,
 					randomWalk.getY() * tileHeight};
+			System.out.println("RANODM... should not happen...");
 			return xy;
 		}
 	}
@@ -127,6 +127,7 @@ public class TileMap {
 	public boolean inFinish(float x, float y) {
 		List<Point> finishPoints = this.getAllTileXY(PositionType.PlayerFinish);
 		for (Point upLeft : finishPoints) {
+			System.out.println(upLeft.x+" "+upLeft.y);
 			if (Math.abs(x - upLeft.x) < tileWidth
 					&& Math.abs(y - upLeft.y) < tileHeight)
 				return true;

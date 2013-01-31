@@ -5,6 +5,7 @@ function initGameMeta() {
 	initNameChange();
 	initRooms();
 	initMenu();
+	initWinNotification();
 }
 
 function initHeader() {
@@ -71,6 +72,12 @@ function initRooms() {
 
 function updateRoomList() {
 	initRooms();
+}
+
+function initWinNotification(){
+	$("#winNotificationX").click(function(){
+		$("#winNotification").fadeOut();
+	});
 }
 
 function updatePlayerList() {

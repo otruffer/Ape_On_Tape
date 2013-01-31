@@ -10,7 +10,7 @@ import java.util.Map;
 
 import server.GameHandler;
 import server.listeners.CollisionListener;
-import server.listeners.PlayerMoveListener;
+import server.model.ServerEvents.EndGameEvent;
 import server.model.ServerEvents.GameStartEvent;
 import server.model.ServerEvents.MapChangeEvent;
 import server.model.ServerEvents.RoundEndEvent;
@@ -42,9 +42,16 @@ public class Game {
 			.getProperty("firstWinnerPoints"));
 	private static final int LATER_WINNER_POINTS = Integer.parseInt(ApeProperties
 			.getProperty("laterWinnerPoints"));
+	private static final int NUMBER_OF_LEVELS = Integer.parseInt(ApeProperties
+			.getProperty("numberOfLevels"));
+	private List<String> levels;
+
 	private boolean finishRound;
+	private String roomName;
+	private GameHandler gameHandler;
 	TileMap map;
 	protected String mapName;
+	protected int currentLevel;
 	int width, height; // TODO: unused? (also in constructor)
 	private Collection<CollisionListener> collisionListeners;
 	private boolean started;
@@ -55,17 +62,27 @@ public class Game {
 	 */
 	private boolean running;
 
-	public Game(int width, int height) {
+	public Game(GameHandler gameHandler, String roomName, int width, int height) {
 		this.players = new HashMap<Integer, Player>();
 		this.collisionListeners = new LinkedList<CollisionListener>();
 		this.width = width;
+		this.roomName = roomName;
 		this.height = height;
+		this.gameHandler = gameHandler;
 		this.finishRound = false;
 		this.started = false;
 		this.winners = new HashMap<Player, Integer>();
 		this.serverEvents = new LinkedList<ServerEvent>();
-
-		this.loadMap(ApeProperties.getProperty("startMap"));
+		this.currentLevel = 0;
+		this.loadLevels();
+		this.loadMap(this.levels.get(this.currentLevel));
+	}
+	
+	private void loadLevels(){
+		this.levels = new LinkedList<String>();
+		for(int i = 0; i < NUMBER_OF_LEVELS; i++){
+			this.levels.add(ApeProperties.getProperty("level"+i));
+		}
 	}
 
 	private void initEntities(MapInfo mapInfo) {
@@ -92,7 +109,6 @@ public class Game {
 		start[0] += this.players.size();
 		Player player = new Player(playerId, start[0], start[1], playerName);
 		player.setId(playerId);
-		player.addMoveListener(new PlayerMoveListener(this, map));
 		this.players.put(player.getId(), player);
 	}
 
@@ -231,8 +247,14 @@ public class Game {
 		}
 		EventHandler.getInstance().addEvent(
 				new PushMessageEvent(GameEvent.Type.PUSH_MESSAGE, message, WAIT_AFTER_END_ROUND * 1000));
-		this.addFutureServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * WAIT_AFTER_END_ROUND,
-				"map.json"));
+		if(this.currentLevel < this.levels.size() - 1){
+			this.currentLevel++;
+			this.addFutureServerEvent(new MapChangeEvent(this, GameHandler.GAME_RATE * WAIT_AFTER_END_ROUND,
+				this.levels.get(this.currentLevel)));
+		}
+		else{
+			this.addFutureServerEvent(new EndGameEvent(this, GameHandler.GAME_RATE * WAIT_AFTER_END_ROUND));
+		}
 		this.finishRound = true;
 	}
 
@@ -256,7 +278,7 @@ public class Game {
 	}
 
 	/**
-	 * moves players back to start and "undwins" them.
+	 * moves players back to start and "unwins" them.
 	 */
 	public void movePlayersToStartingPosition() {
 		int i = 0;
@@ -304,4 +326,13 @@ public class Game {
 				player.getId() + "");
 	}
 
+	public void endGame() {
+		this.gameHandler.endGame(this);
+	}
+
+	public String getRoomName() {
+		return roomName;
+	}
+
+	
 }

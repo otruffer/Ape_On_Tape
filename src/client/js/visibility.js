@@ -5,26 +5,28 @@ var CloudRendering = function(id, renderingEngine) {
 	 * afterwards (for some "anti-aliasing")
 	 */
 
-	var map = renderingEngine.map;
-	var collisionMap;
+	var collisionMap = renderEngine.map.collisionMap;
 	var sc = renderingEngine.sc;
 	var TILE_SIZE = renderingEngine.TILE_SIZE;
 	var PLAYER_SIZE = renderingEngine.PLAYER_SIZE;
 
+	// for adaptive number of clouds
+	var MAX_CYCLE_TIME = 25;
+	var MIN_CYCLE_TIME = 10;
+
 	var CLOUDS_PER_TILE = 3;
-	/**
-	 * Not in tiles, nor in pixels, just some factor.
-	 */
-	var VIEW_RANGE = 8;
-	var MIN_VISIBILITY = 0.95;
+
+	var VIEW_RANGE = 5; // Range in tiles
+	var VIEW_RANGE_PX_PLUS_SQUARED = Math.pow((VIEW_RANGE + 1) * TILE_SIZE, 2);
+	var MIN_VISIBILITY = 0.9;
 	var CLOUD_RGB = '0,0,0';
 
 	var CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
+	var CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
 
 	var MIN_X = 0;
 	var MIN_Y = 0;
-	var MAX_X = map.width;
-	var MAX_Y = map.height;
+	var MAX_Y = renderEngine.map.height;
 
 	var me;
 	var me_x;
@@ -33,22 +35,28 @@ var CloudRendering = function(id, renderingEngine) {
 	var bbox_sx;
 	var bbox_sy;
 
-	var CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
-
 	/**
 	 * Buffer canvas for drawing in background.
 	 */
 	var buffer = document.createElement('canvas');
-	var bufferCtx;
+	var bufferCtx = buffer.getContext('2d');
+	// set the base color - do not use transparency, this will be acheived using
+	// the global alpha parameter while copying the buffer
+	bufferCtx.fillStyle = 'black';
 
-	var canvasImageData;
+	// background-image buffer
+	var bgBuffer = document.createElement('canvas');
+	var bgBufferCtx = bgBuffer.getContext('2d');
+
+	// var canvasImageData;
 	var c_width;
 
 	function init() {
 		c_width = c.width;
 		buffer.width = c.width;
 		buffer.height = c.height;
-		bufferCtx = buffer.getContext('2d');
+		bgBuffer.width = c.width;
+		bgBuffer.height = c.height;
 		bbox_sx = renderingEngine.bbox.sx / sc;
 		bbox_sy = renderingEngine.bbox.sy / sc;
 		MIN_X = (bbox_sx / (TILE_SIZE)) << 0;
@@ -58,14 +66,26 @@ var CloudRendering = function(id, renderingEngine) {
 		me = gameState.players[gameState.playerId];
 		me_x = me.x;
 		me_y = me.y;
-		collisionMap = map.collisionMap;
-		canvasImageData = ctx.getImageData(0, 0, c.width, c.height);
 	}
 
 	this.drawClouds = function() {
-		init();
+		var before = new Date().getTime();
 
+		init();
 		bufferCtx.scale(sc, sc);
+		bgBufferCtx.scale(sc, sc);
+
+		// DRAW GRADIENT OVERLAY
+		var grd = bgBufferCtx.createRadialGradient(
+				(me.x + PLAYER_SIZE / 2 - bbox_sx),
+				(me.y + PLAYER_SIZE / 2 - bbox_sy), TILE_SIZE, (me.x
+						+ PLAYER_SIZE / 2 - bbox_sx),
+				(me.y + PLAYER_SIZE / 2 - bbox_sy), VIEW_RANGE * TILE_SIZE);
+		grd.addColorStop(0, 'transparent');
+		grd.addColorStop(1, 'rgba(' + CLOUD_RGB + ',' + MIN_VISIBILITY + ')');
+		bgBufferCtx.fillStyle = grd;
+		bgBufferCtx.fillRect(0, 0, c.width, c.height);
+		// END GRADIENT OVERLAY
 
 		for ( var i = MIN_X; i < MAX_X; i++) {
 			var upLeftX = i * TILE_SIZE;
@@ -88,15 +108,39 @@ var CloudRendering = function(id, renderingEngine) {
 		}
 
 		bufferCtx.scale(1 / sc, 1 / sc);
+		bgBufferCtx.scale(1 / sc, 1 / sc);
 
-		flushBuffer();
+		flushBuffers();
+
+		var after = new Date().getTime();
+		var consumedMS = after - before;
+		adjustCloudNumber(consumedMS);
+	}
+
+	function adjustCloudNumber(ms) {
+		if (ms < MIN_CYCLE_TIME)
+			CLOUDS_PER_TILE++;
+		else if (ms > MAX_CYCLE_TIME)
+			CLOUDS_PER_TILE--;
+		else
+			return;
+
+		CLOUD_SIZE = TILE_SIZE / CLOUDS_PER_TILE;
+		CLOUD_SIZE_HALF = CLOUD_SIZE / 2;
 	}
 
 	function drawIfVisible(x, y) {
-		if (viewBlocked(x, y, me_x + PLAYER_SIZE / 2, me_y + PLAYER_SIZE / 2) >= 2) {
-			drawCloudAt(x, y, MIN_VISIBILITY);
-		} else
-			drawCloudAt(x, y, min(1 - visibilityAt(x, y), MIN_VISIBILITY));
+		if (viewBlocked(x, y, me_x + PLAYER_SIZE / 2, me_y + PLAYER_SIZE / 2) >= 2
+				&& distanceSquared(x, y, me_x, me_y) < VIEW_RANGE_PX_PLUS_SQUARED) {
+			// drawCloudAt(x, y, MIN_VISIBILITY);
+
+			var xx = x - CLOUD_SIZE_HALF - bbox_sx;
+			var yy = y - CLOUD_SIZE_HALF - bbox_sy;
+			bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+
+			// } else
+			// drawCloudAt(x, y, min(1 - visibilityAt(x, y), MIN_VISIBILITY));
+		}
 	}
 
 	function viewBlocked(xA, yA, xB, yB) {
@@ -204,39 +248,39 @@ var CloudRendering = function(id, renderingEngine) {
 		return collisionMap[tileY][tileX] != 0;
 	}
 
-	function visibilityAt(x, y) {
-		// var distance = new Point(x, y).distanceTo(new Point(me_x +
-		// PLAYER_SIZE
-		// / 2, me_y + PLAYER_SIZE / 2));
-		var distance = distanceSquared(x, y, me_x + PLAYER_SIZE / 2, me_y
-				+ PLAYER_SIZE / 2);
-		distance /= (TILE_SIZE * TILE_SIZE);
-		return min(1, VIEW_RANGE / distance);
-	}
+	// function visibilityAt(x, y) {
+	// // var distance = new Point(x, y).distanceTo(new Point(me_x +
+	// // PLAYER_SIZE
+	// // / 2, me_y + PLAYER_SIZE / 2));
+	// var distance = distanceSquared(x, y, me_x + PLAYER_SIZE / 2, me_y
+	// + PLAYER_SIZE / 2);
+	// distance /= (TILE_SIZE * TILE_SIZE);
+	// return min(1, VIEW_RANGE / distance);
+	// }
 
-	function drawCloudAt(x, y, opacity) {
-		var xx = x - CLOUD_SIZE_HALF - bbox_sx;
-		var yy = y - CLOUD_SIZE_HALF - bbox_sy;
-
-		// var opacity_cpl = 1 - opacity;
-		//
-		// var arrayPos = ((yy - 1) * c_width + xx) * 4;
-		// for ( var i = arrayPos - CLOUD_SIZE * 2; i < arrayPos + CLOUD_SIZE *
-		// 2; i += 4) {
-		// for ( var j = i - CLOUD_SIZE_HALF * c_width * 4; j < i
-		// + CLOUD_SIZE_HALF * c_width * 4; j += c_width * 4) {
-		// canvasImageData.data[j - 1] *= opacity_cpl;
-		// canvasImageData.data[j - 2] *= opacity_cpl;
-		// canvasImageData.data[j - 3] *= opacity_cpl;
-		// }
-		// }
-
-		bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
-		bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
-
-		// if (opacity > 0.7)
-		// bufferCtx.drawImage(imagePreload['cloud'], xx, yy);
-	}
+	// function drawCloudAt(x, y, opacity) {
+	// var xx = x - CLOUD_SIZE_HALF - bbox_sx;
+	// var yy = y - CLOUD_SIZE_HALF - bbox_sy;
+	//
+	// // var opacity_cpl = 1 - opacity;
+	// //
+	// // var arrayPos = ((yy - 1) * c_width + xx) * 4;
+	// // for ( var i = arrayPos - CLOUD_SIZE * 2; i < arrayPos + CLOUD_SIZE *
+	// // 2; i += 4) {
+	// // for ( var j = i - CLOUD_SIZE_HALF * c_width * 4; j < i
+	// // + CLOUD_SIZE_HALF * c_width * 4; j += c_width * 4) {
+	// // canvasImageData.data[j - 1] *= opacity_cpl;
+	// // canvasImageData.data[j - 2] *= opacity_cpl;
+	// // canvasImageData.data[j - 3] *= opacity_cpl;
+	// // }
+	// // }
+	//
+	// bufferCtx.fillStyle = "rgba(" + CLOUD_RGB + "," + opacity + ")";
+	// bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+	//
+	// // if (opacity > 0.7)
+	// // bufferCtx.drawImage(imagePreload['cloud'], xx, yy);
+	// }
 
 	function drawTestDotAt(x, y) {
 		bufferCtx.scale(sc, sc);
@@ -245,7 +289,7 @@ var CloudRendering = function(id, renderingEngine) {
 		bufferCtx.scale(1 / sc, 1 / sc);
 	}
 
-	function flushBuffer() {
+	function flushBuffers() {
 		// var filtered = Pixastic.process(buffer, "blurfast", {amount:0.2});
 
 		// pngUrl = buffer.toDataURL();
@@ -254,8 +298,15 @@ var CloudRendering = function(id, renderingEngine) {
 		// buffer.height);
 		// ctx.putImageData(imgData, 0, 0);
 
-		// bufferCtx.stroke();
-		ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		// first clear out gradient area at hidden tiles
+		bgBufferCtx.globalCompositeOperation = 'destination-out';
+		bgBufferCtx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		// then copy hidden tiles using the MIN_VISIBILITY alpha:
+		bgBufferCtx.globalAlpha = MIN_VISIBILITY;
+		bgBufferCtx.globalCompositeOperation = 'source-over';
+		bgBufferCtx.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		// finally flush back to game-context
+		ctx.drawImage(bgBuffer, 0, 0, bgBuffer.width, bgBuffer.height);
 
 		// ctx.putImageData(canvasImageData, 0, 0);
 	}
@@ -283,5 +334,4 @@ var CloudRendering = function(id, renderingEngine) {
 		yy = abs(dY);
 		return xx * xx + yy * yy;
 	}
-
 }
