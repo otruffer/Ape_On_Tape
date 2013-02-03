@@ -117,7 +117,7 @@ public class GameHandler implements Runnable {
 			t.printStackTrace();
 			System.err.println("Server was shut down due to a fatal error!");
 			System.out.println("Restarting whole server...");
-			//startServer(port, webRoot);
+			startServer(port, webRoot);
 		}
 	}
 
