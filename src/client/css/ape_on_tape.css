@@ -282,6 +282,10 @@ body {
 	height: 400px;
 }
 
+.instructions {
+	font-size: 14pt;
+}
+
 #winNotificationX{
 	float: right;
 	font-color: red;
