@@ -144,6 +144,7 @@ function initMenu() {
 	menus['#tab_designer'] = '#m_designer';
 	menus['#tab_settings'] = '#m_settings';
 	menus['#tab_instructions'] = '#m_instructions';
+	menus['#tab_credits'] = '#m_credits';
 
 	// preselection
 	var selectedTab = '#tab_rooms';
