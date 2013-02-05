@@ -229,8 +229,8 @@ public class GameHandler implements Runnable {
 	}
 
 	public void playerDisconnected(int id) {
-		gameServer.sendDisconnectMessage(id, playerNames.get(id),
-				playersInRoomWith(id));
+		// gameServer.sendDisconnectMessage(id, playerNames.get(id),
+		// playersInRoomWith(id));
 		this.leavePlayer(id);
 		gameServer.disconnect(id);
 		playerRooms.remove(id);
