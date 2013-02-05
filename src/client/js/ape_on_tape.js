@@ -13,6 +13,8 @@ var loginReady;
 var roomChosen;
 var rooms;
 
+var room_global;
+
 // audio support of browser
 var mp3Suppport = audioSupport("mp3");
 var oggSupport = audioSupport("ogg");
