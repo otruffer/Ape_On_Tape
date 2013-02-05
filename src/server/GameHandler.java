@@ -78,7 +78,7 @@ public class GameHandler implements Runnable {
 		Future<? extends WebServer> stopping = webServer.stop();
 		try {
 			stopping.get();
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return true;
