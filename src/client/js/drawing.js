@@ -39,7 +39,7 @@ function RenderingEngine() {
 	this.TILE_SIZE = 30;
 	this.SCALE = 1 / 0.6;
 	this.BACKGROUND_TYPES = [ "blood", "barrier_open", "spike_down",
-			"spike_up", "cloudtrap" ];
+			"spike_up", "cloudtrap", "fastshoot" ];
 
 	/* display properties */
 	this.T = this.TILE_SIZE;
@@ -327,6 +327,11 @@ function RenderingEngine() {
 			entitySize = self.TILE_SIZE;
 			effectiveSize = self.TILE_SIZE;
 			tile = imagePreload['nightTrap'];
+			break;
+		case 'fastshoot':
+			entitySize = self.TILE_SIZE;
+			effectiveSize = self.TILE_SIZE;
+			tile = imagePreload['fastshoot'];
 			break;
 		case 'spike_up':
 			entitySize = self.TILE_SIZE;

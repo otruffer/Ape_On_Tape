@@ -39,7 +39,7 @@
          "name":"(helper: do not export!)",
          "opacity":0.140000000596046,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":80,
          "x":0,
          "y":0

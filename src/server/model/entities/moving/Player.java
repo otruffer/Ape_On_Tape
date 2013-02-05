@@ -28,9 +28,10 @@ public class Player extends Entity {
 
 	@noGson
 	private boolean isSlow;
-	
+
 	protected int points;
-	
+	private int fastBulletsLeft;
+
 	public Player(int id, float x, float y, String name) {
 		super(id, x, y);
 		this.name = name;
@@ -39,6 +40,7 @@ public class Player extends Entity {
 		this.points = 0;
 		this.isWinner = false;
 		this.setDeadlyForPlayer(false);
+		this.fastBulletsLeft = 0;
 	}
 
 	@Override
@@ -47,14 +49,14 @@ public class Player extends Entity {
 
 		if (isWinner)
 			return;
-		
+
 		this.shoot(game);
 	}
 
 	private void shoot(Game game) {
 		currentShootDelay++;
 		if (Util.isShootKeyPressed(keysPressed)
-				&& currentShootDelay > SHOOT_DELAY) {
+				&& (currentShootDelay > SHOOT_DELAY || fastBulletsLeft-- > 0)) {
 			Bullet bullet = new Bullet(this, this.getX() + this.getWidth() / 2,
 					this.getY() + this.getHeight() / 2, dirX, dirY);
 			game.addEntity(bullet);
@@ -123,8 +125,8 @@ public class Player extends Entity {
 		this.collisionResolving = false;
 		this.setTileCollision(false);
 	}
-	
-	public void addPoints(int points){
+
+	public void addPoints(int points) {
 		this.points += points;
 	}
 
@@ -147,8 +149,11 @@ public class Player extends Entity {
 	public void unwin() {
 		this.isWinner = false;
 		this.collisionResolving = true;
-		this.setTileCollision(true);		
+		this.setTileCollision(true);
 	}
-	
-	
+
+	public void fasterShoot(int numBullets) {
+		this.fastBulletsLeft = numBullets;
+	}
+
 }
