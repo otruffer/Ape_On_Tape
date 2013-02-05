@@ -136,7 +136,7 @@ var CloudRendering = function(id, renderingEngine) {
 
 			var xx = x - CLOUD_SIZE_HALF - bbox_sx;
 			var yy = y - CLOUD_SIZE_HALF - bbox_sy;
-			bufferCtx.fillRect(xx, yy, CLOUD_SIZE, CLOUD_SIZE);
+			bufferCtx.fillRect(xx, yy, CLOUD_SIZE + 1, CLOUD_SIZE + 1);
 
 			// } else
 			// drawCloudAt(x, y, min(1 - visibilityAt(x, y), MIN_VISIBILITY));
