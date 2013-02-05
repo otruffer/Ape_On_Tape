@@ -255,6 +255,8 @@ body {
 	border: 5px inset #3FA8B1;
 	border-bottom-left-radius: 20px;
 	padding: 0 5px 0 5px;
+	overflow-y: auto;
+	color: #C9C9C9;
 }
 
 #m_rooms .playerName,#m_rooms .playerName-title {
@@ -286,7 +288,7 @@ body {
 	font-size: 14pt;
 }
 
-#winNotificationX{
+#winNotificationX {
 	float: right;
 	font-color: red;
 }
