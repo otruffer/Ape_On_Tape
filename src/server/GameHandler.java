@@ -127,7 +127,7 @@ public class GameHandler implements Runnable {
 		this.joinPlayer(id, roomName);
 		gameServer.sendJoinMessage(id, user, roomName, playersInRoomWith(id));
 		gameServer.sendNewRoomInfo(roomName, asList(id));
-	}
+	}	
 
 	private void joinPlayer(int playerId, String roomName) {
 		if (!games.containsKey(roomName))
@@ -203,8 +203,8 @@ public class GameHandler implements Runnable {
 	}
 
 	public void playerDisconnected(int id) {
-		gameServer.sendDisconnectMessage(id, playerNames.get(id),
-				playersInRoomWith(id));
+//		gameServer.sendDisconnectMessage(id, playerNames.get(id),
+//				playersInRoomWith(id));
 		this.leavePlayer(id);
 		gameServer.disconnect(id);
 		playerRooms.remove(id);
@@ -254,17 +254,10 @@ public class GameHandler implements Runnable {
 	}
 
 	private List<Integer> playersInRoomWith(int id) {
-		System.out.println(id);
-		System.out.println(playerRooms.get(id));
-		System.out.println(games.get(playerRooms.get(id)));
-		System.out.println(games.get(playerRooms.get(id))
-				.getPlayers());
-		System.out.println(games.get(playerRooms.get(id))
-				.getPlayers().keySet());
 		return new LinkedList<Integer>(games.get(playerRooms.get(id))
 				.getPlayers().keySet());
 	}
-
+	
 	public List<Integer> idsFromPlayers(List<Player> players) {
 		List<Integer> ids = new LinkedList<Integer>();
 		for (Player p : players)
