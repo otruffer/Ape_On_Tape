@@ -74,10 +74,26 @@ function updateRoomList() {
 	initRooms();
 }
 
-function initWinNotification(){
-	$("#winNotificationX").click(function(){
+function initWinNotification() {
+	$("#winNotification").click(function() {
 		$("#winNotification").fadeOut();
+		$("#canvas-overlay").fadeOut();
 	});
+}
+
+function showWinNotification(players) {
+	$("#winNotification").fadeIn();
+	$('#canvas-overlay').fadeIn();
+
+	$("#winText").text("Game end. Suuuupaaa! Click anywhere to continue");
+	for ( var i in players) {
+		var element = $("<div>");
+		element.text = players[i].name;
+		if (i == 0)
+			$("#winText").html(element);
+		else
+			$("#winText").append(element);
+	}
 }
 
 function updatePlayerList() {

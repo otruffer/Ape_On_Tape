@@ -175,8 +175,7 @@ function onMessage(incoming) {
 		}
 		break;
 	case 'END_GAME':
-		$("#winNotification").fadeIn();
-		$("#winText").text("FEGGIG.");
+		showWinNotification(incoming.players);
 		break;
 	}
 }
