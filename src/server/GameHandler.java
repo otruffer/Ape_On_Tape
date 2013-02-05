@@ -117,7 +117,7 @@ public class GameHandler implements Runnable {
 			t.printStackTrace();
 			System.err.println("Server was shut down due to a fatal error!");
 			System.out.println("Restarting whole server...");
-			startServer(port, webRoot);
+//			startServer(port, webRoot);
 		}
 	}
 
@@ -254,6 +254,13 @@ public class GameHandler implements Runnable {
 	}
 
 	private List<Integer> playersInRoomWith(int id) {
+		System.out.println(id);
+		System.out.println(playerRooms.get(id));
+		System.out.println(games.get(playerRooms.get(id)));
+		System.out.println(games.get(playerRooms.get(id))
+				.getPlayers());
+		System.out.println(games.get(playerRooms.get(id))
+				.getPlayers().keySet());
 		return new LinkedList<Integer>(games.get(playerRooms.get(id))
 				.getPlayers().keySet());
 	}
