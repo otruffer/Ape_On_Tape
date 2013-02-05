@@ -47,7 +47,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="menu" style="display: none">
+		<div id="menu">
 			<ul class="menu_tabs">
 				<li><span id="tab_quit" class="tab">X</span></li>
 				<li><span id="tab_rooms" class="tab">Rooms</span></li>
@@ -90,41 +90,56 @@
 			</div>
 			<div id="m_instructions" class="menu_content instructions">
 				<h3>Hey there!</h3>
+				<p>Every year high society apes gather together to have a
+					competition of whom wins the ape's cape! The competition is a race
+					through different areas including a graveyard, a cace, mount simia
+					and a busy bazar! What a blast! Of course these races are quite
+					dangerous for little apes and high society primates don't like to
+					get their hands dirty. Thus they sent out you! Yes, you are the
+					honored ape, you get the top hat of your house's color and try to
+					win the ape's cape for your alpha-ape!</p>
 				<p>
-					Every year high society apes gather together to have a competition of whom wins the ape's cape! The competition is a race through different areas including a graveyard, a cace, mount simia and a busy bazar!
-					What a blast! Of course these races are quite dangerous for little apes and high society primates don't like to get their hands dirty. Thus they sent out you! Yes, you are the honored ape, you get the top hat of
-					your house's color and try to win the ape's cape for your alpha-ape!
+					The rules are fairly simple: Join a room or create your own room in
+					the "rooms" tab. If there are enough primates in a room the game
+					starts!<br /> Now your goal is to reach the end point <img
+						src="../img/finish_flag.png" style="height: 14px; width: 14px;">.
+					Some <img src="../img/turret.png"
+						style="height: 20px; width: 20px;"> throw <img
+						src="../img/tiles/bullets_24px.png" style="height: 20px;">
+					which are (oddly enough) deadly for you. There are evil humans <img
+						src="../img/bot.png" style="height: 20px; width: 20px;"> who
+					are jealous that we apes evolved from them and try to kill you as
+					well! But don't lose hope yet! By pressing the space bar you can
+					shoot your own bananas! If you hit a human once they get slower (as
+					bananas are slippery) and if you hit them twice they die! Can you
+					shoot other apes too? Of course you can! Shooting them will slow
+					your enemies down, try to shoot them if they are chased by a human
+					for some <img src="../img/blood.png"
+						style="height: 20px; width: 20px;">. Another thing to care
+					for are cacti<img src="../img/spike_trap_up.png"
+						style="height: 20px; width: 20px;">.
 				</p>
 				<p>
-					The rules are fairly simple: Join a room or create your own room in the "rooms" tab. If there are enough primates in a room the game starts!<br /> 
-					Now your goal is to reach the end point <img src="../img/finish_flag.png" style="height: 14px; width: 14px;">.
-					Some <img src="../img/turret.png" style="height: 20px; width: 20px;"> throw <img src="../img/tiles/bullets_24px.png" style="height: 20px;"> which are (oddly enough) deadly for you.
-					There are evil humans <img src="../img/bot.png" style="height: 20px; width: 20px;"> who are jealous that we apes evolved from them and try to kill you as well! But don't lose hope yet!
-					By pressing the space bar you can shoot your own bananas! If you hit a human once they get slower (as bananas are slippery) and if you hit them twice they die! Can you shoot other apes too?
-					Of course you can! Shooting them will slow your enemies down, try to shoot them if they are chased by a human for some <img src="../img/blood.png" style="height: 20px; width: 20px;">.
-					Another thing to care for are cacti<img src="../img/spike_trap_up.png" style="height: 20px; width: 20px;">.
-				</p>
-				<p>
-				The first ape to reach the finish line <img src="../img/finish_flag.png" style="height: 14px; width: 14px;"> will get three points. After that there are 10 seconds remaining, every other ape that reaches the finish line by the end of these 10 seconds gets one points as well. After that the next map starts!
-				May the best ape win!
+					The first ape to reach the finish line <img
+						src="../img/finish_flag.png" style="height: 14px; width: 14px;">
+					will get three points. After that there are 10 seconds remaining,
+					every other ape that reaches the finish line by the end of these 10
+					seconds gets one points as well. After that the next map starts!
+					May the best ape win!
 				</p>
 			</div>
 		</div>
+
+		<div id="winNotification">
+			<div id="winText"></div>
+		</div>
+
 		<div id="menu-overlay"></div>
-		<!-- <div id="canvas-overlay">
-		<div id="canvas-lightbox">Waiting for another player...</div>
-	</div> -->
+		<div id="canvas-overlay"></div>
 	</div>
 	<div id="playerList">
 		<h3>Players:</h3>
 		<ul></ul>
-	</div>
-	<div id="winNotification">
-		<div id="winText">
-		</div>
-		<div id="winNotificationX">
-		x
-		</div>
 	</div>
 
 	<!-- div id="delay-graph"></div -->

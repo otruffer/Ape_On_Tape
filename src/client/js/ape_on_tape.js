@@ -13,6 +13,8 @@ var loginReady;
 var roomChosen;
 var rooms;
 
+var room_global;
+
 // audio support of browser
 var mp3Suppport = audioSupport("mp3");
 var oggSupport = audioSupport("ogg");
@@ -72,7 +74,7 @@ function usernameAllowed(name) {
 
 function roomSelection() {
 	// delete room and go to lobby
-	delete window.localStorage.room;
+	delete room_global;
 	if ($('#menu').is(':hidden'))
 		toggleMenu();
 }
@@ -90,7 +92,7 @@ function newRoomPrompt() {
 	if (room) {
 		if (window.localStorage) { // store in browser localStorage, so we
 			// remember next next
-			window.localStorage.room = room;
+			room_global = room;
 		}
 		changeToRoom(room);
 	} else {
@@ -161,7 +163,7 @@ function onMessage(incoming) {
 		updateRoomList();
 		break;
 	case 'NEW_ROOM':
-		window.localStorage.room = incoming.newRoom;
+		room_global = incoming.newRoom;
 		updateRoomInfo();
 		updateRoomList();
 		closeMenu();
@@ -175,8 +177,7 @@ function onMessage(incoming) {
 		}
 		break;
 	case 'END_GAME':
-		$("#winNotification").fadeIn();
-		$("#winText").text("FEGGIG.");
+		showWinNotification(incoming.players);
 		break;
 	}
 }
