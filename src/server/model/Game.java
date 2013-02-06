@@ -44,6 +44,7 @@ public class Game {
 			.getProperty("laterWinnerPoints"));
 	private static final int NUMBER_OF_LEVELS = Integer.parseInt(ApeProperties
 			.getProperty("numberOfLevels"));
+	private static final int FASTER_SHOOT_BULLETS = 50;
 	private List<String> levels;
 
 	private boolean finishRound;
@@ -332,6 +333,10 @@ public class Game {
 
 	public String getRoomName() {
 		return roomName;
+	}
+
+	public void fasterShoot(Player player) {
+		player.fasterShoot(FASTER_SHOOT_BULLETS);
 	}
 
 	
