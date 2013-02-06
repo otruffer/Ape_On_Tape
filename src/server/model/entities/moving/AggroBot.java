@@ -5,11 +5,15 @@ import java.util.List;
 import server.model.Game;
 import server.model.entities.Entity;
 import server.model.map.PositionType;
+import server.network.GsonExclusionStrategy.noGson;
 
 public class AggroBot extends Bot {
 
+	@noGson
 	private static final float MOVE_DIRECTION_MEMORY = 15;
+	@noGson
 	private float lastMoveX;
+	@noGson
 	private float lastMoveY;
 
 	public AggroBot(int id, float x, float y, String name) {

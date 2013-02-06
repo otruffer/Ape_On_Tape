@@ -19,7 +19,9 @@ public class DrunkBot extends Bot {
 	private float memX;
 	@noGson
 	private float memY;
+	@noGson
 	private float lastRandomX;
+	@noGson
 	private float lastRandomY;
 
 	public DrunkBot(int id, float x, float y, String name) {
