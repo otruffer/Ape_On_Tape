@@ -157,6 +157,7 @@ function onMessage(incoming) {
 		if (designer) {
 			designer.composeShape();
 		}
+		hideWinNotification();
 		break;
 	case 'ROOMS':
 		rooms = incoming.rooms;

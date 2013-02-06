@@ -74,26 +74,39 @@ function updateRoomList() {
 	initRooms();
 }
 
-function initWinNotification() {
-	$("#winNotification").click(function() {
-		$("#winNotification").fadeOut();
-		$("#canvas-overlay").fadeOut();
-	});
-}
-
 function showWinNotification(players) {
 	$("#winNotification").fadeIn();
 	$('#canvas-overlay').fadeIn();
 
-	$("#winText").text("Game end. Suuuupaaa! Click anywhere to continue");
+	var list = $('#winList ul');
+	list.empty();
+
 	for ( var i in players) {
-		var element = $("<div>");
-		element.text = players[i].name;
-		if (i == 0)
-			$("#winText").html(element);
-		else
-			$("#winText").append(element);
+		var li = $('<li>');
+
+		// copy pictogram
+		var pictoOrig = tilePreload['playersPicto'][players[i].id];
+		var picto = document.createElement('canvas');
+		picto.width = pictoOrig.width;
+		picto.height = pictoOrig.height;
+		var pCtx = picto.getContext('2d');
+		pCtx.drawImage(pictoOrig, 0, 0);
+		$(picto).addClass('picto');
+		li.append(picto);
+
+		li.append('<span class="player">' + players[i].name + '</span>');
+		li.append('<span class="points">' + players[i].points + '</span>');
+		list.append(li);
 	}
+}
+
+function hideWinNotification() {
+	$("#winNotification").fadeOut();
+	$('#canvas-overlay').fadeOut();
+}
+
+function initWinNotification() {
+	$("#winExit").click(hideWinNotification);
 }
 
 function updatePlayerList() {
