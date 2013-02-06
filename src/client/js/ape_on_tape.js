@@ -157,6 +157,7 @@ function onMessage(incoming) {
 		if (designer) {
 			designer.composeShape();
 		}
+		hideWinNotification();
 		break;
 	case 'ROOMS':
 		rooms = incoming.rooms;
@@ -387,6 +388,7 @@ function loadGraphics() {
 	loadImage('barrier_open', 'img/barrier_open.png');
 	loadImage('turret', 'img/turret.png');
 	loadImage('nightTrap', 'img/night_trap.png');
+	loadImage('fastshoot', 'img/fastshoot.png');
 	loadImage('spike_up', 'img/spike_trap_up.png');
 	loadImage('spike_down', 'img/spike_trap_down.png');
 

@@ -3,7 +3,7 @@ package server.model.map;
 import java.awt.Point;
 
 public enum PositionType {
-	None, PlayerStart, Bot, DrunkBot, AggroBot, PlayerFinish, Turret, Barrier, CloudTrap, SpikeTrap, LookingDirUp, LookingDirRight, LookingDirLeft, LookingDirDown;
+	None, PlayerStart, Bot, DrunkBot, AggroBot, PlayerFinish, Turret, Barrier, FastShoot, CloudTrap, SpikeTrap, LookingDirUp, LookingDirRight, LookingDirLeft, LookingDirDown;
 
 	public static boolean isLookingType(PositionType type) {
 		return PositionType.LookingDirDown.equals(type)
