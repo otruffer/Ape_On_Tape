@@ -3,10 +3,11 @@ package server.model.entities;
 import server.model.Game;
 import server.model.entities.moving.Bot;
 import server.model.entities.moving.Bullet;
+import server.network.GsonExclusionStrategy.noGson;
 
 public class Barrier extends Entity {
 
-	@SuppressWarnings("unused") //is used on client side.
+	@noGson
 	private boolean open;
 
 	public Barrier(float x, float y) {

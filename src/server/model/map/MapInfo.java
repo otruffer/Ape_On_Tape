@@ -13,8 +13,8 @@ import java.util.Map;
 import server.exceptions.MapParseException;
 import server.model.entities.Barrier;
 import server.model.entities.CloudTrap;
-import server.model.entities.Doodle;
 import server.model.entities.Entity;
+import server.model.entities.FastShoot;
 import server.model.entities.PlayerFinish;
 import server.model.entities.SpikeTrap;
 import server.model.entities.Turret;
@@ -44,7 +44,7 @@ public class MapInfo {
 			PositionType.Turret, // symbol #08
 			PositionType.Barrier, // symbol #09
 			PositionType.None, // symbol #10
-			PositionType.None, // symbol #11
+			PositionType.FastShoot, // symbol #11
 			PositionType.CloudTrap, // symbol #12
 			PositionType.SpikeTrap, // symbol #13
 			PositionType.LookingDirUp, // symbol #14
@@ -173,6 +173,9 @@ public class MapInfo {
 			break;
 		case CloudTrap:
 			entity = new CloudTrap(x, y);
+			break;
+		case FastShoot:
+			entity = new FastShoot(x, y);
 			break;
 		default: // gr8, thx
 			System.err.println("WARNING the specified type '" + type

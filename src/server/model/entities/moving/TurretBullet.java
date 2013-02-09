@@ -2,10 +2,13 @@ package server.model.entities.moving;
 
 import server.model.Game;
 import server.model.entities.Entity;
+import server.network.GsonExclusionStrategy.noGson;
 
 public class TurretBullet extends Bullet {
 
+	@noGson
 	protected float range;
+	@noGson
 	protected float travelDistance;
 	
 	public TurretBullet(Entity owner, float x, float y, float dirX, float dirY, float range) {

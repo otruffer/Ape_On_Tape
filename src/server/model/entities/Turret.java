@@ -6,12 +6,16 @@ import server.model.Game;
 import server.model.entities.moving.Bullet;
 import server.model.entities.moving.Player;
 import server.model.entities.moving.TurretBullet;
+import server.network.GsonExclusionStrategy.noGson;
 import server.util.Util;
 
 public class Turret extends Entity {
 
+	@noGson
 	protected float range;
+	@noGson
 	protected int shootTimer;
+	@noGson
 	protected int shootSpeed = 45;
 	
 	public Turret(float x, float y) {

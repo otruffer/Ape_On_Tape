@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
@@ -49,11 +50,16 @@ public class GameHandler implements Runnable {
 	private static final int MAX_USERNAME_CHARS = 20;
 	private static final int MAX_ROOMNAME_CHARS = 20;
 
-	public GameHandler(int port, File webRoot) throws InterruptedException,
-			ExecutionException {
+	public GameHandler(int port, File webRoot) throws Exception {
 		gameServer = new GameServer(this);
-		webServer = createWebServer(port).add("/apesocket", gameServer)
-				.add(new StaticFileHandler(webRoot)).start().get();
+		try {
+			webServer = createWebServer(port).add("/apesocket", gameServer)
+					.add(new StaticFileHandler(webRoot)).start().get();
+		} catch (Exception e) {
+			System.out
+					.println("Webserver could not be started! The port may already be in use. Make sure no other instance of this program runs.");
+			throw e;
+		}
 
 		GameHandler.webRoot = webRoot.getAbsolutePath();
 
@@ -66,6 +72,16 @@ public class GameHandler implements Runnable {
 		this.playerNames = new HashMap<Integer, String>();
 		this.playerRooms = new HashMap<Integer, String>();
 		this.playerColors = new HashMap<Integer, String[]>();
+	}
+
+	private boolean stopServer() {
+		Future<? extends WebServer> stopping = webServer.stop();
+		try {
+			stopping.get();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -91,7 +107,7 @@ public class GameHandler implements Runnable {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		int port = WEB_SERVER_PORT;
 		File webRoot;
 		if (args.length > 0)
@@ -101,20 +117,34 @@ public class GameHandler implements Runnable {
 		else
 			webRoot = ClientDirUtil.getClientDirectory();
 
-		startServer(port, webRoot);
+		boolean hadException;
+		do {
+			hadException = false;
+			GameHandler gameHandler = null;
+			try {
+				gameHandler = startServer(port, webRoot);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Stopping server...");
+				if (gameHandler.stopServer()) {
+					System.out.println("Server shutdown was successful.");
+				} else {
+					System.err.println("Server shutdown failed!");
+				}
+				System.err
+						.println("Server was shut down due to a fatal error!");
+				System.out.println("Restarting whole server...");
+				hadException = true;
+			}
+		} while (hadException);
 	}
 
-	private static void startServer(int port, File webRoot) {
-		try {
-			GameHandler gameHandler = new GameHandler(port, webRoot);
-			Thread gameThread = new Thread(gameHandler);
-			gameThread.run();
-		} catch (Throwable t) {
-			t.printStackTrace();
-			System.err.println("Server was shut down due to a fatal error!");
-			System.out.println("Restarting whole server...");
-			//startServer(port, webRoot);
-		}
+	private static GameHandler startServer(int port, File webRoot)
+			throws Exception {
+		GameHandler gameHandler = new GameHandler(port, webRoot);
+		Thread gameThread = new Thread(gameHandler);
+		gameThread.run();
+		return gameHandler;
 	}
 
 	public void joinRoom(int id, String roomName) {
@@ -199,8 +229,8 @@ public class GameHandler implements Runnable {
 	}
 
 	public void playerDisconnected(int id) {
-		gameServer.sendDisconnectMessage(id, playerNames.get(id),
-				playersInRoomWith(id));
+		// gameServer.sendDisconnectMessage(id, playerNames.get(id),
+		// playersInRoomWith(id));
 		this.leavePlayer(id);
 		gameServer.disconnect(id);
 		playerRooms.remove(id);
@@ -271,6 +301,7 @@ public class GameHandler implements Runnable {
 
 	public void endGame(Game game) {
 		this.gameServer.sendEndGame(game.getPlayersList());
-		//TODO maybe destroy room... but there are problems with synchronization.
+		// TODO maybe destroy room... but there are problems with
+		// synchronization.
 	}
 }

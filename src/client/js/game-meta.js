@@ -15,12 +15,12 @@ function initHeader() {
 				window.localStorage.username);
 	}
 	if (roomChosen)
-		$('#gameRoom .name').text(window.localStorage.room);
+		$('#gameRoom .name').text(room_global);
 
 }
 
 function updateRoomInfo() {
-	$('#gameRoom .name').text(window.localStorage.room);
+	$('#gameRoom .name').text(room_global);
 }
 
 function initNameChange() {
@@ -38,12 +38,12 @@ function nameChange() {
 }
 
 function leaveRoom() {
-	delete window.localStorage.room;
+	delete room_global;
 	changeToRoom(null);
 }
 
 function isInARoom() {
-	return window.localStorage.room;
+	return room_global;
 }
 
 function initRooms() {
@@ -61,7 +61,7 @@ function initRooms() {
 			item.append(rooms[index]);
 			roomList.append(item);
 			item.click(changeRoom);
-			if (rooms[index] == window.localStorage.room) {
+			if (rooms[index] == room_global) {
 				item.addClass('selected');
 			}
 		}
@@ -74,10 +74,39 @@ function updateRoomList() {
 	initRooms();
 }
 
-function initWinNotification(){
-	$("#winNotificationX").click(function(){
-		$("#winNotification").fadeOut();
-	});
+function showWinNotification(players) {
+	$("#winNotification").fadeIn();
+	$('#canvas-overlay').fadeIn();
+
+	var list = $('#winList ul');
+	list.empty();
+
+	for ( var i in players) {
+		var li = $('<li>');
+
+		// copy pictogram
+		var pictoOrig = tilePreload['playersPicto'][players[i].id];
+		var picto = document.createElement('canvas');
+		picto.width = pictoOrig.width;
+		picto.height = pictoOrig.height;
+		var pCtx = picto.getContext('2d');
+		pCtx.drawImage(pictoOrig, 0, 0);
+		$(picto).addClass('picto');
+		li.append(picto);
+
+		li.append('<span class="player">' + players[i].name + '</span>');
+		li.append('<span class="points">' + players[i].points + '</span>');
+		list.append(li);
+	}
+}
+
+function hideWinNotification() {
+	$("#winNotification").fadeOut();
+	$('#canvas-overlay').fadeOut();
+}
+
+function initWinNotification() {
+	$("#winExit").click(hideWinNotification);
 }
 
 function updatePlayerList() {
@@ -127,6 +156,8 @@ function initMenu() {
 	menus['#tab_rooms'] = '#m_rooms';
 	menus['#tab_designer'] = '#m_designer';
 	menus['#tab_settings'] = '#m_settings';
+	menus['#tab_instructions'] = '#m_instructions';
+	menus['#tab_credits'] = '#m_credits';
 
 	// preselection
 	var selectedTab = '#tab_rooms';
@@ -157,7 +188,7 @@ function toggleMenu() {
 		$('#menu-control').addClass('selected');
 		$('#menu-overlay').show();
 	} else {
-		if (!window.localStorage.room) {
+		if (!room_global) {
 			return false;
 		}
 		$('#menu').hide();

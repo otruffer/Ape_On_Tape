@@ -13,6 +13,8 @@ var loginReady;
 var roomChosen;
 var rooms;
 
+var room_global;
+
 // audio support of browser
 var mp3Suppport = audioSupport("mp3");
 var oggSupport = audioSupport("ogg");
@@ -72,7 +74,7 @@ function usernameAllowed(name) {
 
 function roomSelection() {
 	// delete room and go to lobby
-	delete window.localStorage.room;
+	delete room_global;
 	if ($('#menu').is(':hidden'))
 		toggleMenu();
 }
@@ -90,7 +92,7 @@ function newRoomPrompt() {
 	if (room) {
 		if (window.localStorage) { // store in browser localStorage, so we
 			// remember next next
-			window.localStorage.room = room;
+			room_global = room;
 		}
 		changeToRoom(room);
 	} else {
@@ -155,13 +157,14 @@ function onMessage(incoming) {
 		if (designer) {
 			designer.composeShape();
 		}
+		hideWinNotification();
 		break;
 	case 'ROOMS':
 		rooms = incoming.rooms;
 		updateRoomList();
 		break;
 	case 'NEW_ROOM':
-		window.localStorage.room = incoming.newRoom;
+		room_global = incoming.newRoom;
 		updateRoomInfo();
 		updateRoomList();
 		closeMenu();
@@ -175,8 +178,7 @@ function onMessage(incoming) {
 		}
 		break;
 	case 'END_GAME':
-		$("#winNotification").fadeIn();
-		$("#winText").text("FEGGIG.");
+		showWinNotification(incoming.players);
 		break;
 	}
 }
@@ -386,6 +388,7 @@ function loadGraphics() {
 	loadImage('barrier_open', 'img/barrier_open.png');
 	loadImage('turret', 'img/turret.png');
 	loadImage('nightTrap', 'img/night_trap.png');
+	loadImage('fastshoot', 'img/fastshoot.png');
 	loadImage('spike_up', 'img/spike_trap_up.png');
 	loadImage('spike_down', 'img/spike_trap_down.png');
 

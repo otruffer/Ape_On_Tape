@@ -14,12 +14,16 @@ public class Bot extends Entity {
 
 	@noGson
 	protected float lastDX = 0, lastDY = 0;
+	@noGson
 	private float lastX, lastY, homeX, homeY;
+	@noGson
 	private int hitCount;
 	/**
 	 * Number of hits until death/respawn.
 	 */
+	@noGson
 	protected final int lifePoints;
+	@noGson
 	protected final float originalSpeed;
 
 	public Bot(int id, float x, float y, String name) {
