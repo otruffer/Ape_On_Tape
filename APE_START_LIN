@@ -2,4 +2,4 @@
 
 echo "starting server... logging into ape.log"
 
-java -Dfile.encoding=UTF-8 -classpath /home/oskar/workspace/ape_on_tape/bin:/home/oskar/workspace/ape_on_tape/libs/autojar.jar:/home/oskar/workspace/ape_on_tape/libs/gson-1.7.2.jar:/home/oskar/workspace/ape_on_tape/libs/jarjar-1.1.jar:/home/oskar/workspace/ape_on_tape/libs/junit-4.10.jar:/home/oskar/workspace/ape_on_tape/libs/mockito-all-1.9.0.jar:/home/oskar/workspace/ape_on_tape/libs/netty-3.5.11.Final.jar server.GameHandler > ape.log
+nohup java -Dfile.encoding=UTF-8 -classpath bin:libs/autojar.jar:libs/gson-1.7.2.jar:libs/jarjar-1.1.jar:libs/junit-4.10.jar:libs/mockito-all-1.9.0.jar:libs/netty-3.5.11.Final.jar server.GameHandler > ape.log
