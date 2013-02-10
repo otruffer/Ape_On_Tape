@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="80" height="80" tilewidth="16" tileheight="16">
+ <properties>
+  <property name="subdivision" value="4"/>
+ </properties>
+ <tileset firstgid="1" name="entities" tilewidth="24" tileheight="24">
+  <image source="entities.png" width="408" height="24"/>
+ </tileset>
+ <tileset firstgid="18" name="TileA1" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileA1.png" width="512" height="384"/>
+ </tileset>
+ <tileset firstgid="786" name="TileA2" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileA2.png" width="512" height="384"/>
+ </tileset>
+ <tileset firstgid="1554" name="TileA3" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileA3.png" width="512" height="256"/>
+ </tileset>
+ <tileset firstgid="2066" name="TileA4" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileA4.png" width="512" height="480"/>
+ </tileset>
+ <tileset firstgid="3026" name="TileA5" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileA5.png" width="256" height="512"/>
+ </tileset>
+ <tileset firstgid="3538" name="TileB" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileB.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="4562" name="TileC" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileC.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="5586" name="TileD" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileD.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="6610" name="TileE" tilewidth="16" tileheight="16">
+  <image source="../client/img/map/TileE.png" width="512" height="512"/>
+ </tileset>
+ <layer name="background" width="80" height="80">
+  <data encoding="base64" compression="zlib">
+   eJztmUtOwzAQhiuFExS4BI9NgUuQrgpcAljxuARLHhcpcD8mUiOFUaw0TurPf5XFSP1kj2SPmPlicXIwm51anFmcW8yL2ezQ4sjiuJi4i6+tZuUmlu53FQvbc2FxaXFVTOz5vqN+K9tzY3FrcVdM7PnNavSwiceW+j3ZnmeLF4vXYmLP78X/ejVr2VbP3Ner+3xYfFp8FbvntaufP48aV/f5tvix+C12z/M9q19q/1Y+aeuH+kyhfsl1PbV/V4H5F/JJ7uup/fu0Z/1L+bfsOJ/KOuHfnPux73qO/l22nNfP81zyCf/2OX/MfEqZT/uXvv/QfMK/zX7w/dH83eyX+sxt+8l8+v277fwJzXM6P8f3r1L/Uv4t3Xk8d50/l3zq/Vv3g+8PP1/8+UP7qXzav9ued1frqf25b+/f1P5M4d+UnNqfY71/fT/Vdwr1267WU/tz7Pevn8dd83rs9dT+TPH+Tcmp/TmWf8uO+6Vap30a+/6l+tWv0z5N9f4Nfb8Nzad9GuPfPvePmW998mmfDvUvXT/apzH+bfaT76/m722+34bm0z6N9W/f+RXywdB82qcx/s2pf2mfxvrXf591fa95Hiuf9mmMf5v95Pur63sjtD82n/bpUP/SPlPjhasf7TM19v6lfabGlU+a84n2mRrX/q3//mifqfHa1Y/2mRrX/i0n/47y/1/aZ2pM+0udaX+pM+0vdab9pc60v9SZ9pc60/5SZ9pf6kz7S51pf6kz7S91pv2lzrS/1Jn2lzrT/lJn2l/qTPtLnWl/qTPtL3Wm/aXOtL/UmfaXOtP+UmfaX+pM+0udaX+pM+0vdab9pc60v9SZ9pc60/5SZ9pf6kz7S51pf6kz7S91pv2lzn//vHkc
+  </data>
+ </layer>
+ <layer name="(helper: do not export!)" width="80" height="80" opacity="0.09">
+  <data encoding="base64" compression="zlib">
+   eJzt0TEKAkEQRcHNvf/F1hvoRTQQhA4Eo9cF+2FomArfeTuO+/udnzt3Xv7TH++/5+17L//P63661/10n6t76l731L3up3vdT/O6l+7bempe99O97qf7XN1T97qn7nU/3et+mte9dN/WU/O6n+51P93n6p661z11r/vpXvfTvO6l+7aemtf9dK/76T5X99S97ql73U/3up/mdS/dt/XUvO6ne91P97m6p+51T93rfrrX/TSve+m+rafmdT/d6366z9U9da976l73073up3ndS/dtPTWv++le99N9ru6pe91T97qf7nU/zeteum/rqXndT/e6n+5zdU/d65661/10r/tpXvfSfVtPzet+utf9dJ+re+pe99S97qd73U/zupfu23pqXvfTve6n+1zdU/e6p+51P93rfpq/AAuaNWY=
+  </data>
+ </layer>
+ <layer name="foreground" width="80" height="80">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20Hb6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA1wBkAAAB
+  </data>
+ </layer>
+ <layer name="entities" width="80" height="80">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20Hb6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA1wBkAAAB
+  </data>
+ </layer>
+</map>

@@ -5,7 +5,6 @@
 # *.[oa]
 # *~
 
-*.class
 
 # Package Files #
 *.war
@@ -14,7 +13,6 @@
 *.pydevproject
 .project
 .metadata
-bin/**
 tmp/**
 tmp/**/*
 *.tmp

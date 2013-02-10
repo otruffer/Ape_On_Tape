@@ -1,0 +1,11 @@
+.main_box {
+	background-color: brown;
+	border-style: dotted;
+	padding: 10px;
+	margin: 10px;
+}
+
+body {
+	background-color: gray;
+	font-size: 16pt;
+}
